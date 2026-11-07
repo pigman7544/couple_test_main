@@ -1,5 +1,5 @@
 """Small demo web server. Uses existing Python engine; serves real local image assets."""
-import json, os, mimetypes
+import json, os, mimetypes, traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
@@ -13,10 +13,16 @@ ROOT=Path(__file__).resolve().parent
 MAX_BODY=8192
 
 def compute(payload, unlock=False):
+    if not isinstance(payload,dict):
+        raise ValueError('두 사람의 정보를 입력해 주세요.')
     def build(x):
+        if not isinstance(x,dict) or not isinstance(x.get('date'),str):
+            raise ValueError('생년월일을 입력해 주세요.')
         date=x['date'].split('-')
         if len(date)!=3:raise ValueError('생년월일을 입력해 주세요.')
         t=x.get('time') or None
+        if t is not None and not isinstance(t,str):
+            raise ValueError('태어난 시간을 확인해 주세요.')
         hh,mm=map(int,t.split(':')) if t else (None,0)
         return person(*map(int,date),hour=hh,minute=mm,calendar=x.get('calendar','solar'),leap=bool(x.get('leap',False)))
     a,b=build(payload['a']),build(payload['b'])
@@ -51,10 +57,10 @@ class Handler(BaseHTTPRequestHandler):
             size=int(self.headers.get('Content-Length','0'))
             if size<=0 or size>MAX_BODY:raise ValueError('입력 형식이 올바르지 않습니다.')
             result=compute(json.loads(self.rfile.read(size)),unlock=(endpoint=='/api/test-unlock'));status=200
-        except (ValueError,TypeError,KeyError,IndexError,OverflowError) as e:
-            result={'error':str(e)};status=400
+        except (ValueError,TypeError,KeyError,IndexError,OverflowError):
+            result={'error':'입력 정보를 확인해 주세요. 생년월일과 시간을 올바르게 입력해 주세요.'};status=400
         except Exception:
-            self.log_error('Unhandled match error',exc_info=True)
+            self.log_error('Unhandled match error: %s',traceback.format_exc())
             result={'error':'계산 중 오류가 발생했습니다. 입력값을 확인해 주세요.'};status=500
         raw=json.dumps(result,ensure_ascii=False).encode('utf-8')
         self.send_response(status);self.send_header('Content-Type','application/json; charset=utf-8')

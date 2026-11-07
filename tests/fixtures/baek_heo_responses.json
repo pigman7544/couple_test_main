@@ -1,0 +1,116 @@
+[
+  {
+    "case": "default",
+    "payload": {
+      "a": {
+        "date": "1992-03-18",
+        "time": "16:00",
+        "calendar": "solar",
+        "gender": "female"
+      },
+      "b": {
+        "date": "1992-04-30",
+        "time": "01:00",
+        "calendar": "solar",
+        "gender": "male"
+      }
+    },
+    "unlock": false,
+    "sha256": "12829dc209367c07a75a0d8cf3ed1a9ea26f4faa023ed39c05cbd6ce1ef8f93f"
+  },
+  {
+    "case": "default",
+    "payload": {
+      "a": {
+        "date": "1992-03-18",
+        "time": "16:00",
+        "calendar": "solar",
+        "gender": "female"
+      },
+      "b": {
+        "date": "1992-04-30",
+        "time": "01:00",
+        "calendar": "solar",
+        "gender": "male"
+      }
+    },
+    "unlock": true,
+    "sha256": "fae896f6bdd4bc332cbf24fc28f46bda507364b15a31c530d67b7f8bbbfa8a5c"
+  },
+  {
+    "case": "no_time",
+    "payload": {
+      "a": {
+        "date": "1992-03-18",
+        "time": "",
+        "calendar": "solar",
+        "gender": "female"
+      },
+      "b": {
+        "date": "1992-04-30",
+        "time": "",
+        "calendar": "solar",
+        "gender": "male"
+      }
+    },
+    "unlock": false,
+    "sha256": "12829dc209367c07a75a0d8cf3ed1a9ea26f4faa023ed39c05cbd6ce1ef8f93f"
+  },
+  {
+    "case": "no_time",
+    "payload": {
+      "a": {
+        "date": "1992-03-18",
+        "time": "",
+        "calendar": "solar",
+        "gender": "female"
+      },
+      "b": {
+        "date": "1992-04-30",
+        "time": "",
+        "calendar": "solar",
+        "gender": "male"
+      }
+    },
+    "unlock": true,
+    "sha256": "5af2d941c72e209b97633be9451a16e6cb2e0b066298aa1ee8224e5d2f126b04"
+  },
+  {
+    "case": "swapped",
+    "payload": {
+      "a": {
+        "date": "1992-04-30",
+        "time": "01:00",
+        "calendar": "solar",
+        "gender": "male"
+      },
+      "b": {
+        "date": "1992-03-18",
+        "time": "16:00",
+        "calendar": "solar",
+        "gender": "female"
+      }
+    },
+    "unlock": false,
+    "sha256": "12829dc209367c07a75a0d8cf3ed1a9ea26f4faa023ed39c05cbd6ce1ef8f93f"
+  },
+  {
+    "case": "swapped",
+    "payload": {
+      "a": {
+        "date": "1992-04-30",
+        "time": "01:00",
+        "calendar": "solar",
+        "gender": "male"
+      },
+      "b": {
+        "date": "1992-03-18",
+        "time": "16:00",
+        "calendar": "solar",
+        "gender": "female"
+      }
+    },
+    "unlock": true,
+    "sha256": "44eb086cf79a0b829d891bd340a8d3d04e379710dc0f08dc738280b0b030efe0"
+  }
+]
