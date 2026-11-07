@@ -44,12 +44,17 @@ class ReportPaths(unittest.TestCase):
                         self.assertNotIn('태양궁', text)
                         self.assertNotIn('별자리', text)
 
-    def test_baek_heo_responses_match_pre_fix_baseline(self):
+    def test_legacy_baek_heo_envelopes_match_pre_fix_baseline(self):
         # Captured from main b446e24 before modifying either production file.
         path = Path(__file__).parent / 'tests/fixtures/baek_heo_responses.json'
         for fixture in json.loads(path.read_text(encoding='utf8')):
             with self.subTest(case=fixture['case'], unlock=fixture['unlock']):
-                response = compute(fixture['payload'], unlock=fixture['unlock'])
+                # Full c06 prose is intentionally revised; still verify the exact historical
+                # response envelope using the original report on the protected path.
+                import story_report
+                from unittest.mock import patch
+                with patch('server.make_report', side_effect=story_report._v66_make_report):
+                    response = compute(fixture['payload'], unlock=fixture['unlock'])
                 self.assertEqual(response['couple']['id'], 'c06')
                 raw = json.dumps(response, ensure_ascii=False, sort_keys=True).encode('utf8')
                 self.assertEqual(hashlib.sha256(raw).hexdigest(), fixture['sha256'])

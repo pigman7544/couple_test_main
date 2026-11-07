@@ -322,3 +322,14 @@ def make_report(a,b,rel,couple,story):
 {lead}은 함께 결정하는 연습을, {follow}은 마음을 조금 더 자주 말하는 연습을 해 봐요. **다른 사람이 될 필요는 없어요. 서로에게 닿는 방법을 찾으면 돼요.**"""
     result['teaser']='**당신들은 사랑하는 방식이 달라서 더욱 끌리는 커플이에요.** 하지만 그 차이가 언젠가는 서로를 가장 아프게 할 수도 있어요.'
     return result
+
+
+# Keep all other types and free-preview fields on the existing report path.
+_v66_make_report = make_report
+
+def make_report(a,b,rel,couple,story):
+    result = _v66_make_report(a,b,rel,couple,story)
+    if couple['id'] != 'c06':
+        return result
+    from c06_report import enrich
+    return enrich(result, a, b, rel)
