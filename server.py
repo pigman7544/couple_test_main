@@ -44,6 +44,17 @@ class Handler(BaseHTTPRequestHandler):
             raw=(ROOT/'index.html').read_bytes();mime='text/html; charset=utf-8'
         elif path in ('/assets/baek_heo_plain.png','/assets/baek_heo_title.png'):
             raw=(ROOT/path.lstrip('/')).read_bytes();mime='image/png'
+        elif path in (
+            '/assets/fonts/BMJUA.ttf',
+            '/assets/fonts/NanumSquareRoundR.woff2',
+            '/assets/fonts/NanumSquareRoundB.woff2',
+            '/assets/fonts/NanumSquareRoundEB.woff2',
+            '/assets/fonts/OFL-BM-JUA.txt',
+            '/assets/fonts/OFL-NanumSquareRound.txt',
+        ):
+            raw=(ROOT/path.lstrip('/')).read_bytes()
+            mime=('font/ttf' if path.endswith('.ttf') else
+                  'font/woff2' if path.endswith('.woff2') else 'text/plain; charset=utf-8')
         else:self.send_error(404);return
         self.send_response(200)
         self.send_header('Content-Type',mime)

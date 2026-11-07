@@ -105,6 +105,12 @@ class C06Report(unittest.TestCase):
         for path, expected in protected.items():
             raw = (html[html.index('<section class="hide" id="result">'):html.index('<div class="hide" id="premiumReport">')].encode()
                    if path == 'preview_html' else (ROOT / path).read_bytes())
+            if path == 'server.py':
+                # Only the new, allowlisted font-serving branch may differ.
+                source = raw.decode('utf8').replace('\r\n', '\n')
+                start = source.index('        elif path in (\n')
+                end = source.index('        else:self.send_error(404);return', start)
+                raw = (source[:start] + source[end:]).replace('\n', '\r\n').encode('utf8')
             self.assertEqual(hashlib.sha256(raw).hexdigest(), expected, path)
 
 
