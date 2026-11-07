@@ -10,12 +10,22 @@
 const $=id=>document.getElementById(id);
 const escapeHTML=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function renderProse(s){return String(s||'').split(/\n\n+/).map(part=>{let safe=escapeHTML(part).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');if(safe.startsWith('◆ '))safe='<span class="subhead">'+safe.slice(2)+'</span>';return '<p>'+safe.replace(/\n/g,'<br>')+'</p>'}).join('')}
+// Hangul syllables encode the final consonant in the remainder modulo 28.
+// Names without a final Hangul syllable (including empty names) use the vowel form.
+function koreanParticle(name, consonant, vowel){
+ const last=String(name||'').trim().normalize('NFC').slice(-1).charCodeAt(0);
+ return last>=0xAC00&&last<=0xD7A3&&(last-0xAC00)%28!==0?consonant:vowel;
+}
+function fillPairName(name){
+ $('pairName').textContent=name;
+ $('pairName').nextSibling.textContent=koreanParticle(name,'을','를')+' 닮았어.';
+}
 const reportLayoutIds=['roles','story','sajuA','crisis','scene','tip'];
 const originalReportLayout=reportLayoutIds.map(id=>{const section=$(id).closest('.section');return {section,chapter:section.querySelector('.chapter').textContent,title:section.querySelector('h2').textContent}});
 function setReportChapters(chapters){
  const keys={roles:'roles',story:'story',saju_a:'sajuA',crisis:'crisis',tip:'tip'};
  originalReportLayout.forEach(({section,chapter,title})=>{section.classList.remove('hide');section.querySelector('.chapter').textContent=chapter;section.querySelector('h2').textContent=title});
- if(!chapters)return;
+ if(!chapters){const name=$('pairName').textContent;$('story').closest('.section').querySelector('h2').textContent=name+koreanParticle(name,'은','는')+' 어떤 사랑을 했을까?';return;}
  originalReportLayout.forEach(({section})=>section.classList.add('hide'));
  chapters.forEach((chapter,i)=>{const id=keys[chapter.key];if(!id)return;const section=$(id).closest('.section');section.classList.remove('hide');section.querySelector('.chapter').textContent='CHAPTER '+String(i+1).padStart(2,'0');section.querySelector('h2').textContent=chapter.title});
 }
@@ -34,7 +44,7 @@ function showAnalysisLoading(){
 function hideAnalysisLoading(){clearInterval(loadingTimer);$('analysisLoading').classList.add('hide')}
 
 $('payButton').addEventListener('click',async()=>{if(!lastPayload)return;const btn=$('payButton');btn.disabled=true;btn.textContent='전체 리포트를 준비하고 있어요…';$('payNotice').textContent='';try{const r=await fetch('/api/test-unlock',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(lastPayload)});const d=await r.json();if(!r.ok)throw Error(d.error||'다시 시도해 주세요');fill(d.full_report);$('artSection').classList.toggle('hide',!d.has_art);$('premiumReport').classList.remove('hide');$('paywall').classList.add('hide');$('blurTeaser').classList.add('hide');$('premiumReport').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){$('payNotice').textContent=e.message;}finally{btn.disabled=false;btn.textContent='5,000원 결제하고 전체 보기 (테스트 무료)';}});
-$('matchForm').addEventListener('submit',async e=>{e.preventDefault();$('error').textContent='';$('submit').disabled=true;$('submit').textContent='분석 중…';showAnalysisLoading();const started=Date.now();const f=new FormData(e.target),p=k=>({date:f.get(k+'_date'),calendar:f.get(k+'_calendar'),time:f.get(k+'_time'),gender:f.get(k+'_gender')});try{const r=await fetch('/api/match',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({a:p('a'),b:p('b')})});const d=await r.json();if(!r.ok)throw Error(d.error||'잠시 후 다시 시도해 주세요');await wait(Math.max(0,2000-(Date.now()-started)));lastPayload={a:p('a'),b:p('b')};$('premiumReport').classList.add('hide');$('paywall').classList.remove('hide');$('blurTeaser').classList.remove('hide');fillPreview(d.preview);$('pairName').textContent=d.couple.name;$('heroWrap').classList.toggle('hide',!d.has_art);$('formSection').classList.add('hide');$('result').classList.remove('hide');window.scrollTo(0,0)}catch(err){$('error').textContent=err.message}finally{hideAnalysisLoading();$('submit').disabled=false;$('submit').textContent='연연으로 우리의 이야기 분석하기 ♥'}});
+$('matchForm').addEventListener('submit',async e=>{e.preventDefault();$('error').textContent='';$('submit').disabled=true;$('submit').textContent='분석 중…';showAnalysisLoading();const started=Date.now();const f=new FormData(e.target),p=k=>({date:f.get(k+'_date'),calendar:f.get(k+'_calendar'),time:f.get(k+'_time'),gender:f.get(k+'_gender')});try{const r=await fetch('/api/match',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({a:p('a'),b:p('b')})});const d=await r.json();if(!r.ok)throw Error(d.error||'잠시 후 다시 시도해 주세요');await wait(Math.max(0,2000-(Date.now()-started)));lastPayload={a:p('a'),b:p('b')};$('premiumReport').classList.add('hide');$('paywall').classList.remove('hide');$('blurTeaser').classList.remove('hide');fillPreview(d.preview);fillPairName(d.couple.name);$('heroWrap').classList.toggle('hide',!d.has_art);$('formSection').classList.add('hide');$('result').classList.remove('hide');window.scrollTo(0,0)}catch(err){$('error').textContent=err.message}finally{hideAnalysisLoading();$('submit').disabled=false;$('submit').textContent='연연으로 우리의 이야기 분석하기 ♥'}});
 $('back').onclick=()=>{lastPayload=null;$('premiumReport').classList.add('hide');$('paywall').classList.remove('hide');$('blurTeaser').classList.remove('hide');$('result').classList.add('hide');$('formSection').classList.remove('hide');window.scrollTo(0,0)};
 for(const im of document.querySelectorAll('img'))im.addEventListener('error',()=>{$('imageError').classList.remove('hide')});
 </script></body></html>
