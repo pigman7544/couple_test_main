@@ -10,7 +10,16 @@
 const $=id=>document.getElementById(id);
 const escapeHTML=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function renderProse(s){return String(s||'').split(/\n\n+/).map(part=>{let safe=escapeHTML(part).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');if(safe.startsWith('◆ '))safe='<span class="subhead">'+safe.slice(2)+'</span>';return '<p>'+safe.replace(/\n/g,'<br>')+'</p>'}).join('')}
-function fill(x){for(const [id,key] of [['story','story'],['sajuA','saju_a'],['roles','roles'],['crisis','crisis'],['scene','scene'],['tip','tip']])$(id).innerHTML=renderProse(x[key]);$('ending').innerHTML=renderProse(x.ending||'');$('questions').replaceChildren();for(const q of x.questions||[]){const p=document.createElement('p');p.textContent='♥ '+q;$('questions').append(p)}}
+const reportLayoutIds=['roles','story','sajuA','crisis','scene','tip'];
+const originalReportLayout=reportLayoutIds.map(id=>{const section=$(id).closest('.section');return {section,chapter:section.querySelector('.chapter').textContent,title:section.querySelector('h2').textContent}});
+function setReportChapters(chapters){
+ const keys={roles:'roles',story:'story',saju_a:'sajuA',crisis:'crisis',tip:'tip'};
+ originalReportLayout.forEach(({section,chapter,title})=>{section.classList.remove('hide');section.querySelector('.chapter').textContent=chapter;section.querySelector('h2').textContent=title});
+ if(!chapters)return;
+ originalReportLayout.forEach(({section})=>section.classList.add('hide'));
+ chapters.forEach((chapter,i)=>{const id=keys[chapter.key];if(!id)return;const section=$(id).closest('.section');section.classList.remove('hide');section.querySelector('.chapter').textContent='CHAPTER '+String(i+1).padStart(2,'0');section.querySelector('h2').textContent=chapter.title});
+}
+function fill(x){setReportChapters(x.chapters);for(const [id,key] of [['story','story'],['sajuA','saju_a'],['roles','roles'],['crisis','crisis'],['scene','scene'],['tip','tip']])$(id).innerHTML=renderProse(x[key]);$('ending').innerHTML=renderProse(x.ending||'');$('questions').replaceChildren();for(const q of x.questions||[]){const p=document.createElement('p');p.textContent='♥ '+q;$('questions').append(p)}}
 
 function fillPreview(x){$('tagline').textContent=x.tagline||'';$('previewStory').innerHTML=renderProse(x.teaser||'');}
 let lastPayload=null;
