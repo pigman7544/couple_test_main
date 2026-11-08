@@ -61,7 +61,7 @@ def enrich(result, a, b, rel):
                 f'월간 {p["month_pillar"][0]}과 일간의 관계를 나타내는 십성은 {x["god"]}이고, '
                 f'이는 {GOD_TEXT[x["god"]]}의 이미지와 이어져요. '
                 f'겉으로 드러난 오행은 {elements}예요. '
-                f'가장 자주 보이는 {", ".join(KO[k] for k in dominant)}은(는) '
+                f'가장 자주 보이는 오행은 {", ".join(KO[k] for k in dominant)}이에요. '
                 f'{ELEM_DESC[dominant[0]].replace("이미지야.", "이미지예요.").replace("있어.", "있어요.")}')
     result['tagline'] = '서로 떨어져 있어도, 마음속 약속을 지키는 사랑'
     result['teaser'] = '서로에 대한 믿음이 관계를 지탱하는 커플이에요. 하지만 그 믿음이 때로는 말하지 못한 외로움과 기다림을 감추기도 해요.'
