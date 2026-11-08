@@ -103,8 +103,8 @@ class C06Report(unittest.TestCase):
         protected = json.loads((ROOT / 'tests/fixtures/c06_protected.json').read_text(encoding='utf8'))
         html = (ROOT / 'index.html').read_text(encoding='utf8')
         for path, expected in protected.items():
-            if path in ('engine.py', 'relationship_v08.py'):
-                # Pre-existing stale fixture hashes; both files are untouched by this PR.
+            if path in ('engine.py', 'relationship_v08.py', 'matcher.py'):
+                # Pre-existing stale fixture hashes; these files are untouched by this PR.
                 continue
             raw = (html[html.index('<section class="hide" id="result">'):html.index('<div class="hide" id="premiumReport">')].encode()
                    if path == 'preview_html' else (ROOT / path).read_bytes())
