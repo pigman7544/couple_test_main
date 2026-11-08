@@ -329,6 +329,9 @@ _v66_make_report = make_report
 
 def make_report(a,b,rel,couple,story):
     result = _v66_make_report(a,b,rel,couple,story)
+    if couple['id'] == 'c01':
+        from c01_report import enrich as enrich_chunhyang
+        return enrich_chunhyang(result, a, b, rel)
     if couple['id'] != 'c06':
         return result
     from c06_report import enrich
