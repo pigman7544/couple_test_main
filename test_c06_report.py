@@ -90,14 +90,17 @@ class C06Report(unittest.TestCase):
                 self.assertTrue(r['test_mode'])
                 self.assertTrue(r['has_art'])
 
-    def test_other_eleven_reports_exact_baseline(self):
-        expected = json.loads((ROOT / 'tests/fixtures/other_reports.json').read_text(encoding='utf8'))
+    def test_other_ten_reports_are_individual_five_chapter_reports(self):
+        from other_reports import LENSES
+        self.assertEqual(len(LENSES), 10)
         for c in DB:
             if c['id'] in ('c06', 'c01'):
                 continue
             r = make_report(self.a, self.b, self.rel, c, describe(self.rel['vector'], c['id']))
-            self.assertEqual(digest(r), expected[c['id']], c['id'])
-            self.assertNotIn('chapters', r)
+            self.assertEqual(len(r['chapters']), 5, c['id'])
+            self.assertEqual(len(r['sections']), 5, c['id'])
+            self.assertIn(c['name'].split('·')[0], r['roles'], c['id'])
+            self.assertTrue(all(r[key] for key in r['sections']), c['id'])
 
     def test_assets_preview_markup_and_calculation_files_unchanged(self):
         import subprocess
