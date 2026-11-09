@@ -84,14 +84,29 @@ def audit(samples=2400, repeat=10, seed=20261109):
     for cid, p in sample_inputs.items():
         assert digest(p) == digest(p), 'nondeterministic output for ' + cid
 
+    # Diagnostic gates: every archetype must appear; concentration is flagged
+    # rather than forcing an artificial uniform distribution.
+    expected_ids = {c['id'] for c in DB}
+    observed_ids = set(counts)
+    unmatched = sorted(expected_ids - observed_ids)
+    max_share = max(counts.values()) / samples
+    distribution_flags = []
+    if unmatched:
+        distribution_flags.append('unmatched archetypes: ' + ', '.join(unmatched))
+    if max_share > 0.35:
+        distribution_flags.append('largest archetype exceeds 35% of samples')
+    distribution_ok = not distribution_flags
+
     return {
+        'distribution_ok': distribution_ok,
+        'distribution_flags': distribution_flags,
         'seed': seed,
         'samples': samples,
         'repeat': repeat,
         'deterministic': deterministic,
         'matched_types': sum(v > 0 for v in counts.values()),
-        'unmatched_types': [c['id'] for c in DB if not counts[c['id']]],
-        'max_share': round(max(counts.values()) / samples, 4),
+        'unmatched_types': unmatched,
+        'max_share': round(max_share, 4),
         'counts': dict(sorted(counts.items())),
         'quality': quality,
         'note': 'Equal frequency is not required; editorial quality must also be reviewed manually.',
@@ -104,4 +119,7 @@ if __name__ == '__main__':
     parser.add_argument('--repeat', type=int, default=10)
     parser.add_argument('--seed', type=int, default=20261109)
     args = parser.parse_args()
-    print(json.dumps(audit(args.samples, args.repeat, args.seed), ensure_ascii=False, indent=2))
+    result = audit(args.samples, args.repeat, args.seed)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    if not result['distribution_ok'] or not result['deterministic']:
+        raise SystemExit(1)
