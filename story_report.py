@@ -354,9 +354,9 @@ def make_report(a,b,rel,couple,story):
         if not isinstance(value, str):
             continue
         # Preserve bold section headings introduced by ◆; remove body bold.
-        value = re.sub(r'(?<!◆ )\\*\\*(.+?)\\*\\*', r'\\1', value, flags=re.DOTALL)
+        value = re.sub(r'(?<!◆ )\*\*(.+?)\*\*', r'\1', value, flags=re.DOTALL)
         if key in ('saju_a', 'crisis'):
-            value = re.sub(r'(\\d+(?:\\.\\d+)?)/100', display_score, value)
+            value = re.sub(r'(\d+(?:\.\d+)?)/100', display_score, value)
             value = value.replace('100점', '10점')
         result[key] = value
     return result
