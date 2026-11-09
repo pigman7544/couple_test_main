@@ -12,6 +12,9 @@ import statistics
 
 from server import compute
 from matcher import DB
+from engine import person
+from relationship_v08 import relation
+from story_report import make_report
 
 REPORT_KEYS = ('roles', 'story', 'saju_a', 'crisis', 'tip')
 BASELINE_ID = 'c06'
@@ -20,7 +23,7 @@ BASELINE_ID = 'c06'
 def payload(rng):
     def one():
         return {
-            'date': '%04d-%02d-%02d' % (rng.randint(1970, 2004), rng.randint(1, 12), 15),
+            'date': '%04d-%02d-%02d' % (rng.randint(1970, 2004), rng.randint(1, 12), rng.randint(1, 28)),
             'calendar': 'solar',
             'time': '%02d:00' % rng.randrange(24),
             'gender': rng.choice(['male', 'female']),
@@ -44,6 +47,17 @@ def audit(samples=2400, repeat=10, seed=20261109):
         assert len(report['chapters']) == 5, cid
         assert all(report.get(k) for k in REPORT_KEYS), cid
 
+    # Compare every archetype on the exact same two birth charts, including
+    # those never selected by the matcher in this sample.
+    a, b = person(1992, 3, 18, 16), person(1992, 4, 30, 1)
+    rel = relation(a, b)
+    forced = {}
+    for c in DB:
+        report = make_report(a, b, rel, c, {})
+        forced[c['id']] = sum(len(str(report.get(k, ''))) for k in REPORT_KEYS)
+        assert len(report['chapters']) == 5, c['id']
+        assert all(report.get(k) for k in REPORT_KEYS), c['id']
+    forced_baseline = forced[BASELINE_ID]
     baseline = statistics.median(lengths[BASELINE_ID]) if lengths[BASELINE_ID] else None
     quality = {}
     for c in DB:
@@ -55,6 +69,8 @@ def audit(samples=2400, repeat=10, seed=20261109):
             'median_chars': statistics.median(vals) if vals else None,
             'min_chars': min(vals) if vals else None,
             'ratio_to_c06': round(statistics.median(vals) / baseline, 3) if vals and baseline else None,
+            'forced_chars': forced[cid],
+            'forced_ratio_to_c06': round(forced[cid] / forced_baseline, 3),
         }
 
     # Compare complete API output; repeated calls must match byte-for-byte
@@ -74,6 +90,8 @@ def audit(samples=2400, repeat=10, seed=20261109):
         'repeat': repeat,
         'deterministic': deterministic,
         'matched_types': sum(v > 0 for v in counts.values()),
+        'unmatched_types': [c['id'] for c in DB if not counts[c['id']]],
+        'max_share': round(max(counts.values()) / samples, 4),
         'counts': dict(sorted(counts.items())),
         'quality': quality,
         'note': 'Equal frequency is not required; editorial quality must also be reviewed manually.',
