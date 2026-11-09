@@ -5,6 +5,7 @@ individual story beats; the thematic lens is specific to each work.
 """
 from c06_report import band
 from individual_scenes import SCENES
+from editorial_readings import READINGS
 from story_report import relationship_style, count_elements, STEM_NAME, GOD_TEXT, KO
 
 LENSES = {
@@ -100,6 +101,7 @@ def enrich(result, a, b, rel, couple):
                           '이 결말을 지금 두 사람의 미래에 그대로 대입할 필요는 없어요.')))
     original_scene, tension, action = SCENES[cid]
     result['story']='\n\n'.join(blocks)+f'\n\n◆ **작품 속에서 더 읽어 볼 장면**\n{original_scene}\n\n**{question}**\n{takeaway} {caution} 작품과 고사의 세부는 판본과 전승에 따라 다를 수 있어요.'
+    result['story'] += '\n\n' + READINGS[cid]
     v=rel['vector']
     def axis(key):
         score=v[key];i=band(score)
