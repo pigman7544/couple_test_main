@@ -9,7 +9,9 @@ class AuditQualityTests(unittest.TestCase):
         self.assertTrue(result['deterministic'])
         self.assertEqual(sum(result['counts'].values()), 120)
         self.assertEqual(len(result['quality']), 12)
-        self.assertGreaterEqual(result['matched_types'], 1)
+        self.assertEqual(result['matched_types'] + len(result['unmatched_types']), 12)
+        self.assertEqual(result['distribution_ok'], not result['distribution_flags'])
+        self.assertEqual(result['max_share'], round(max(result['counts'].values()) / 120, 4))
 
 
 if __name__ == '__main__':
