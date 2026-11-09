@@ -28,7 +28,7 @@ for(let pass=0;pass<2;pass++){
  for(const [id,s] of Object.entries(sections)){
   assert.equal(s.classList.contains('hide'),false);
   assert.equal(s.querySelector('.chapter').textContent,'original '+id);
-  assert.equal(s.querySelector('h2').textContent,id==='story'?'백소정·허선은 어떤 사랑을 했을까?':'title '+id);
+  assert.equal(s.querySelector('h2').textContent,id==='story'?'백소정·허선은 어떤 이야기를 남겼을까?':'title '+id);
  }
 }
 // Parse the complete inline script as well, catching syntax errors outside the switch.
@@ -46,7 +46,7 @@ for(const couple of couples){
  context.setReportChapters(chapters);
  context.setReportChapters(couple.id==='c06'?chapters:undefined);
  assert.equal(Object.values(sections).filter(s=>!s.classList.contains('hide')).length,couple.id==='c06'?5:6);
- assert.equal(sections.story.querySelector('h2').textContent,couple.id==='c06'?'c06 1':couple.name+(expectedParticles[couple.id]==='을'?'은':'는')+' 어떤 사랑을 했을까?');
+ assert.equal(sections.story.querySelector('h2').textContent,couple.id==='c06'?'c06 1':couple.name+(expectedParticles[couple.id]==='을'?'은':'는')+' 어떤 이야기를 남겼을까?');
  context.setReportChapters(chapters);
  assert.equal(sections.story.querySelector('h2').textContent,'c06 1');
 }

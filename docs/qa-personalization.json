@@ -25,37 +25,37 @@
     "c01": {
       "name": "춘향·이몽룡",
       "count": 793,
-      "median_chars": 4172,
-      "min_chars": 4130,
+      "median_chars": 4180,
+      "min_chars": 4138,
       "ratio_to_c06": 0.977,
-      "forced_chars": 4216,
+      "forced_chars": 4224,
       "forced_ratio_to_c06": 0.968
     },
     "c02": {
       "name": "견우·직녀",
       "count": 477,
-      "median_chars": 3484,
-      "min_chars": 3443,
-      "ratio_to_c06": 0.816,
-      "forced_chars": 3513,
-      "forced_ratio_to_c06": 0.806
+      "median_chars": 4150,
+      "min_chars": 4109,
+      "ratio_to_c06": 0.97,
+      "forced_chars": 4179,
+      "forced_ratio_to_c06": 0.958
     },
     "c03": {
       "name": "온달·평강공주",
       "count": 108,
-      "median_chars": 3467.5,
-      "min_chars": 3436,
-      "ratio_to_c06": 0.812,
-      "forced_chars": 3503,
-      "forced_ratio_to_c06": 0.804
+      "median_chars": 4158.5,
+      "min_chars": 4127,
+      "ratio_to_c06": 0.972,
+      "forced_chars": 4194,
+      "forced_ratio_to_c06": 0.961
     },
     "c06": {
       "name": "백소정·허선",
       "count": 703,
-      "median_chars": 4271,
-      "min_chars": 4199,
+      "median_chars": 4279,
+      "min_chars": 4207,
       "ratio_to_c06": 1.0,
-      "forced_chars": 4356,
+      "forced_chars": 4364,
       "forced_ratio_to_c06": 1.0
     },
     "c10": {
@@ -64,35 +64,35 @@
       "median_chars": null,
       "min_chars": null,
       "ratio_to_c06": null,
-      "forced_chars": 3505,
-      "forced_ratio_to_c06": 0.805
+      "forced_chars": 4183,
+      "forced_ratio_to_c06": 0.959
     },
     "c11": {
       "name": "엘리자베스·다아시",
       "count": 267,
-      "median_chars": 3467,
-      "min_chars": 3421,
-      "ratio_to_c06": 0.812,
-      "forced_chars": 3497,
-      "forced_ratio_to_c06": 0.803
+      "median_chars": 4152,
+      "min_chars": 4106,
+      "ratio_to_c06": 0.97,
+      "forced_chars": 4182,
+      "forced_ratio_to_c06": 0.958
     },
     "c13": {
       "name": "오디세우스·페넬로페",
       "count": 2,
-      "median_chars": 3419.5,
-      "min_chars": 3400,
-      "ratio_to_c06": 0.801,
-      "forced_chars": 3444,
-      "forced_ratio_to_c06": 0.791
+      "median_chars": 4087.5,
+      "min_chars": 4068,
+      "ratio_to_c06": 0.955,
+      "forced_chars": 4112,
+      "forced_ratio_to_c06": 0.942
     },
     "c18": {
       "name": "개츠비·데이지",
       "count": 1,
-      "median_chars": 3431,
-      "min_chars": 3431,
-      "ratio_to_c06": 0.803,
-      "forced_chars": 3461,
-      "forced_ratio_to_c06": 0.795
+      "median_chars": 4114,
+      "min_chars": 4114,
+      "ratio_to_c06": 0.961,
+      "forced_chars": 4144,
+      "forced_ratio_to_c06": 0.95
     },
     "f01": {
       "name": "셜록 홈즈·존 왓슨",
@@ -100,8 +100,8 @@
       "median_chars": null,
       "min_chars": null,
       "ratio_to_c06": null,
-      "forced_chars": 3636,
-      "forced_ratio_to_c06": 0.835
+      "forced_chars": 4300,
+      "forced_ratio_to_c06": 0.985
     },
     "f02": {
       "name": "돈키호테·산초 판사",
@@ -109,17 +109,17 @@
       "median_chars": null,
       "min_chars": null,
       "ratio_to_c06": null,
-      "forced_chars": 3648,
-      "forced_ratio_to_c06": 0.837
+      "forced_chars": 4312,
+      "forced_ratio_to_c06": 0.988
     },
     "f03": {
       "name": "관중·포숙아",
       "count": 49,
-      "median_chars": 3593,
-      "min_chars": 3565,
-      "ratio_to_c06": 0.841,
-      "forced_chars": 3627,
-      "forced_ratio_to_c06": 0.833
+      "median_chars": 4276,
+      "min_chars": 4248,
+      "ratio_to_c06": 0.999,
+      "forced_chars": 4310,
+      "forced_ratio_to_c06": 0.988
     },
     "f04": {
       "name": "길가메시·엔키두",
@@ -127,8 +127,8 @@
       "median_chars": null,
       "min_chars": null,
       "ratio_to_c06": null,
-      "forced_chars": 3637,
-      "forced_ratio_to_c06": 0.835
+      "forced_chars": 4328,
+      "forced_ratio_to_c06": 0.992
     }
   },
   "note": "Equal frequency is not required; editorial quality must also be reviewed manually.",
