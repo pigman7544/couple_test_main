@@ -4,6 +4,7 @@ No change to matching or saju calculations. Existing couple metadata supplies
 individual story beats; the thematic lens is specific to each work.
 """
 from c06_report import band
+from individual_scenes import SCENES
 from story_report import relationship_style, count_elements, STEM_NAME, GOD_TEXT, KO
 
 LENSES = {
@@ -58,7 +59,7 @@ def enrich(result, a, b, rel, couple):
     theme, question, characters, hook, takeaway, caution = LENSES[cid]
     friendship = couple.get('relationship_kind') == 'friendship'
     bond = '우정' if friendship else '사랑'
-    first, second = characters.split('와 ',1) if '와 ' in characters else (characters.split('과 ',1) if '과 ' in characters else characters.split('·',1))
+    first, second = couple['name'].split('·', 1)
     x,y=relationship_style(a),relationship_style(b)
     counts_a,counts_b=count_elements(a),count_elements(b)
     def strength(p,style,counts):
@@ -77,7 +78,7 @@ def enrich(result, a, b, rel, couple):
                 f'이는 인물의 마음을 상상하는 문학적 단서이지 성격을 판정하는 검사는 아니에요.')
     result['tagline']=theme
     result['teaser']=hook
-    result['roles']=(f'**왜 우리는 {characters}와 닮았을까요?**\n'
+    result['roles']=(f'**왜 우리는 {characters}의 이야기와 닮았을까요?**\n'
                      f'{bond}의 핵심을 {question}이라는 질문으로 읽어 볼게요. '
                      f'두 사람을 성별이 아닌 일간·월간 십성과 겉으로 드러난 오행의 상징으로 배역에 비춰 봤어요. '
                      f'{p}은 {first}, {q}은 {second}의 시선에서 읽어요.\n\n'
@@ -93,23 +94,24 @@ def enrich(result, a, b, rel, couple):
                       + (('이 장면에서 눈여겨볼 것은 단순한 사건보다 두 사람이 서로에게 어떤 선택을 요구받았는지예요.' if i==0 else
                           '그 선택은 관계를 더 단단하게 만들 수도, 서로의 차이를 선명하게 드러낼 수도 있어요.' if i==1 else
                           '이 결말을 지금 두 사람의 미래에 그대로 대입할 필요는 없어요.')))
-    result['story']='\n\n'.join(blocks)+f'\n\n**{question}**\n{takeaway} {caution} 작품과 고사의 세부는 판본과 전승에 따라 다를 수 있어요.'
+    original_scene, tension, action = SCENES[cid]
+    result['story']='\n\n'.join(blocks)+f'\n\n◆ **작품 속에서 더 읽어 볼 장면**\n{original_scene}\n\n**{question}**\n{takeaway} {caution} 작품과 고사의 세부는 판본과 전승에 따라 다를 수 있어요.'
     v=rel['vector']
     def axis(key):
         score=v[key];i=band(score)
-        return f'◆ **{LABELS[key]} {score:g}/100**\n{AXIS_TEXT[key][i]} {takeaway}'
+        return f'◆ **{LABELS[key]} {score:g}/100**\n{AXIS_TEXT[key][i]}'
     result['saju_a']=(f'두 사람의 관계를 {theme}이라는 관점에서 읽어 볼게요. '
                       f'당신의 일간은 {STEM_NAME[x["stem"]]}, 상대방의 일간은 {STEM_NAME[y["stem"]]}이에요. '
                       f'당신에게는 {x["desc"][2]}, 상대방에게는 {y["desc"][2]}이 중요하다는 상징으로 해석할 수 있어요.\n\n'
                       +'\n\n'.join(axis(k) for k in ('attraction','security','growth'))
                       +'\n\n이 점수는 관계를 이야기로 풀기 위한 상징적 지표이며 실제 감정이나 미래를 측정하지 않아요.')
-    result['crisis']=(f'**{question}**\n{hook}\n\n'
+    result['crisis']=(f'**{question}**\n{hook}\n\n{tension}\n\n'
                       +'\n\n'.join(axis(k) for k in ('conflict','expression','autonomy'))
                       +f'\n\n{caution} 서사 속 갈등을 현실의 위험한 행동과 동일시하지 않아요.')
-    result['tip']=(f'**이번 주, {bond}을(를) 지키는 작은 실천**\n{takeaway}\n\n'
+    result['tip']=(f'**이번 주, {bond}을 지키는 작은 실천**\n{takeaway}\n\n◆ **{characters}에게서 배운 한 가지**\n{action}\n\n'
                    +'\n\n'.join(f'◆ **{LABELS[k]}**\n{ADVICE[k][band(v[k])]}' for k in ('security','expression','autonomy','conflict','growth','attraction')))
-    result['ending']=f'{bond}은(는) 이야기 속 정해진 결말이 아니라 오늘 두 사람이 함께 만드는 선택이에요.'
-    result['questions']=[f'{question}', '상대에게 아직 물어보지 못한 마음은 무엇인가요?', '이번 주 함께 지킬 작은 약속은 무엇인가요?']
+    result['ending']=f'{bond}의 결말은 이야기처럼 정해져 있지 않아요. 오늘 두 사람이 함께 선택해요.'
+    result['questions']=[question, '상대에게 아직 물어보지 못한 마음은 무엇인가요?', action]
     result['sections']=['roles','story','saju_a','crisis','tip']
     result['chapters']=[{'key':k,'title':t} for k,t in zip(result['sections'],[
         f'우리는 왜 {characters}일까요?',
