@@ -61,17 +61,8 @@ def enrich(result, a, b, rel):
     xc, cc = (xa, ca) if a_chun else (xb, cb)
     xm, cm = (xb, cb) if a_chun else (xa, ca)
     def profile(label, character, p, x, counts):
-        elements = ' · '.join(f'{KO[k]} {v}개' for k,v in counts.items())
-        dominant = [k for k in KO if counts[k] == max(counts.values())]
-        return (f'◆ **{label}에게 비춰 보는 {character}의 마음**\n'
-                f'{label}의 일간은 {STEM_NAME[x["stem"]]}({x["stem"]})이에요. '
-                f'{x["desc"][0]}이라는 상징에서 {x["desc"][1]}을 떠올려 볼 수 있어요. '
-                f'가까운 사이에서는 {x["desc"][2]}을 중요하게 읽어요. '
-                f'월간 {p["month_pillar"][0]}과 일간의 관계를 나타내는 십성은 {x["god"]}이고, '
-                f'이는 {GOD_TEXT[x["god"]]}의 이미지와 이어져요. '
-                f'겉으로 드러난 오행은 {elements}예요. '
-                f'가장 자주 보이는 오행은 {", ".join(KO[k] for k in dominant)}이에요. '
-                f'{ELEM_DESC[dominant[0]].replace("이미지야.", "이미지예요.").replace("있어.", "있어요.")}')
+        from reading_voice import profile as reader_profile
+        return f'◆ **{label}에게 비춰 보는 {character}의 마음**\n' + reader_profile(label, x, counts, character == "춘향")
     result['tagline'] = '서로 떨어져 있어도, 마음속 약속을 지키는 사랑'
     result['teaser'] = '서로에 대한 믿음이 관계를 지탱하는 커플이에요. 하지만 그 믿음이 때로는 말하지 못한 외로움과 기다림을 감추기도 해요.'
     result['roles'] = (
@@ -80,9 +71,9 @@ def enrich(result, a, b, rel):
         '성별이나 누가 더 사랑하는지를 판단하는 배역은 아니에요.\n\n'
         + profile(chun, '춘향', pc, xc, cc) + '\n\n'
         + profile(mong, '몽룡', pm, xm, cm) + '\n\n'
-        '이 역할은 일간·월간 십성과 겉으로 드러난 오행의 편집상 비교예요. '
-        '오행 개수는 월령·지장간까지 고려한 강약 판정이 아니며, 동점이면 입력 순서로 정해요. '
-        + ('출생시각을 모르면 시주를 제외했어요. ' if not a.get('hour_pillar') or not b.get('hour_pillar') else '')
+        '이 역할은 나를 상징하는 글자와 태어난 달의 글자, 다섯 자연 이미지의 편집상 비교예요. '
+        '글자에 나타난 이미지의 개수만으로 기운의 강약을 정하지 않으며, 동점이면 입력 순서로 정해요. '
+        + ('출생시각을 모르면 시주, 즉 태어난 시간의 글자는 제외했어요. ' if not a.get('hour_pillar') or not b.get('hour_pillar') else '')
         + '실제 성격이나 미래를 예측하는 진단이 아니에요.'
     )
     result['story'] = TALE

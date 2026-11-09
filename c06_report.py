@@ -71,26 +71,16 @@ def enrich(result, a, b, rel):
     for label, character, p in ((lead, '백소정', pa), (follow, '허선', pb)):
         x = relationship_style(p)
         counts = count_elements(p)
-        dominant = [KO[k] for k in KO if counts[k] == max(counts.values())]
-        elements = ' · '.join(f'{KO[k]} {v}개' for k, v in counts.items())
-        profiles.append(
-            f'◆ **{label} 쪽에서 읽어 보는 {character}의 마음**\n'
-            f'{label}의 일간은 {STEM_NAME[x["stem"]]}({x["stem"]})이에요. '
-            f'{x["desc"][0]}이라는 비유에서 {x["desc"][1]}을 떠올려요. '
-            f'가까운 사이에서는 {x["desc"][2]}을 소중히 여길 수 있어요.\n\n'
-            f'월간 {p["month_pillar"][0]}을 일간과 비교한 십성은 {x["god"]}이에요. '
-            f'{GOD_TEXT[x["god"]]}이라는 주제가 그 마음을 표현하는 방식에 색을 더해요. '
-            f'겉으로 드러난 글자의 오행은 {elements}예요. 가장 많은 오행은 {", ".join(dominant)}이에요. '
-            + ' '.join(ELEM_DESC[k].replace('이미지야.', '이미지예요.').replace('있어.', '있어요.') for k in KO if counts[k] == max(counts.values()))
-        )
+        from reading_voice import profile as reader_profile
+        profiles.append(f'◆ **{label} 쪽에서 읽어 보는 {character}의 마음**\n' + reader_profile(label, x, counts, character == "백소정"))
     result['roles'] = (
         f'백소정은 함께할 삶을 위해 먼저 길을 찾고, 허선은 낯선 일을 이해하며 믿음을 다시 세워야 했어요. '
         f'기존 사주 해석 기준으로는 {lead}에게 백소정의 자리를, {follow}에게 허선의 자리를 빗대어 읽어요. '
         '성별이나 사랑의 크기를 나누는 배역은 아니에요.\n\n' + '\n\n'.join(profiles) +
-        '\n\n일간의 행동 이미지에 월간 십성과 오행 구성을 함께 반영한 상대적 배역이에요. '
+        '\n\n나를 상징하는 글자에 태어난 달의 글자와 자연의 이미지를 함께 비춰 정한 배역이에요. '
         '차이가 같은 기준에 걸리면 입력 순서로 배역을 정하므로, 비슷한 두 사람이라면 서로 역할을 바꾸어 읽어도 좋아요. '
-        '오행 개수는 지장간이나 계절의 세력까지 따진 강약 판정이 아니에요. '
-        + ('출생시간을 모르는 사람은 시주를 빼고 읽었어요. ' if not a.get('hour_pillar') or not b.get('hour_pillar') else '') +
+        '이미지가 자주 보인다고 그 기운이 더 강하거나 좋은 것은 아니에요. 계절 등 다른 조건도 있으니까요. '
+        + ('출생시간을 모르는 사람은 시주를 빼고 읽었어요. 시주는 태어난 시간을 나타내는 글자예요. ' if not a.get('hour_pillar') or not b.get('hour_pillar') else '') +
         '전통 상징을 문학에 비추어 보는 해석이며 성격을 확정하는 진단은 아니에요.'
     )
     result['story'] = TALE
