@@ -339,4 +339,9 @@ def make_report(a,b,rel,couple,story):
         from c06_report import enrich
         result = enrich(result, a, b, rel)
     from personalized_reading import enrich as personalize
-    return personalize(result, a, b, rel, couple)
+    result = personalize(result, a, b, rel, couple)
+    from report_display import reduce_body_bold
+    for key in ('roles', 'story', 'saju_a', 'crisis', 'scene', 'tip', 'ending'):
+        if isinstance(result.get(key), str):
+            result[key] = reduce_body_bold(result[key])
+    return result
