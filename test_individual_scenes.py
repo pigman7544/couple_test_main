@@ -23,7 +23,7 @@ class EditorialQuality(unittest.TestCase):
             self.assertEqual(len(r['chapters']),5,c['id'])
             self.assertEqual(r['sections'],['roles','story','saju_a','crisis','tip'])
             for text in SCENES[c['id']]:
-                self.assertIn(text,r['story']+r['crisis']+r['tip'],c['id'])
+                    self.assertIn(text.replace('**',''),(r['story']+r['crisis']+r['tip']).replace('**',''),c['id'])
             self.assertEqual(r['saju_a'].count(LENSES[c['id']][4]),0,c['id'])
             self.assertIn(self.a['day_pillar'][0],r['roles'])
             self.assertIn(self.b['day_pillar'][0],r['roles'])

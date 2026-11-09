@@ -20,7 +20,7 @@ class EditorialReadings(unittest.TestCase):
                 self.assertGreaterEqual(size / baseline, .90, (cid, size, baseline))
                 self.assertLess(size / baseline, 1.20, cid)
                 if cid in READINGS:
-                    self.assertIn(READINGS[cid], r['story'])
+                    self.assertIn(READINGS[cid].replace('**',''), r['story'].replace('**',''))
                     self.assertIn('문학적 해설', r['story'])
 
 

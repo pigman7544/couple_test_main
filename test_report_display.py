@@ -45,18 +45,18 @@ class ReportDisplayTests(unittest.TestCase):
                     else:
                         from c06_report import AXES
                     for axis in axes:
-                        self.assertIn(AXES[axis][1][band(value)][0], report['saju_a'] + report['crisis'])
+                        self.assertIn(AXES[axis][1][band(value)][0], (report['saju_a'] + report['crisis']).replace('**', ''))
                 else:
                     from other_reports import AXIS_TEXT
                     for axis in axes:
-                        self.assertIn(AXIS_TEXT[axis][band(value)], report['saju_a'] + report['crisis'])
+                        self.assertIn(AXIS_TEXT[axis][band(value)], (report['saju_a'] + report['crisis']).replace('**', ''))
 
     def test_original_story_and_headings_preserved(self):
         from report_display import reduce_body_bold
         a, b = person(1992, 3, 18), person(1992, 4, 30)
         rel = relation(a, b)
         for couple in DB:
-            with patch('report_display.reduce_body_bold', side_effect=lambda s: s):
+            with patch('report_emphasis.emphasize', side_effect=lambda s, *args: s):
                 before = make_report(a, b, rel, couple, {})
             after = make_report(a, b, rel, couple, {})
             for key in ('roles', 'story', 'saju_a', 'crisis', 'scene', 'tip', 'ending'):
@@ -107,7 +107,7 @@ class ReportDisplayTests(unittest.TestCase):
                 self.assertNotRegex(body, r'\d+(?:\.\d+)?/100')
                 for line in body.splitlines():
                     if not line.lstrip().startswith('◆ '):
-                        self.assertNotIn('**', line, (couple['id'], key, line))
+                        self.assertEqual(line.count('**') % 2, 0, (couple['id'], key, line))
             for key in ('saju_a', 'crisis'):
                 scores = [int(n) for n in re.findall(r'(?<!\d)(\d+)/10(?!\d)', report[key])]
                 self.assertGreaterEqual(len(scores), 3, (couple['id'], key))

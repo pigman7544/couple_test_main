@@ -340,8 +340,8 @@ def make_report(a,b,rel,couple,story):
         result = enrich(result, a, b, rel)
     from personalized_reading import enrich as personalize
     result = personalize(result, a, b, rel, couple)
-    from report_display import reduce_body_bold
+    from report_emphasis import emphasize
     for key in ('roles', 'story', 'saju_a', 'crisis', 'scene', 'tip', 'ending'):
         if isinstance(result.get(key), str):
-            result[key] = reduce_body_bold(result[key])
+            result[key] = emphasize(result[key], couple['id'], key)
     return result

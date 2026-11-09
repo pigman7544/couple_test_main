@@ -48,11 +48,11 @@ class EssayVoice(unittest.TestCase):
         for cid,r in current.items():
             old=before[cid]
             for key in ('story','chapters','sections','teaser','tagline','questions','ending','tip'):
-                self.assertEqual(old[key],r[key],(cid,key))
-            self.assertEqual(old['crisis'],r['crisis'],cid)
+                self.assertEqual(str(old[key]).replace('**',''),str(r[key]).replace('**',''),(cid,key))
+            self.assertEqual(old['crisis'].replace('**',''),r['crisis'].replace('**',''),cid)
             for key in ('saju_a','crisis'):
                 def axes(text):
-                    return [block for block in text.split('\n\n') if re.match(r'◆ .*\d+/10', block)]
+                    return [block.replace('**','') for block in text.split('\n\n') if re.match(r'◆ .*\d+/10', block)]
                 self.assertEqual(axes(old[key]), axes(r[key]), (cid, key))
                 self.assertEqual(re.findall(r'\d+/10',old[key]),re.findall(r'\d+/10',r[key]))
             self.assertNotRegex(r['roles'], '십성|천간|지지|월령|지장간')
@@ -60,6 +60,6 @@ class EssayVoice(unittest.TestCase):
             self.assertEqual(r,make_report(a,b,rel,next(c for c in DB if c['id']==cid),{}))
             examples.append(dict(id=cid,before=old['roles'],after=r['roles'],chapter3=r['saju_a'],chapter4=r['crisis']))
         self.assertEqual((a,b,rel),original)
-        Path('docs/qa-essay-examples.json').write_text(json.dumps(examples,ensure_ascii=False,indent=2),encoding='utf8')
+        Path('docs/qa-emphasis-examples.json').write_text(json.dumps(examples,ensure_ascii=False,indent=2),encoding='utf8')
 
 if __name__=='__main__': unittest.main()
