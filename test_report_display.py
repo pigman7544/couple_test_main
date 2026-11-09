@@ -16,12 +16,12 @@ class ReportDisplayTests(unittest.TestCase):
             self.assertEqual(report, make_report(a, b, rel, couple, {}))
             for key in ('roles', 'story', 'saju_a', 'crisis', 'tip'):
                 body = report[key]
-                self.assertNotRegex(body, r'\\d+(?:\\.\\d+)?/100')
+                self.assertNotRegex(body, r'\d+(?:\.\d+)?/100')
                 for line in body.splitlines():
                     if not line.lstrip().startswith('◆ '):
                         self.assertNotIn('**', line, (couple['id'], key, line))
             for key in ('saju_a', 'crisis'):
-                scores = [int(n) for n in re.findall(r'(?<!\\d)(\\d+)/10(?!\\d)', report[key])]
+                scores = [int(n) for n in re.findall(r'(?<!\d)(\d+)/10(?!\d)', report[key])]
                 self.assertGreaterEqual(len(scores), 3, (couple['id'], key))
                 self.assertTrue(all(1 <= n <= 10 for n in scores))
             self.assertTrue(any(line.lstrip().startswith('◆ **')
