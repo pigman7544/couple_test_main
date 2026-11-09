@@ -19,7 +19,7 @@
       ]
     ],
     "oldScores": false,
-    "bodyBold": 31,
+    "bodyBold": 35,
     "headings": 21,
     "density": [
       {
@@ -43,9 +43,13 @@
       },
       {
         "id": "story",
-        "count": 1,
-        "ratio": 0.010113780025284451,
+        "count": 5,
+        "ratio": 0.0695322376738306,
         "phrases": [
+          "설렘만으로 지킬 수 있는 일이 아니",
+          "둘의 시간이 다르게",
+          "선택의 주체성",
+          "말이 아니라 행동으로",
           "오늘의 행동으로"
         ],
         "headingWeights": [
@@ -171,7 +175,7 @@
       ]
     ],
     "oldScores": false,
-    "bodyBold": 29,
+    "bodyBold": 30,
     "headings": 20,
     "density": [
       {
@@ -194,9 +198,10 @@
       },
       {
         "id": "story",
-        "count": 2,
-        "ratio": 0.017101710171017102,
+        "count": 3,
+        "ratio": 0.0315031503150315,
         "phrases": [
+          "매일 새로 감당해야 하는 생활",
           "오늘의 외로움",
           "서로의 시간을 아는 일"
         ],
@@ -325,7 +330,7 @@
       ]
     ],
     "oldScores": false,
-    "bodyBold": 29,
+    "bodyBold": 30,
     "headings": 20,
     "density": [
       {
@@ -348,9 +353,10 @@
       },
       {
         "id": "story",
-        "count": 2,
-        "ratio": 0.02118270079435128,
+        "count": 3,
+        "ratio": 0.02824360105913504,
         "phrases": [
+          "성공했기 때문에",
           "자기 속도로 배울 권리",
           "지금의 상대를 부족하게"
         ],
@@ -479,7 +485,7 @@
       ]
     ],
     "oldScores": false,
-    "bodyBold": 31,
+    "bodyBold": 33,
     "headings": 20,
     "density": [
       {
@@ -503,11 +509,13 @@
       },
       {
         "id": "story",
-        "count": 3,
-        "ratio": 0.04400440044004401,
+        "count": 5,
+        "ratio": 0.07920792079207921,
         "phrases": [
           "서로의 하루에 들어갈 자리",
           "같은 집으로 돌아가",
+          "서로를 어떻게 이해할 것인지",
+          "대화 부족 탓으로 돌릴 수는 없",
           "어떻게 다시 마주 앉을 것인가"
         ],
         "headingWeights": [],
@@ -1887,7 +1895,7 @@
       ]
     ],
     "oldScores": false,
-    "bodyBold": 31,
+    "bodyBold": 35,
     "headings": 21,
     "density": [
       {
@@ -1911,9 +1919,13 @@
       },
       {
         "id": "story",
-        "count": 1,
-        "ratio": 0.010113780025284451,
+        "count": 5,
+        "ratio": 0.0695322376738306,
         "phrases": [
+          "설렘만으로 지킬 수 있는 일이 아니",
+          "둘의 시간이 다르게",
+          "선택의 주체성",
+          "말이 아니라 행동으로",
           "오늘의 행동으로"
         ],
         "headingWeights": [
@@ -2039,7 +2051,7 @@
       ]
     ],
     "oldScores": false,
-    "bodyBold": 29,
+    "bodyBold": 30,
     "headings": 20,
     "density": [
       {
@@ -2062,9 +2074,10 @@
       },
       {
         "id": "story",
-        "count": 2,
-        "ratio": 0.017101710171017102,
+        "count": 3,
+        "ratio": 0.0315031503150315,
         "phrases": [
+          "매일 새로 감당해야 하는 생활",
           "오늘의 외로움",
           "서로의 시간을 아는 일"
         ],
@@ -2193,7 +2206,7 @@
       ]
     ],
     "oldScores": false,
-    "bodyBold": 29,
+    "bodyBold": 30,
     "headings": 20,
     "density": [
       {
@@ -2216,9 +2229,10 @@
       },
       {
         "id": "story",
-        "count": 2,
-        "ratio": 0.02118270079435128,
+        "count": 3,
+        "ratio": 0.02824360105913504,
         "phrases": [
+          "성공했기 때문에",
           "자기 속도로 배울 권리",
           "지금의 상대를 부족하게"
         ],
@@ -2347,7 +2361,7 @@
       ]
     ],
     "oldScores": false,
-    "bodyBold": 31,
+    "bodyBold": 33,
     "headings": 20,
     "density": [
       {
@@ -2371,11 +2385,13 @@
       },
       {
         "id": "story",
-        "count": 3,
-        "ratio": 0.04400440044004401,
+        "count": 5,
+        "ratio": 0.07920792079207921,
         "phrases": [
           "서로의 하루에 들어갈 자리",
           "같은 집으로 돌아가",
+          "서로를 어떻게 이해할 것인지",
+          "대화 부족 탓으로 돌릴 수는 없",
           "어떻게 다시 마주 앉을 것인가"
         ],
         "headingWeights": [],
@@ -3755,7 +3771,7 @@
       ]
     ],
     "oldScores": false,
-    "bodyBold": 31,
+    "bodyBold": 35,
     "headings": 21,
     "density": [
       {
@@ -3779,9 +3795,13 @@
       },
       {
         "id": "story",
-        "count": 1,
-        "ratio": 0.010113780025284451,
+        "count": 5,
+        "ratio": 0.0695322376738306,
         "phrases": [
+          "설렘만으로 지킬 수 있는 일이 아니",
+          "둘의 시간이 다르게",
+          "선택의 주체성",
+          "말이 아니라 행동으로",
           "오늘의 행동으로"
         ],
         "headingWeights": [
@@ -3907,7 +3927,7 @@
       ]
     ],
     "oldScores": false,
-    "bodyBold": 29,
+    "bodyBold": 30,
     "headings": 20,
     "density": [
       {
@@ -3930,9 +3950,10 @@
       },
       {
         "id": "story",
-        "count": 2,
-        "ratio": 0.017101710171017102,
+        "count": 3,
+        "ratio": 0.0315031503150315,
         "phrases": [
+          "매일 새로 감당해야 하는 생활",
           "오늘의 외로움",
           "서로의 시간을 아는 일"
         ],
@@ -4061,7 +4082,7 @@
       ]
     ],
     "oldScores": false,
-    "bodyBold": 29,
+    "bodyBold": 30,
     "headings": 20,
     "density": [
       {
@@ -4084,9 +4105,10 @@
       },
       {
         "id": "story",
-        "count": 2,
-        "ratio": 0.02118270079435128,
+        "count": 3,
+        "ratio": 0.02824360105913504,
         "phrases": [
+          "성공했기 때문에",
           "자기 속도로 배울 권리",
           "지금의 상대를 부족하게"
         ],
@@ -4215,7 +4237,7 @@
       ]
     ],
     "oldScores": false,
-    "bodyBold": 31,
+    "bodyBold": 33,
     "headings": 20,
     "density": [
       {
@@ -4239,11 +4261,13 @@
       },
       {
         "id": "story",
-        "count": 3,
-        "ratio": 0.04400440044004401,
+        "count": 5,
+        "ratio": 0.07920792079207921,
         "phrases": [
           "서로의 하루에 들어갈 자리",
           "같은 집으로 돌아가",
+          "서로를 어떻게 이해할 것인지",
+          "대화 부족 탓으로 돌릴 수는 없",
           "어떻게 다시 마주 앉을 것인가"
         ],
         "headingWeights": [],
