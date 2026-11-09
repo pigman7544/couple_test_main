@@ -331,11 +331,12 @@ def make_report(a,b,rel,couple,story):
     result = _v66_make_report(a,b,rel,couple,story)
     if couple['id'] == 'c01':
         from c01_report import enrich as enrich_chunhyang
-        return enrich_chunhyang(result, a, b, rel)
+        result = enrich_chunhyang(result, a, b, rel)
     if couple['id'] not in ('c06', 'c01'):
         from other_reports import enrich as enrich_other
-        return enrich_other(result, a, b, rel, couple)
-    if couple['id'] != 'c06':
-        return result
-    from c06_report import enrich
-    return enrich(result, a, b, rel)
+        result = enrich_other(result, a, b, rel, couple)
+    if couple['id'] == 'c06':
+        from c06_report import enrich
+        result = enrich(result, a, b, rel)
+    from personalized_reading import enrich as personalize
+    return personalize(result, a, b, rel, couple)

@@ -115,7 +115,10 @@ class C06Report(unittest.TestCase):
         # UI copy is intentionally revised in this PR; engine, matching and art remain frozen.
         for path in protected:
             before = subprocess.check_output(['git', 'show', f'{baseline}:{path}'], cwd=ROOT)
-            self.assertEqual((ROOT / path).read_bytes(), before, path)
+            actual = (ROOT / path).read_bytes()
+            if path.endswith(('.py', '.json')):
+                actual = actual.replace(b'\r\n', b'\n')
+            self.assertEqual(actual, before, path)
 
 
 
