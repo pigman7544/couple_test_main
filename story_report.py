@@ -340,30 +340,8 @@ def make_report(a,b,rel,couple,story):
         result = enrich(result, a, b, rel)
     from personalized_reading import enrich as personalize
     result = personalize(result, a, b, rel, couple)
-    # Reader-facing typography and scores only. Raw relationship vectors,
-    # matching, and editorial low/mid/high decisions remain unchanged.
-    import re
-    def display_score(match):
-        raw = float(match.group(1))
-        # Wider editorial display scale, anchored at raw 50 -> 5/10.
-        # This is not a probability, percentile or validated measurement.
-        score = max(1, min(10, int(5 + (raw - 50) / 7 + 0.5)))
-        return f'{score}/10'
+    from report_display import reduce_body_bold
     for key in ('roles', 'story', 'saju_a', 'crisis', 'scene', 'tip', 'ending'):
-        value = result.get(key)
-        if not isinstance(value, str):
-            continue
-        # Process each line independently: never pair a heading's closing
-        # marker with the next paragraph's opening marker.
-        lines = []
-        for line in value.split('\n'):
-            if line.lstrip().startswith('◆ '):
-                lines.append(line)
-            else:
-                lines.append(line.replace('**', ''))
-        value = '\n'.join(lines)
-        if key in ('saju_a', 'crisis'):
-            value = re.sub(r'(\d+(?:\.\d+)?)/100', display_score, value)
-            value = value.replace('100점', '10점')
-        result[key] = value
+        if isinstance(result.get(key), str):
+            result[key] = reduce_body_bold(result[key])
     return result

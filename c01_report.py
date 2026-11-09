@@ -1,4 +1,5 @@
 """Five-chapter Chunhyang report. Editorial saju symbolism, not psychological prediction."""
+from report_display import ten_point_score
 from c06_report import AXES, band
 
 
@@ -88,7 +89,7 @@ def enrich(result, a, b, rel):
     vector = rel['vector']
     def axis(key, intro):
         label, variants = AXES[key]
-        return f'◆ **{label} {vector[key]:g}/100**\n{intro} {variants[band(vector[key])][0]}'
+        return f'◆ **{label} {ten_point_score(vector[key])}/10**\n{intro} {variants[band(vector[key])][0]}'
     result['saju_a'] = (
         '춘향과 몽룡에게 끌림은 출발점이었지만, 오래 남은 것은 서로를 믿고 성장하려는 선택이었어요. '
         '당신들의 관계를 기존 사주 상징 점수로 세 방향에서 읽어 볼게요.\n\n'

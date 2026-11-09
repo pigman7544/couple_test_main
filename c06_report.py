@@ -1,4 +1,5 @@
 """Editorial c06 full report. Consumes existing features; never changes matching."""
+from report_display import ten_point_score
 
 TITLES = [
     '우리는 왜 백소정과 허선일까?',
@@ -96,7 +97,7 @@ def enrich(result, a, b, rel):
     vector = rel['vector']
     def paragraph(key):
         label, variants = AXES[key]
-        return f'◆ **{label} {vector[key]:g}/100**\n{variants[band(vector[key])][0]}'
+        return f'◆ **{label} {ten_point_score(vector[key])}/10**\n{variants[band(vector[key])][0]}'
     result['saju_a'] = ('백소정에게 허선은 함께 돌아갈 일상이었고, 허선에게 백소정은 익숙한 세상을 넓혀 준 사람이었어요. '
                         '두 분의 끌림은 다음 세 가지 결로 읽어 볼 수 있어요.\n\n' +
                         '\n\n'.join(paragraph(k) for k in ('attraction', 'security', 'growth')) +

@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import unittest
 
+from report_display import ten_point_score
 from c06_report import AXES, TITLES, band
 from engine import person
 from matcher import DB
@@ -50,7 +51,7 @@ class C06Report(unittest.TestCase):
                 original = copy.deepcopy(rel)
                 r = self.report(rel=rel)
                 self.assertEqual(rel, original)
-                self.assertIn(f'{value}/100', r[chapter])
+                self.assertIn(f'{ten_point_score(value)}/10', r[chapter])
                 reports.append(r)
             self.assertEqual(len({r[chapter] for r in reports}), 3, key)
             self.assertEqual(len({r['tip'] for r in reports}), 3, key)
