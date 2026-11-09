@@ -353,8 +353,15 @@ def make_report(a,b,rel,couple,story):
         value = result.get(key)
         if not isinstance(value, str):
             continue
-        # Preserve bold section headings introduced by ◆; remove body bold.
-        value = re.sub(r'(?<!◆ )\*\*(.+?)\*\*', r'\1', value, flags=re.DOTALL)
+        # Process each line independently: never pair a heading's closing
+        # marker with the next paragraph's opening marker.
+        lines = []
+        for line in value.split('\n'):
+            if line.lstrip().startswith('◆ '):
+                lines.append(line)
+            else:
+                lines.append(line.replace('**', ''))
+        value = '\n'.join(lines)
         if key in ('saju_a', 'crisis'):
             value = re.sub(r'(\d+(?:\.\d+)?)/100', display_score, value)
             value = value.replace('100점', '10점')
