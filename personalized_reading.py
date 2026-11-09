@@ -53,12 +53,15 @@ def enrich(result, a, b, rel, couple):
         dominant = [k for k, value in count.items() if value == max(count.values())]
         # Include all tied dominant elements rather than silently privileging one.
         supports = ' · '.join(PACE[k][1] for k in dominant)
-        voices.append(f'{label}의 일간 {STEM_NAME[style["stem"]]}: {image} 모습으로 비춰 볼게요. '
-                      f'그 마음이 닿으려면 {style["desc"][3]}이 필요할 수 있어요. '
-                      f'겉글자에서 많이 나타난 오행은 {supports}에도 시선을 두게 해요.')
+        voices.append(f'{label}에게 비춰 본 {style["desc"][0]}의 이미지를 일상으로 옮겨 볼게요. '
+                      f'{image} 날이라면, 상대에게는 어떤 배려가 편한지 물어보세요. '
+                      f'{supports}에 관해 한마디 나누어도 좋아요. '
+                      '답이 내 예상과 달라도 그날의 마음을 먼저 들어 주세요.')
         tasks.append(f'{label}에게: “{prompt}에 관해 내가 바라는 것은…”을 완성해 보세요. '
                      f'상대가 답하면 바로 고치거나 설명하지 말고, 들은 바람 하나를 되짚어 주세요.')
     v = rel['vector']
+    from reading_voice import connection
+    result['saju_a'] += '\n\n' + connection(a, b)
     result['saju_a'] += '\n\n◆ **두 사람의 상징이 일상에서 만난다면**\n\n' + '\n\n'.join(voices)
     result['crisis'] += (f'\n\n◆ **현실에 비춰 보는 가상 장면 — {setting}**\n'
                          '아래는 원전의 사건이나 두 분이 실제로 겪은 일이 아닌, 출생정보의 상징과 관계 점수로 고른 대화 예시예요. '

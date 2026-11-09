@@ -37,9 +37,9 @@ class C06Report(unittest.TestCase):
             self.assertIn(word, r['story'])
         for p in (self.a, self.b):
             self.assertIn(p['day_pillar'][0], r['roles'])
-            self.assertIn(p['month_pillar'][0], r['roles'])
-        self.assertEqual(r['roles'].count('을 일간과 비교한 십성은'), 2)
-        self.assertEqual(r['roles'].count('목(木)'), 2)
+        self.assertIn('태어난 달의 글자를 함께 읽으면', r['roles'])
+        self.assertNotIn('십성은', r['roles'])
+        self.assertEqual(r['roles'].count('오행은 나무·불·흙·쇠·물'), 1)
 
     def test_each_axis_changes_its_chapter_and_advice_independently(self):
         for key in AXES:
