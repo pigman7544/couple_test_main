@@ -339,4 +339,24 @@ def make_report(a,b,rel,couple,story):
         from c06_report import enrich
         result = enrich(result, a, b, rel)
     from personalized_reading import enrich as personalize
-    return personalize(result, a, b, rel, couple)
+    result = personalize(result, a, b, rel, couple)
+    # Reader-facing typography and scores only. Raw relationship vectors,
+    # matching, and editorial low/mid/high decisions remain unchanged.
+    import re
+    def display_score(match):
+        raw = float(match.group(1))
+        # Wider editorial display scale, anchored at raw 50 -> 5/10.
+        # This is not a probability, percentile or validated measurement.
+        score = max(1, min(10, int(5 + (raw - 50) / 7 + 0.5)))
+        return f'{score}/10'
+    for key in ('roles', 'story', 'saju_a', 'crisis', 'scene', 'tip', 'ending'):
+        value = result.get(key)
+        if not isinstance(value, str):
+            continue
+        # Preserve bold section headings introduced by ◆; remove body bold.
+        value = re.sub(r'(?<!◆ )\\*\\*(.+?)\\*\\*', r'\\1', value, flags=re.DOTALL)
+        if key in ('saju_a', 'crisis'):
+            value = re.sub(r'(\\d+(?:\\.\\d+)?)/100', display_score, value)
+            value = value.replace('100점', '10점')
+        result[key] = value
+    return result
