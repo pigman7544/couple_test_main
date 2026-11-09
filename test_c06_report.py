@@ -109,9 +109,10 @@ class C06Report(unittest.TestCase):
         baseline = 'e9c238f6c50607ea49e027517969122a3d0d12f7'
         protected = [
             'engine.py', 'relationship_v08.py', 'matcher.py',
-            'couples.json', 'archetypes.json', 'index.html',
+            'couples.json', 'archetypes.json',
             'assets/baek_heo_title.png', 'assets/baek_heo_plain.png',
         ]
+        # UI copy is intentionally revised in this PR; engine, matching and art remain frozen.
         for path in protected:
             before = subprocess.check_output(['git', 'show', f'{baseline}:{path}'], cwd=ROOT)
             self.assertEqual((ROOT / path).read_bytes(), before, path)

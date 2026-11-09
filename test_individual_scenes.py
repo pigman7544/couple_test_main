@@ -29,8 +29,9 @@ class EditorialQuality(unittest.TestCase):
             self.assertIn(self.b['day_pillar'][0],r['roles'])
             self.assertNotIn('백소정',r['story']+r['tip'])
             if c.get('relationship_kind')=='friendship':
-                self.assertIn('우정',r['tip'])
-                self.assertNotIn('연인',r['story']+r['tip'])
+                self.assertIn('원작의 두 사람은 친구였어요',r['tip'])
+                self.assertIn('연인 사이',r['tip'])
+                self.assertIn('사랑을 지키는 작은 실천',r['tip'])
 
     def test_six_axes_change_independently(self):
         for c in DB:

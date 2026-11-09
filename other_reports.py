@@ -17,7 +17,7 @@ LENSES = {
  'f01': ('추론과 공감의 상호보완', '다른 재능이 만나 하나의 팀이 되는 방식', '셜록 홈즈와 존 왓슨', '한 사람의 날카로운 판단과 다른 사람의 꾸준한 동행이 서로를 빛나게 할 수 있어요.', '상대의 기여가 눈에 잘 띄지 않아도 말로 인정해요.', '왓슨을 단순한 조수로만 취급하지 마세요.'),
  'f02': ('이상과 현실의 동행', '다르게 보는 두 사람이 함께 길을 가는 법', '돈키호테와 산초 판사', '한 사람은 가능성을 크게 그리고 다른 사람은 발밑의 길을 살펴요. 두 시선이 만나면 모험이 달라져요.', '꿈을 비웃지 않고 위험은 함께 점검해요.', '위험한 판단을 낭만적인 도전으로 정당화하지 마세요.'),
  'f03': ('진가를 알아보는 오래된 신뢰', '결과보다 사람의 사정을 먼저 알아보는 관계', '관중과 포숙아', '서로의 사정을 이해하려는 마음은 신뢰를 깊게 해요. 하지만 무조건 감싸는 일과 이해는 달라요.', '상대의 능력을 인정하되 대신 결정하지 마세요.', '전승된 고사를 확인된 모든 역사적 사실로 단정하지 마세요.'),
- 'f04': ('경쟁에서 우정으로', '맞서는 힘이 서로를 바꾸는 계기', '길가메시와 엔키두', '처음에는 부딪히던 두 사람이 서로의 삶을 넓혀 줄 수도 있어요. 다름을 이겨야 할 대상으로만 보지 마세요.', '서로에게 배운 점을 살아 있는 동안 표현해요.', '상실과 죽음을 관계의 성숙을 위한 필수 조건처럼 말하지 마세요.'),
+ 'f04': ('경쟁을 넘어 서로를 변화시키는 사랑', '맞서는 힘이 서로를 바꾸는 계기', '길가메시와 엔키두', '처음에는 부딪히던 두 사람이 서로의 삶을 넓혀 줄 수도 있어요. 다름을 이겨야 할 대상으로만 보지 마세요.', '서로에게 배운 점을 살아 있는 동안 표현해요.', '상실과 죽음을 관계의 성숙을 위한 필수 조건처럼 말하지 마세요.'),
 }
 AXES = ('attraction','security','growth','conflict','expression','autonomy')
 LABELS = {'attraction':'끌림과 호기심','security':'신뢰와 안정','growth':'함께하는 성장','conflict':'차이를 다루는 방식','expression':'마음의 표현','autonomy':'각자의 선택'}
@@ -57,8 +57,8 @@ def enrich(result, a, b, rel, couple):
     if cid not in LENSES:
         return result
     theme, question, characters, hook, takeaway, caution = LENSES[cid]
-    friendship = couple.get('relationship_kind') == 'friendship'
-    bond = '우정' if friendship else '사랑'
+    # Friendship stories are analogies for patterns within romantic couples.
+    bond = '사랑'
     first, second = couple['name'].split('·', 1)
     x,y=relationship_style(a),relationship_style(b)
     counts_a,counts_b=count_elements(a),count_elements(b)
@@ -76,6 +76,10 @@ def enrich(result, a, b, rel, couple):
                 f'월간과의 십성은 {style["god"]}으로, {GOD_TEXT[style["god"]]}의 상징과 연결돼요. '
                 f'겉으로 드러난 오행 중에는 {KO[prominent]}이 가장 많아요. '
                 f'이는 인물의 마음을 상상하는 문학적 단서이지 성격을 판정하는 검사는 아니에요.')
+    if cid.startswith('f'):
+        hook = '이 원작은 우정의 이야기지만, 여기서는 연인 사이에 나타나는 협력·신뢰·차이의 양상을 비춰 보는 거울로 사용해요. ' + hook
+        question = '연인 사이에서 ' + question
+        takeaway = '원작의 두 사람은 친구였어요. 그 관계의 특징을 연인 사이의 사랑에 비춰 보면, ' + takeaway
     result['tagline']=theme
     result['teaser']=hook
     result['roles']=(f'**왜 우리는 {characters}의 이야기와 닮았을까요?**\n'
