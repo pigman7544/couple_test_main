@@ -40,6 +40,8 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path=urlparse(self.path).path
         if path=='/health':raw=b'OK';mime='text/plain; charset=utf-8'
+        elif path in ('/preview','/preview.html'):
+            raw=(ROOT/'preview.html').read_bytes();mime='text/html; charset=utf-8'
         elif path in ('/','/index.html'):
             raw=(ROOT/'index.html').read_bytes();mime='text/html; charset=utf-8'
         elif path in ('/assets/baek_heo_plain.png','/assets/baek_heo_title.png'):
