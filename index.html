@@ -26,6 +26,7 @@
 .reader-buttons button:disabled{opacity:.35}
 @media(max-width:500px){.reader-art{height:240px}}
 </style><style>
+#premiumReport.reading-mode:not([data-active-chapter='5']) [data-final-only='true']{display:none!important}
 #premiumReport .final-chapter-extra{margin:28px 0 0;padding:24px 0 0;border-top:1px solid #e9dce4}
 #premiumReport .final-chapter-extra .questions{margin-top:12px}
 #premiumReport .final-chapter-extra h2{font-size:20px}
@@ -63,9 +64,11 @@ function arrangeFinalChapter(){
  for(const section of [questions,art]){
    section.classList.remove('section');
    section.classList.add('final-chapter-extra');
+   section.setAttribute('data-final-only','true');
    section.querySelector('.chapter')?.remove();
    tip.appendChild(section);
  }
+ // Do not let the collectible and question blocks appear in any other chapter.
  const ending=$('ending');
  if(ending)tip.appendChild(ending); // End with the literary closing sentence.
 }
@@ -105,6 +108,7 @@ let active=0,sections=[];
 function show(i){
  active=Math.max(0,Math.min(sections.length-1,i));
  sections.forEach((el,n)=>el.classList.toggle('chapter-visible',n===active));
+ document.getElementById('premiumReport').dataset.activeChapter=String(active+1);
  const nav=document.getElementById('chapterReaderNav');
  nav.querySelector('.reader-count').textContent='CHAPTER '+String(active+1).padStart(2,'0')+' / '+String(sections.length).padStart(2,'0');
  nav.querySelector('.reader-progress').innerHTML=sections.map((_,n)=>'<i class="'+(n<=active?'current':'')+'"></i>').join('');
