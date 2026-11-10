@@ -55,22 +55,46 @@ function setReportChapters(chapters){
  chapters.forEach((chapter,i)=>{const id=keys[chapter.key];if(!id)return;const section=$(id).closest('.section');section.classList.remove('hide');section.querySelector('.chapter').textContent='CHAPTER '+String(i+1).padStart(2,'0');section.querySelector('h2').textContent=chapter.title});
 }
 function arrangeFinalChapter(){
- const root=$('premiumReport');
  const tip=$('tip').closest('.section');
- const questions=$('questions').closest('.section');
+ const questions=$('questions').closest('.final-chapter-extra')||$('questions').closest('.section');
  const art=$('artSection');
  if(!tip||!questions||!art)return;
- // Keep both bonus experiences inside the last narrative chapter.
  for(const section of [questions,art]){
    section.classList.remove('section');
    section.classList.add('final-chapter-extra');
    section.setAttribute('data-final-only','true');
    section.querySelector('.chapter')?.remove();
-   tip.appendChild(section);
+   if(section.parentElement!==tip)tip.appendChild(section);
  }
- // Do not let the collectible and question blocks appear in any other chapter.
  const ending=$('ending');
- if(ending)tip.appendChild(ending); // End with the literary closing sentence.
+ if(ending&&ending.parentElement!==tip)tip.appendChild(ending);
+}
+function setupCoupleCard(couple,report){
+ const art=$('artSection');
+ const isBaek=couple.id==='c06';
+ art.classList.remove('hide');
+ art.querySelector('h2').textContent=isBaek?'우리 둘의 커플 카드 ♡':'우리 둘의 이야기 카드 ♡';
+ if(isBaek){
+   art.querySelector('.subtitle').textContent='백소정과 허선의 일러스트 카드. 문구가 있는 버전과 없는 버전을 저장할 수 있어요.';
+   art.querySelector('.art-grid').classList.remove('hide');
+   art.querySelector('.generated-card')?.remove();
+   return;
+ }
+ art.querySelector('.art-grid').classList.add('hide');
+ art.querySelector('.subtitle').textContent='우리의 문학적 닮은 점을 담은 소장용 카드예요. 그림 카드가 아닌 타이포그래피 카드이며, 이름은 저장되지 않아요.';
+ let holder=art.querySelector('.generated-card');
+ if(!holder){holder=document.createElement('div');holder.className='generated-card';art.appendChild(holder);}
+ holder.replaceChildren();
+ const palettes={c01:['#fff0dd','#aa6b65'],c02:['#e9edff','#6675aa'],c03:['#eaf4e6','#6d8c68'],c10:['#fff0ee','#b86c72'],c11:['#f4e8f4','#88668d'],c13:['#e8f0fa','#587a9b'],c18:['#e8f1e9','#658476'],f01:['#e9eff4','#64798a'],f02:['#fff2dd','#a98754'],f03:['#f3ede2','#947958'],f04:['#ede8f2','#7c719a']};
+ const [bg,accent]=palettes[couple.id]||['#f7edf1','#895777'];
+ const title=couple.name||'우리 둘의 이야기';
+ const tagline=report.tagline||'우리 둘의 이야기';
+ const escapeXml=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200"><rect width="900" height="1200" fill="'+bg+'"/><rect x="45" y="45" width="810" height="1110" rx="38" fill="none" stroke="'+accent+'" stroke-width="3" opacity=".5"/><circle cx="450" cy="380" r="208" fill="'+accent+'" opacity=".1"/><circle cx="390" cy="365" r="125" fill="'+accent+'" opacity=".22"/><circle cx="510" cy="365" r="125" fill="'+accent+'" opacity=".22"/><path d="M260 595 Q450 730 640 595" stroke="'+accent+'" stroke-width="7" fill="none" stroke-linecap="round"/><text x="450" y="135" text-anchor="middle" fill="'+accent+'" font-size="26" letter-spacing="8" font-family="sans-serif">緣硏 · YEONYEON</text><text x="450" y="805" text-anchor="middle" fill="'+accent+'" font-size="54" font-weight="bold" font-family="sans-serif">'+escapeXml(title)+'</text><text x="450" y="895" text-anchor="middle" fill="'+accent+'" font-size="30" font-family="sans-serif">'+escapeXml(tagline.slice(0,22))+'</text><text x="450" y="1080" text-anchor="middle" fill="'+accent+'" font-size="22" letter-spacing="3" font-family="sans-serif">OUR TWO STORIES</text></svg>';
+ const url='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+ const img=document.createElement('img');img.src=url;img.alt=title+' 문학적 관계 카드';img.style.cssText='display:block;width:100%;max-width:380px;margin:0 auto;border-radius:18px';
+ const link=document.createElement('a');link.href=url;link.download='연연_'+couple.id+'_이야기카드.svg';link.textContent='카드 저장하기 (SVG)';link.style.cssText='display:block;text-align:center;margin:14px auto;padding:14px;background:#f5e6ed;color:#754662;border-radius:12px;text-decoration:none;font-weight:800;max-width:380px';
+ holder.append(img,link);
 }
 function fill(x){setReportChapters(x.chapters);for(const [id,key] of [['story','story'],['sajuA','saju_a'],['roles','roles'],['crisis','crisis'],['scene','scene'],['tip','tip']])$(id).innerHTML=renderProse(x[key]);$('ending').innerHTML=renderProse(x.ending||'');$('questions').replaceChildren();for(const q of x.questions||[]){const p=document.createElement('p');p.textContent='♥ '+q;$('questions').append(p)}}
 
@@ -91,7 +115,7 @@ function showAnalysisLoading(){
 }
 function hideAnalysisLoading(){clearInterval(loadingTimer);$('analysisLoading').classList.add('hide')}
 
-$('payButton').addEventListener('click',async()=>{if(!lastPayload)return;const btn=$('payButton');btn.disabled=true;btn.textContent='전체 리포트를 준비하고 있어요…';$('payNotice').textContent='';try{const r=await fetch('/api/test-unlock',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(lastPayload)});const d=await r.json();if(!r.ok)throw Error(d.error||'다시 시도해 주세요');fill(d.full_report);setRelationshipCopy(d.couple);$('artSection').classList.toggle('hide',!d.has_art);$('premiumReport').classList.remove('hide');arrangeFinalChapter();window.yeonyeonInitReader(d.couple);$('paywall').classList.add('hide');$('blurTeaser').classList.add('hide');$('premiumReport').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){$('payNotice').textContent=e.message;}finally{btn.disabled=false;btn.textContent='5,000원 결제하고 전체 보기 (테스트 무료)';}});
+$('payButton').addEventListener('click',async()=>{if(!lastPayload)return;const btn=$('payButton');btn.disabled=true;btn.textContent='전체 리포트를 준비하고 있어요…';$('payNotice').textContent='';try{const r=await fetch('/api/test-unlock',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(lastPayload)});const d=await r.json();if(!r.ok)throw Error(d.error||'다시 시도해 주세요');fill(d.full_report);setRelationshipCopy(d.couple);setupCoupleCard(d.couple,d.full_report);$('premiumReport').classList.remove('hide');arrangeFinalChapter();window.yeonyeonInitReader(d.couple);$('paywall').classList.add('hide');$('blurTeaser').classList.add('hide');$('premiumReport').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){$('payNotice').textContent=e.message;}finally{btn.disabled=false;btn.textContent='5,000원 결제하고 전체 보기 (테스트 무료)';}});
 $('matchForm').addEventListener('submit',async e=>{e.preventDefault();$('error').textContent='';$('submit').disabled=true;$('submit').textContent='분석 중…';showAnalysisLoading();const started=Date.now();const f=new FormData(e.target),p=k=>({date:f.get(k+'_date'),calendar:f.get(k+'_calendar'),time:f.get(k+'_time'),gender:f.get(k+'_gender')});try{const r=await fetch('/api/match',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({a:p('a'),b:p('b')})});const d=await r.json();if(!r.ok)throw Error(d.error||'잠시 후 다시 시도해 주세요');await wait(Math.max(0,2000-(Date.now()-started)));lastPayload={a:p('a'),b:p('b')};$('premiumReport').classList.add('hide');$('paywall').classList.remove('hide');$('blurTeaser').classList.remove('hide');fillPreview(d.preview);fillPairName(d.couple.name);setRelationshipCopy(d.couple);$('heroWrap').classList.toggle('hide',!d.has_art);$('formSection').classList.add('hide');$('result').classList.remove('hide');window.scrollTo(0,0)}catch(err){$('error').textContent=err.message}finally{hideAnalysisLoading();$('submit').disabled=false;$('submit').textContent='연연으로 우리의 이야기 분석하기 ♥'}});
 $('back').onclick=()=>{lastPayload=null;$('premiumReport').classList.add('hide');$('paywall').classList.remove('hide');$('blurTeaser').classList.remove('hide');$('result').classList.add('hide');$('formSection').classList.remove('hide');window.scrollTo(0,0)};
 for(const im of document.querySelectorAll('img'))im.addEventListener('error',()=>{$('imageError').classList.remove('hide')});
