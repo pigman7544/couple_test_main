@@ -8,6 +8,7 @@ from relationship_v08 import relation
 from matcher import rank
 from narrative import describe
 from story_report import make_report
+from c06_editorial import apply as apply_c06_editorial
 
 ROOT=Path(__file__).resolve().parent
 MAX_BODY=8192
@@ -30,6 +31,8 @@ def compute(payload, unlock=False):
     ranked=rank(rel['vector']);couple=ranked[0][2]
     story=describe(rel['vector'],couple['id'],ranked[1][2]['id'])
     full=make_report(a,b,rel,couple,story)
+    if couple['id']=='c06' and a['day_pillar'][0]=='癸' and b['day_pillar'][0]=='丙':
+        full=apply_c06_editorial(full)
     full['gender_a']=payload['a'].get('gender','other')
     full['gender_b']=payload['b'].get('gender','other')
     if unlock:
