@@ -104,7 +104,7 @@ const meta=[
 ["같은 마음도 다른 속도로 전해져요","서로의 행동을 다르게 받아들이는 순간이에요."],
 ["우리의 다음 장면은 우리가 만들어요","서로를 바꾸지 않고도 함께 성장할 수 있어요."]
 ];
-let active=0,sections=[];
+let active=0,sections=[];let currentChapterTitles=[];
 function show(i){
  active=Math.max(0,Math.min(sections.length-1,i));
  sections.forEach((el,n)=>el.classList.toggle('chapter-visible',n===active));
@@ -112,8 +112,8 @@ function show(i){
  const nav=document.getElementById('chapterReaderNav');
  nav.querySelector('.reader-count').textContent='CHAPTER '+String(active+1).padStart(2,'0')+' / '+String(sections.length).padStart(2,'0');
  nav.querySelector('.reader-progress').innerHTML=sections.map((_,n)=>'<i class="'+(n<=active?'current':'')+'"></i>').join('');
- nav.querySelector('.reader-title').textContent=meta[active]?.[0]||'우리 둘의 이야기';
- nav.querySelector('.reader-summary').textContent=meta[active]?.[1]||'';
+ nav.querySelector('.reader-title').textContent=currentChapterTitles[active]||meta[active]?.[0]||'우리 둘의 이야기';
+ nav.querySelector('.reader-summary').textContent=window.__yeonyeonIsC06?(meta[active]?.[1]||''):'';
  const art=nav.querySelector('.reader-art');
  art.style.display=window.__yeonyeonIsC06?'block':'none';
  if(window.__yeonyeonIsC06)art.src='/preview?embed=1&chapter='+active;
@@ -129,6 +129,7 @@ window.yeonyeonInitReader=function(couple){
  sections=[...root.querySelectorAll('.section')].filter(el=>!el.classList.contains('hide')&&el.querySelector('.chapter')?.textContent.startsWith('CHAPTER'));
  root.querySelectorAll('[data-report-chapter]').forEach(el=>{el.removeAttribute('data-report-chapter');el.classList.remove('chapter-visible')});
  sections.forEach(el=>el.setAttribute('data-report-chapter','true'));
+ currentChapterTitles=sections.map(el=>el.querySelector('h2')?.textContent||'우리 둘의 이야기');
  let nav=document.getElementById('chapterReaderNav');
  if(!nav){nav=document.createElement('div');nav.id='chapterReaderNav';nav.innerHTML='<div class="reader-count eyebrow"></div><div class="reader-progress"></div><div class="reader-intro"><h3 class="reader-title"></h3><p class="reader-summary"></p></div><iframe class="reader-art" title="오행 캐릭터 관계 일러스트" loading="lazy"></iframe><div class="reader-buttons"><button class="reader-prev">← 이전 장</button><button class="reader-next">다음 장 →</button></div>';root.insertBefore(nav,root.querySelector('.section'));nav.querySelector('.reader-prev').onclick=()=>show(active-1);nav.querySelector('.reader-next').onclick=()=>show(active+1);}
  let bottom=document.getElementById('chapterReaderBottom');
