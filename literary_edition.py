@@ -111,7 +111,7 @@ def enrich(result,a,b,rel,couple):
         f'당신은 **{sa["stem"]}({STEM_NAME[sa["stem"]]})**, 상대방은 **{sb["stem"]}({STEM_NAME[sb["stem"]]})**의 일간을 가졌어요. '
         f'당신에게는 {sa["desc"][2]}, 상대방에게는 {sb["desc"][2]}이라는 관계의 이미지가 있어요.\n\n'
         f'◆ **서로 다른 두 자연의 이미지**\n{dynamic}\n\n'
-        f'◆ **서로에게 물어볼 질문**\n{question}\n\n'
+        f'◆ **차이를 이해하는 방법**\n{everyday}\n\n'
         '사주는 사람의 실제 성격이나 미래를 판정하지 않아요. 이 비유가 자신의 경험과 맞지 않는다면 실제로 나눈 이야기를 더 중요하게 생각해 주세요.')
     result['crisis']=(f'**그런데 왜 사랑하면서도 어긋날까요?**\n\n'
         f'◆ **작품이 보여 준 균열**\n{source_tension}\n\n'
@@ -124,7 +124,7 @@ def enrich(result,a,b,rel,couple):
         f'◆ **세 번째 선택 — 함께 정하기**\n'
         '각자 바라는 것을 한 문장씩 말하고, 이번 주 실천할 작은 약속 하나를 함께 골라 보세요. '
         '다음에는 지켰는지 채점하기보다 어떤 순간이 편안했는지 나눠요.\n\n'
-        f'**{question}**')
+        '서로의 답을 미리 정하지 않고, 직접 듣는 것에서 시작해요.')
     result['ending']='책 속 인물의 이야기는 여기까지지만, 우리 둘의 다음 장면은 오늘의 대화에서 시작돼요.'
     result['questions']=[question]
     result['chapters']=[
