@@ -101,7 +101,6 @@ def enrich(result,a,b,rel,couple):
     result['story']=(f'**{central}**\n\n'
         f'◆ **이야기 속 두 사람**\n{origin}\n\n'
         f'◆ **이 이야기를 오늘 읽는 이유**\n{tension}\n\n'
-        f'**{central}**\n\n'
         '※ 원전의 사건과 오늘의 관계에 적용한 해석은 구별해 읽어 주세요. 전승과 판본에 따라 세부가 다를 수 있어요.')
     ea,eb=elem(a),elem(b)
     if ea==eb: dynamic='두 사람의 일간은 같은 오행이에요. 비슷한 언어로 이해하기 쉬울 수 있지만, 같은 고집이 부딪힐 수도 있어요.'
