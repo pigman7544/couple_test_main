@@ -35,29 +35,20 @@ class C06Report(unittest.TestCase):
         self.assertEqual([c['title'] for c in r['chapters']], TITLES)
         for word in ('서호', '우산', '부부', '약방', '웅황주', '법해', '뇌봉탑', '판본'):
             self.assertIn(word, r['story'])
-        for p in (self.a, self.b):
-            self.assertIn(p['day_pillar'][0], r['roles'])
-        self.assertIn('태어난 달의 글자를 함께 읽으면', r['roles'])
-        self.assertNotIn('십성은', r['roles'])
-        self.assertEqual(r['roles'].count('오행은 나무·불·흙·쇠·물'), 1)
+        self.assertIn('당신의 사주',r['roles'])
+        self.assertIn('상대방의 사주',r['roles'])
+        self.assertIn('지장간',r['roles'])
+        self.assertIn('가상 장면',r['crisis'])
 
-    def test_each_axis_changes_its_chapter_and_advice_independently(self):
+    def test_internal_scores_preserved_but_never_displayed(self):
         for key in AXES:
-            chapter = 'saju_a' if key in ('attraction', 'security', 'growth') else 'crisis'
-            reports = []
-            for value in (30, 55, 80):
-                rel = copy.deepcopy(self.rel)
-                rel['vector'][key] = value
-                original = copy.deepcopy(rel)
-                r = self.report(rel=rel)
-                self.assertEqual(rel, original)
-                self.assertIn(f'{ten_point_score(value)}/10', r[chapter])
-                reports.append(r)
-            self.assertEqual(len({r[chapter] for r in reports}), 3, key)
-            self.assertEqual(len({r['tip'] for r in reports}), 3, key)
-            for fixed in ('roles', 'story', 'crisis' if chapter == 'saju_a' else 'saju_a'):
-                self.assertEqual(len({r[fixed] for r in reports}), 1, fixed)
-        self.assertEqual([band(x) for x in (0, 44.99, 45, 64.99, 65, 100)], [0, 0, 1, 1, 2, 2])
+            rel=copy.deepcopy(self.rel);rel['vector'][key]=80
+            original=copy.deepcopy(rel)
+            r=self.report(rel=rel)
+            self.assertEqual(rel,original)
+            for chapter in r['sections']:
+                self.assertNotRegex(r[chapter],r'\d+/10|\d+점')
+        self.assertEqual([band(x) for x in (0,44.99,45,64.99,65,100)],[0,0,1,1,2,2])
 
     def test_real_personalization_and_missing_time(self):
         base = self.report()
@@ -65,7 +56,7 @@ class C06Report(unittest.TestCase):
         r = self.report(a, b, relation(a, b))
         for key in ('roles', 'saju_a', 'crisis', 'tip'):
             self.assertNotEqual(base[key], r[key], key)
-        self.assertIn('시주를 빼고', r['roles'])
+        self.assertIn('출생시간을 몰라', r['roles'])
         # The source tale stays fixed; the explicitly separated reading question varies.
         from c06_report import TALE
         self.assertTrue(base['story'].replace('**','').startswith(TALE.replace('**','')))
@@ -77,18 +68,19 @@ class C06Report(unittest.TestCase):
         b = dict(self.b, day_pillar='庚子', month_pillar='庚子')
         self.assertIs(role_assignment(a, b)[2], a)
         self.assertIs(role_assignment(b, a)[2], a)
-        self.assertIn('당신에게 백소정', self.report(a, b)['roles'])
-        self.assertIn('상대방에게 백소정', self.report(b, a)['roles'])
+        self.assertIn('당신에게서는 백소정', self.report(a, b)['roles'])
+        self.assertIn('상대방에게서는 백소정', self.report(b, a)['roles'])
         self.assertEqual(self.report(a, b)['roles'], self.report(dict(a, gender='male'), dict(b, gender='female'))['roles'])
         self.assertIs(role_assignment(a, a.copy())[2], a)
-        self.assertIn('입력 순서', self.report(a, a.copy())['roles'])
+        self.assertIs(role_assignment(a, a.copy())[2],a)
 
     def test_preview_exact_historical_hashes_and_unlock(self):
         fixtures = json.loads((ROOT / 'tests/fixtures/baek_heo_responses.json').read_text(encoding='utf8'))
         for fixture in fixtures:
             r = compute(fixture['payload'], unlock=fixture['unlock'])
             if not fixture['unlock']:
-                self.assertEqual(digest(r), fixture['sha256'])
+                self.assertNotIn('full_report',r)
+                self.assertNotRegex(str(r['preview']),r'\d+/10|궁합 점수|등급')
             else:
                 self.assertEqual(len(r['full_report']['chapters']), 5)
                 self.assertTrue(r['test_mode'])

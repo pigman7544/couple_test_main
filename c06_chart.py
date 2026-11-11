@@ -36,7 +36,7 @@ THEMES = {
           '한 사람이 저녁 식사와 이동편을 모두 예약해요. 다른 사람은 “고맙지만 오늘은 집에서 쉬고 싶었어”라고 말해요.',
           '예약하기 전에 외출과 집에서 쉬기 중 무엇이 편한지 묻고, 취소가 필요한 준비는 함께 나누어 정리해 보세요.',
           '상대를 위해 준비하기 전에 먼저 물어보고 싶은 배려는 무엇인가요?'),
- 'promise': ('약속의 무게', '모호한 마음을 작은 약속으로 확인할 때 편안함을 느끼는 장면에 비춰 볼 수 있어요.',
+ 'promise': ('약속의 무게', '모호했던 마음도 다음에 만날 날이나 짧은 연락 약속이 생기면 조금 더 편하게 나눌 수 있겠죠.',
              '확실히 하려는 질문이 상대에게는 지금 답을 내놓으라는 요구로 들릴 수 있어요.',
              '다음 달 여행 예약을 앞두고 “오늘 정하자”와 “근무표가 나올 때까지 기다려 줘”가 마주해요.',
              '예약 마감과 근무표가 나오는 날짜를 따로 적고, 확정 전에는 취소 가능한 선택지만 함께 살펴보세요.',
@@ -103,63 +103,8 @@ def evidence_text(label,x):
             + f'. {root} 뿌리의 수로 강약을 판정하지 않아요.')
 
 def enrich(result,a,b):
-    aa,bb=extract(a),extract(b); links=cross(a,b)
-    ta,tb=THEMES[aa['theme']],THEMES[bb['theme']]
-    result['chart_evidence'] = dict(version='c06-chart-v1',a=aa,b=bb,cross=links,
-        policy='계절·십성·지장간·통근·육합·육충·천간합의 고정 편집 규칙. 합화·신강약·용신·대운 판단 없음. 기존 배역·점수·매칭 보존.')
-    # Keep the existing role assignment explanation; remove day-only profiles
-    # so the full-chart reading is the main argument, not an appendix to it.
-    role_intro=result['roles'].split('\n\n')[0]
-    result['roles'] = (role_intro+'\n\n◆ **기둥 전체에서 고른 관계의 실마리**\n'
-        f'당신에게서는 **{ta[0]}**, 상대방에게서는 **{tb[0]}**에 주목했어요. '
-        '태어난 계절과 가까운 관계를 비추는 자리, 입력한 경우 태어난 시간의 표현을 먼저 보고 나머지 글자를 함께 살폈어요. '
-        '앞의 배역은 기존 기준을 유지하지만, 아래 현실 장면은 이 추가 근거로 달라져요.\n\n'
-        + evidence_text('당신',aa)+'\n\n'+evidence_text('상대방',bb)
-        +'\n\n태어난 달의 글자를 함께 읽으면 일간 하나로는 보이지 않는 차이를 살필 수 있어요. '
-        '오행은 나무·불·흙·쇠·물, 다섯 자연의 이미지예요. '
-        '이 근거로 실제 성격이나 관계의 미래를 확정하지 않아요. '
-        '배역 기준의 차이가 같으면 입력 순서로 정하며 역할을 바꾸어 읽어도 좋아요. '
-        + ('출생시간을 모르는 사람은 시주를 빼고 읽었어요.' if aa['missing_hour'] or bb['missing_hour'] else ''))
-    result['story'] += ('\n\n◆ **이야기 뒤에 두 분에게 묻는 질문**\n'
-        '위의 전승과 아래 상징적 질문은 구분해 읽어 주세요. 백소정이 삶을 지키려 한 선택과 허선이 낯선 모습을 마주한 일을 거울로 삼아 봐요. '
-        f'당신에게는 “{ta[5]}”, 상대방에게는 “{tb[5]}”를 건네요.')
-    result['saju_a'] += ('\n\n◆ **같은 배역, 서로 다른 끌림**\n'
-        f'당신 쪽은 ‘{ta[0]}’의 관점으로 일상을 살펴봐요. {ta[1]} 상대방 쪽은 ‘{tb[0]}’의 관점으로 읽어요. {tb[1]} '
-        '이 두 배려가 서로에게 반가운지는 직접 물어봐야 해요. 사주의 상징은 실제 마음의 증거가 아니니까요.')
-    for label,x in [('당신',aa),('상대방',bb)]:
-        if GROUP[x['anchors']['day']]==x['theme']:continue
-        day_theme=THEMES[GROUP[x['anchors']['day']]]
-        result['saju_a'] += f'\n\n{label}의 일지에 담긴 중심 글자는 가까운 관계의 비유로 보았어요. {day_theme[1]}'
-    link_text=' / '.join(f"당신 {LABELS[x['a']]}·상대방 {LABELS[x['b']]} {x['chars']} {x['kind']}" for x in links)
-    clash=any(x['kind']=='육충' for x in links)
-    link_read=('서로 다른 생활 리듬을 조정하는 질문을 더해요. 충이 다툼이나 이별을 뜻하지는 않아요.' if clash else
-               '맞추기 쉬워 보이는 부분에서도 동의를 생략하지 않는 질문을 더해요. 합이 좋은 관계를 보장하지는 않아요.' if links else
-               '검사한 두 명식 사이에는 육합·육충·천간합이 없어요. 관계의 의미가 없다는 뜻은 아니에요.')
-    internal=' / '.join(f"{label} {LABELS[v['positions'][0]]}·{LABELS[v['positions'][1]]} {v['branches']} {v['kind']}" for label,x in [('당신',aa),('상대방',bb)] for v in x['internal'])
-    result['crisis'] += ('\n\n◆ **현실에 비춰 보는 가상 장면 — 두 가지 바람**\n'
-        '다음은 실제 경험이나 원전 사건이 아닌 편집 예시예요.\n\n'
-        f'당신의 시선: {ta[3]} {ta[2]}\n\n상대방의 시선: {tb[3]} {tb[2]}\n\n'
-        f'두 사람 사이에서 확인한 글자 관계: {link_text or "해당 없음"}. {link_read} '
-        f'각 명식 안의 합충: {internal or "검사한 육합·육충 없음"}. '
-        '합을 다른 오행으로 변했다고 가정하거나 충을 실제 사건으로 바꾸지 않았어요.')
-    for label,x in [('당신',aa),('상대방',bb)]:
-        if not x['missing_hour'] and GROUP[x['anchors']['hour']]!=x['theme']:
-            h=THEMES[GROUP[x['anchors']['hour']]]
-            result['crisis'] += (f'\n\n{label}의 시주를 혼자 하루를 정리하는 시간에 비춰 본다면: {h[2]} '
-                                '시주가 반드시 사적인 성격을 결정한다는 뜻은 아니에요.')
-        root_read=('익숙한 방식을 지키는 바람과 새로운 제안을 함께 놓아 보는 장면' if x['roots'] else
-                   '주변 상황에 맞추기 전에 자기 바람을 먼저 말해 보는 장면')
-        result['crisis'] += f'\n\n{label}의 뿌리 유무는 {root_read}을 고르는 보조 비유로만 사용했어요.'
-    bridge=('이번 주 일정이 어긋난 날을 가정해, 바꿀 수 없는 일정과 조정 가능한 일정을 하나씩 적어 보세요.' if clash else
-            '서로 편하다고 짐작한 약속 하나를 골라, 지금도 같은 방식이 좋은지 다시 확인해 보세요.' if links else
-            '두 사람의 배려 중 이번 주 받고 싶은 것을 하나씩 골라 말해 보세요.')
-    result['tip'] += ('\n\n◆ **앞의 장면을 바꾸는 두 사람의 선택**\n'
-        f'당신에게: {ta[4]}\n\n상대방에게: {tb[4]}\n\n함께: {bridge} '
-        '일주일 뒤 그 약속이 편했는지 확인하고, 맞지 않았다면 실제 바람에 맞춰 바꾸세요.')
-    for label,x in [('당신',aa),('상대방',bb)]:
-        if GROUP[x['anchors'].get('hour',x['anchors']['day'])]==x['theme']:continue
-        h=THEMES[GROUP[x['anchors'].get('hour',x['anchors']['day'])]]
-        result['tip'] += f'\n\n{label}의 하루 끝에 더해 볼 선택: {h[4]}'
-    result['questions']=[f'당신에게: {ta[5]}',f'상대방에게: {tb[5]}',bridge]
-    result['ending']=f'두 주제를 대화에 놓아 주세요: **{ta[0]}**, **{tb[0]}**. 두 분의 실제 답이 사주의 비유보다 먼저예요.'
-    return result
+    from c06_narrative import compose
+    aa,bb=extract(a),extract(b)
+    result['chart_evidence'] = dict(version='c06-chart-v2',a=aa,b=bb,cross=cross(a,b),
+        policy='기존 전체 명식 편집 규칙 유지. 합화·신강약·용신·대운 판단 없음. 배역·내부 점수·매칭 보존.')
+    return compose(result,a,b,aa,bb,result['chart_evidence']['cross'])

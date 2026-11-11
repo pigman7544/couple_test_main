@@ -1,4 +1,4 @@
-"""Regression tests for reader-facing typography and 10-point score display."""
+"""Regression tests for reader-facing typography and score-free reports."""
 import re
 import unittest
 import copy
@@ -11,45 +11,9 @@ from story_report import make_report
 
 
 class ReportDisplayTests(unittest.TestCase):
-    def test_boundaries_and_monotonicity(self):
-        self.assertEqual([ten_point_score(x) for x in (0, 34.99, 35, 42.49, 42.5, 45, 50, 52.49, 52.5, 77.49, 77.5, 100)],
-                         [1, 1, 1, 2, 3, 3, 4, 4, 5, 9, 10, 10])
-        values = [ten_point_score(n / 100) for n in range(10001)]
-        self.assertEqual(values, sorted(values))
-        self.assertEqual(set(values), set(range(1, 11)))
-
     def test_heading_and_multiline_prose_preservation(self):
         self.assertEqual(reduce_body_bold('◆ **제목**\n**첫 문단\n둘째 문단**\n## **제목**'),
                          '◆ **제목**\n첫 문단\n둘째 문단\n## **제목**')
-
-    def test_every_axis_and_raw_band_for_every_type(self):
-        from c06_report import band
-        a, b = person(1992, 3, 18, 16), person(1992, 4, 30, 1)
-        axes = ('attraction', 'security', 'growth', 'conflict', 'expression', 'autonomy')
-        for couple in DB:
-            for value in (0, 44.99, 45, 53.49, 53.5, 64.99, 65, 100):
-                rel = relation(a, b)
-                rel['vector'] = dict(zip(axes, [value] * 6))
-                original = copy.deepcopy(rel)
-                report = make_report(a, b, rel, couple, {})
-                self.assertEqual(rel, original)
-                self.assertEqual(report['sections'], ['roles', 'story', 'saju_a', 'crisis', 'tip'])
-                self.assertEqual([c['key'] for c in report['chapters']], report['sections'])
-                for chapter in ('saju_a', 'crisis'):
-                    scores = re.findall(r'(?<!\d)(\d+)/10(?!\d)', report[chapter])
-                    self.assertEqual(scores, [str(ten_point_score(value))] * 3, (couple['id'], value, chapter))
-                # Compare against the prose selected directly by the original raw bands.
-                if couple['id'] in ('c01', 'c06'):
-                    if couple['id'] == 'c01':
-                        from c01_report import AXES
-                    else:
-                        from c06_report import AXES
-                    for axis in axes:
-                        self.assertIn(AXES[axis][1][band(value)][0], (report['saju_a'] + report['crisis']).replace('**', ''))
-                else:
-                    from other_reports import AXIS_TEXT
-                    for axis in axes:
-                        self.assertIn(AXIS_TEXT[axis][band(value)], (report['saju_a'] + report['crisis']).replace('**', ''))
 
     def test_original_story_and_headings_preserved(self):
         from report_display import reduce_body_bold
@@ -63,16 +27,6 @@ class ReportDisplayTests(unittest.TestCase):
                 self.assertEqual(before[key].replace('**', ''), after[key].replace('**', ''))
                 self.assertEqual([s for s in before[key].splitlines() if s.lstrip().startswith('◆ ')],
                                  [s for s in after[key].splitlines() if s.lstrip().startswith('◆ ')])
-
-    def test_six_different_values_keep_axis_order(self):
-        a, b = person(1992, 3, 18), person(1992, 4, 30)
-        rel = relation(a, b)
-        rel['vector'] = dict(zip(('attraction', 'security', 'growth', 'conflict', 'expression', 'autonomy'),
-                                 (30, 45, 55, 65, 75, 100)))
-        for couple in DB:
-            report = make_report(a, b, rel, couple, {})
-            for chapter, expected in (('saju_a', ['1', '3', '5']), ('crisis', ['7', '9', '10'])):
-                self.assertEqual(re.findall(r'(\d+)/10', report[chapter]), expected, couple['id'])
 
     def test_missing_gender_time_and_gender_independent_reports(self):
         from server import compute
@@ -96,24 +50,27 @@ class ReportDisplayTests(unittest.TestCase):
                             self.assertEqual(base['full_report'][key], changed['full_report'][key])
                         self.assertEqual(base['couple'], changed['couple'])
 
-    def test_all_archetypes_keep_headings_and_integer_ten_point_scores(self):
-        a, b = person(1992, 3, 18, 16), person(1992, 4, 30, 1)
-        rel = relation(a, b)
+    def test_all_types_all_bands_have_no_reader_scores_or_grades(self):
+        from server import compute
+        a,b=person(1992,3,18,16),person(1992,4,30,1)
+        forbidden=r'\d+(?:\.\d+)?\s*/\s*(?:10|100)(?!\d)|\d+\s*점|궁합\s*(?:점수|등급)|[A-FS][+−-]?등급'
         for couple in DB:
-            report = make_report(a, b, rel, couple, {})
-            self.assertEqual(report, make_report(a, b, rel, couple, {}))
-            for key in ('roles', 'story', 'saju_a', 'crisis', 'tip'):
-                body = report[key]
-                self.assertNotRegex(body, r'\d+(?:\.\d+)?/100')
-                for line in body.splitlines():
-                    if not line.lstrip().startswith('◆ '):
-                        self.assertEqual(line.count('**') % 2, 0, (couple['id'], key, line))
-            for key in ('saju_a', 'crisis'):
-                scores = [int(n) for n in re.findall(r'(?<!\d)(\d+)/10(?!\d)', report[key])]
-                self.assertGreaterEqual(len(scores), 3, (couple['id'], key))
-                self.assertTrue(all(1 <= n <= 10 for n in scores))
-            self.assertTrue(any(line.lstrip().startswith('◆ **')
-                                for line in report['saju_a'].splitlines()))
+            for value in (0,44.99,45,55,64.99,65,100):
+                rel=relation(a,b);rel['vector']=dict.fromkeys(rel['vector'],value)
+                original=copy.deepcopy(rel)
+                report=make_report(a,b,rel,couple,{})
+                self.assertEqual(rel,original)
+                for key in ('tagline','teaser','roles','story','saju_a','saju_b','chemistry','crisis','scene','tip','ending','questions'):
+                    self.assertNotRegex(str(report.get(key,'')),forbidden,(couple['id'],value,key))
+                self.assertEqual(len(report['chapters']),5)
+            other=next(c for c in DB if c['id']!=couple['id'])
+            with patch('server.rank',return_value=[(0,couple['id'],couple),(1,other['id'],other)]):
+                payload={'a':{'date':'1992-03-18'},'b':{'date':'1992-04-30'}}
+                self.assertNotRegex(str(compute(payload)),forbidden)
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_no_score_formatter_imports_in_report_generators(self):
+        from pathlib import Path
+        for name in ('c01_report.py','c06_report.py','other_reports.py'):
+            self.assertNotIn('ten_point_score',Path(name).read_text(encoding='utf8'))
+
+if __name__=='__main__':unittest.main()

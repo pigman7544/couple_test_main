@@ -64,7 +64,7 @@ def enrich(result, a, b, rel, couple):
     result['saju_a'] += '\n\n' + connection(a, b)
     result['saju_a'] += '\n\n◆ **두 사람의 상징이 일상에서 만난다면**\n\n' + '\n\n'.join(voices)
     result['crisis'] += (f'\n\n◆ **현실에 비춰 보는 가상 장면 — {setting}**\n'
-                         '아래는 원전의 사건이나 두 분이 실제로 겪은 일이 아닌, 출생정보의 상징과 관계 점수로 고른 대화 예시예요. '
+                         '아래는 원전의 사건이나 두 분이 실제로 겪은 일이 아닌, 출생정보의 상징을 바탕으로 고른 대화 예시예요. '
                          + CONFLICT[band(v['conflict'])] + '\n\n' + EXPRESSION[band(v['expression'])]
                          + '\n\n' + AUTONOMY[band(v['autonomy'])])
     result['tip'] += (f'\n\n◆ **{question}**\n\n' + '\n\n'.join(tasks)

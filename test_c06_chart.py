@@ -81,6 +81,6 @@ class FullChartTests(unittest.TestCase):
         r=compute(p,True)
         self.assertEqual(r['couple']['id'],'c06')
         self.assertIn('chart_evidence',r['full_report'])
-        self.assertIn('기둥 전체',r['full_report']['roles'])
+        self.assertIn('지장간',r['full_report']['roles'])
 
 if __name__=='__main__': unittest.main()
