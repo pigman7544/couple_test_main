@@ -21,10 +21,12 @@ class FullChartTests(unittest.TestCase):
             text=r['roles'].replace('**','')
             lead=role_assignment(a,b)[0]
             label='당신' if lead=='첫 번째 사람' else '상대방'
-            self.assertIn(label+'은 백소정',text)
-            self.assertLess(text.index('당신의 일간은'),text.index('은 백소정'))
-            for phrase in ('우산을 빌려주며','영초를 구하러','명확한 약속과 일관성',
-                           '이 대목과 맞닿아','둘이 함께 이 이야기를 닮은 이유'):
+            self.assertIn(label+'은 백소정을 닮았어요',text)
+            headings=[line for line in text.splitlines() if line.startswith('◆ ')]
+            expected=['백소정을 닮은 당신','허선을 닮은 상대방'] if label=='당신' else ['허선을 닮은 당신','백소정을 닮은 상대방']
+            self.assertEqual(headings,['◆ '+h for h in expected])
+            for phrase in ('우산을 빌려주면서','영초를 구하러','명확한 약속과 일관성',
+                           '문학적 해석','서로를 이해하는 속도'):
                 self.assertIn(phrase,text)
             for phrase in ('경금','단단한 쇠','병화','태양'):
                 self.assertIn('**'+phrase+'**',r['roles'])

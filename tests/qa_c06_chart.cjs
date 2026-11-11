@@ -34,6 +34,10 @@ const base = process.env.QA_BASE || 'http://127.0.0.1:8771';
      return [...lines.join('\n').matchAll(/\*\*(.+?)\*\*/g)].map(m=>m[1]);
     });
     assert.deepEqual(rendered,expected);assert.ok(rendered.every(spans=>spans.length<=2));
+    if(i===0){
+     assert.deepEqual(await page.locator('#roles .subhead').allTextContents(),['허선을 닮은 당신','백소정을 닮은 상대방']);
+     for(const word of ['일관성',c.id==='A'?'마음을 여는 속도':'돌봄의 방식']) assert.equal(await page.locator('#roles strong').filter({hasText:word}).count(),1);
+    }
     if(i===0)for(const word of ['경금','단단한 쇠','병화','태양']){
      const strong=page.locator('#roles strong').filter({hasText:word});
      assert.equal(await strong.count(),1);
