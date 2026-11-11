@@ -23,6 +23,7 @@ const base = process.env.QA_BASE || 'http://127.0.0.1:8771';
     assert.equal(await page.locator('#premiumReport').getAttribute('data-active-chapter'),String(i+1));
     assert.ok(await page.locator('#'+id).isVisible());
     const txt=(await page.locator('#'+id).innerText()).replace(/\s+/g,'');
+    assert.doesNotMatch(txt,/\d+(?:\.\d+)?\/(?:10|100)(?!\d)|\d+점|궁합(?:점수|등급)/);
     assert.equal(txt,report[key].replaceAll('**','').replaceAll('◆','').replace(/\s+/g,''));
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
     if(width===390)await page.locator('#'+id).screenshot({path:`tests/qa-c06-chart-${c.id}-ch${i+1}.png`});
@@ -43,7 +44,7 @@ const base = process.env.QA_BASE || 'http://127.0.0.1:8771';
   await page.locator('#submit').click();await page.locator('#result').waitFor({state:'visible'});
   assert.equal(await page.locator('#premiumReport').isVisible(),false);
   await page.locator('#payButton').click();await page.locator('#premiumReport').waitFor({state:'visible'});
-  assert.ok((await page.locator('#roles').innerText()).includes('기둥 전체'));
+  assert.ok((await page.locator('#roles').innerText()).includes('당신의 일간은'));
   assert.deepEqual(errors,[]);await page.close();
  }
  const api=await request.newContext();
