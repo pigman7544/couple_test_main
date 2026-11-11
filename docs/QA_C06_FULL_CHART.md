@@ -40,4 +40,15 @@
 
 브라우저 검사는 `tests/qa_c06_chart.cjs`로 두 표본×390/1440px×5장을 실제 HTTP 응답과 대조했다. 일반 입력→무료 미리보기→테스트 언락과 카드 표시·PNG 응답, 뒤로 가기도 통과했다. 결과는 `qa-c06-chart-browser.json`에 기록했다. 첫 검사 스크립트의 소제목 장식 비교와 카드 요청 객체 오류를 교정한 뒤 전체 재실행하여 통과했다.
 
-배포·원격 링크 검증 결과는 별도 `qa-c06-chart-preview.json` 및 작업 완료 보고로 구분한다. 배포 요청 수락만으로 성공으로 간주하지 않는다.
+## 배포 및 원격 링크 확인 완료
+
+2026-11-11 한국 시간 18:22:59, 코드 커밋 `1b0dac0e5c478bcdb9f23a6b445020dc569189fa`의 Render 배포 `dep-dbq37i59el5s7394d2d0`가 `live`로 완료되었다.
+
+그 뒤 실제 `https://yeonyeon-preview-pr17.onrender.com`을 대상으로 동일 브라우저 검사를 실행해 두 표본×두 화면 폭×5장, 정규 `/api/match`·`/api/test-unlock` 응답의 로컬 생성물 일치, 일반 입력→무료 미리보기→언락, 카드 표시·PNG 2종 응답, 뒤로 가기가 모두 통과했다. 페이지 오류와 가로 넘침이 없었다. [원격 확인 기록](qa-c06-chart-preview.json). 해당 시간대 `Unhandled match error` 서버 로그도 없었다. 카드 파일을 사용자 컴퓨터에 실제로 저장하는 동작까지 검사했다고 주장하지 않는다.
+
+- [A 전체 미리보기](https://yeonyeon-preview-pr17.onrender.com/?sample=c06-A)
+- [B 전체 미리보기](https://yeonyeon-preview-pr17.onrender.com/?sample=c06-B)
+- [A 전체 본문 사본](C06_REPORT_A.md)
+- [B 전체 본문 사본](C06_REPORT_B.md)
+
+운영 main은 작업 전후 `9a8e43dca8ac6399058e71b0710ab24f78d53e1e`로 동일했다. 해당 운영 서비스의 마지막 배포도 `dep-dbopqq142hec73dmn320`으로 유지되었다. 운영 설정·배포를 변경하는 도구는 호출하지 않았다. 검증 기록을 보존하는 후속 문서 커밋은 `[skip render]`로 미리보기 재배포 없이 올린다.
