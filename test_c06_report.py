@@ -37,7 +37,8 @@ class C06Report(unittest.TestCase):
             self.assertIn(word, r['story'])
         self.assertIn('당신의 일간은',r['roles'])
         self.assertIn('상대방의 일간은',r['roles'])
-        self.assertIn('지장간',r['roles'])
+        self.assertNotIn('지장간',r['roles'])
+        self.assertIn('hidden',r['chart_evidence']['a'])
         self.assertIn('가상 장면',r['crisis'])
 
     def test_internal_scores_preserved_but_never_displayed(self):
@@ -56,7 +57,9 @@ class C06Report(unittest.TestCase):
         r = self.report(a, b, relation(a, b))
         for key in ('roles', 'saju_a', 'crisis', 'tip'):
             self.assertNotEqual(base[key], r[key], key)
-        self.assertIn('출생시간을 몰라', r['roles'])
+        for who in ('a','b'):
+            self.assertTrue(r['chart_evidence'][who]['missing_hour'])
+            self.assertNotIn('hour_pillar',r['chart_evidence'][who]['pillars'])
         # The source tale stays fixed; the explicitly separated reading question varies.
         from c06_report import TALE
         self.assertTrue(base['story'].replace('**','').startswith(TALE.replace('**','')))
@@ -68,8 +71,8 @@ class C06Report(unittest.TestCase):
         b = dict(self.b, day_pillar='庚子', month_pillar='庚子')
         self.assertIs(role_assignment(a, b)[2], a)
         self.assertIs(role_assignment(b, a)[2], a)
-        self.assertIn('당신에게서는 백소정', self.report(a, b)['roles'])
-        self.assertIn('상대방에게서는 백소정', self.report(b, a)['roles'])
+        self.assertIn('백소정의 마음은 당신에게', self.report(a, b)['roles'])
+        self.assertIn('백소정의 마음은 상대방에게', self.report(b, a)['roles'])
         self.assertEqual(self.report(a, b)['roles'], self.report(dict(a, gender='male'), dict(b, gender='female'))['roles'])
         self.assertIs(role_assignment(a, a.copy())[2], a)
         self.assertIs(role_assignment(a, a.copy())[2],a)

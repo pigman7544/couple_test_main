@@ -21,11 +21,11 @@ class FullChartTests(unittest.TestCase):
         texts=[basis('당신',extract(p)) for p in (a,b)]
         for text in texts:
             self.assertTrue(text.startswith('당신의 일간은 **경금(庚)**'))
-            self.assertLess(text.index('일간'),text.index('월령'))
+            self.assertLess(text.index('일간'),text.index('태어난'))
             self.assertIn('명확한 약속과 일관성',text)
-            self.assertIn('일간과 비교',text)
-        self.assertIn('겨울',texts[0]);self.assertIn('정인',texts[0])
-        self.assertIn('여름',texts[1]);self.assertIn('정관',texts[1])
+            self.assertNotRegex(text,r'월령|정인|정관|편인|통근|지장간|십성|읽어 볼게요|살펴요')
+        self.assertIn('겨울',texts[0]);self.assertIn('신중함',texts[0])
+        self.assertIn('여름',texts[1]);self.assertIn('약속',texts[1])
         self.assertNotEqual(texts[0],texts[1])
 
     def test_conventional_tables_and_season_roots(self):
@@ -97,6 +97,17 @@ class FullChartTests(unittest.TestCase):
         r=compute(p,True)
         self.assertEqual(r['couple']['id'],'c06')
         self.assertIn('chart_evidence',r['full_report'])
-        self.assertIn('지장간',r['full_report']['roles'])
+        self.assertIn('hidden',r['full_report']['chart_evidence']['a'])
+        self.assertNotIn('지장간',r['full_report']['roles'])
+
+    def test_reader_copy_has_no_methodology_but_keeps_story_boundaries(self):
+        cases=json.loads(Path('tests/fixtures/c06_comparison.json').read_text(encoding='utf8'))
+        for c in cases:
+            r=compute(c['payload'],True)['full_report']
+            text=' '.join(r[k] for k in r['sections'])
+            self.assertNotRegex(text,r'월령|정인|정관|편인|통근|지장간|십성|시주|일지[의를에]|명식|읽어 볼게요|확인해 주세요|다음 장에서는')
+            self.assertIn('문학적 해설',r['story'])
+            self.assertIn('가상 장면',r['crisis'])
+            self.assertIn('같은 장면을 다시',r['tip'])
 
 if __name__=='__main__': unittest.main()
