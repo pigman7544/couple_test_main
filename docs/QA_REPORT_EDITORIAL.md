@@ -20,3 +20,13 @@
 - 로컬 브라우저에서 A/B 전체 5장을 읽고 모바일 표시를 확인했다. 원격 최종 확인은 배포 후 아래에 기록한다.
 
 남은 기존 실패: `test_editorial_readings`의 분량 1건, `test_individual_scenes` 3건, `test_personalized_reading` 1건, `test_reading_voice`의 과거 원고 보존 1건, `test_report_emphasis`의 모든 장 강조 강제 1건.
+
+
+## 원격 최종 확인 완료
+
+- 배포 코드 `dd38a15f41950aa0fc5de127517dbc314a226100`, Render 배포 `dep-dbq3i8ijnfac739pd460`, 상태 `live` (2026-11-11 18:45 KST 완료).
+- 실제 브라우저로 A/B × 390px/1440px × 5장, 총 20개 챕터를 이동하며 읽고 검사했다. 모든 화면에서 정량 궁합 표시·가로 넘침 없음. [브라우저 원문 기록](qa-editorial-browser.json).
+- 동일한 두 가상 생일을 직접 입력해 A/B × 두 화면 크기, 4개의 무료 미리보기 → 테스트 언락 → 마지막 장 흐름을 확인했다. 언락 후 1·5장 원문은 샘플 리포트와 같고, 배지는 전체 리포트로 바뀌며 결제 예고가 숨겨졌다. 두 카드 저장 링크와 이미지 로딩, 다시 입력하기도 확인했다. [흐름 기록](qa-editorial-flows.json).
+- 원격 `/api/c06-sample/A`, `/B`, 각각의 `/api/match`, `/api/test-unlock` 응답을 검증했다. 전체 응답은 로컬 최종 fixture와 정확히 일치하고 무료 응답에는 전체 원고와 궁합 정량 표시가 없다. `/health` 정상. [API 기록](qa-editorial-api.json), 재검사 도구 `tests/verify_editorial_preview.py`.
+- [A 데스크톱 검증 화면](../tests/qa-editorial-A-desktop.png), [B 모바일 마지막 장](../tests/qa-editorial-B-mobile.png).
+- 최종 확인용 문서·검증 기록 커밋은 `[skip render]`로 배포를 다시 만들지 않는다. 운영 브랜치 및 운영 Render에 쓰기 작업을 수행하지 않았다.
