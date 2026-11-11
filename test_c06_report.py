@@ -35,8 +35,8 @@ class C06Report(unittest.TestCase):
         self.assertEqual([c['title'] for c in r['chapters']], TITLES)
         for word in ('서호', '우산', '부부', '약방', '웅황주', '법해', '뇌봉탑', '판본'):
             self.assertIn(word, r['story'])
-        self.assertIn('당신의 사주',r['roles'])
-        self.assertIn('상대방의 사주',r['roles'])
+        self.assertIn('당신의 일간은',r['roles'])
+        self.assertIn('상대방의 일간은',r['roles'])
         self.assertIn('지장간',r['roles'])
         self.assertIn('가상 장면',r['crisis'])
 

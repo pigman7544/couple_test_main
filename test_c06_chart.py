@@ -12,6 +12,22 @@ from matcher import DB
 from relationship_v08 import relation
 
 class FullChartTests(unittest.TestCase):
+    def test_day_master_leads_and_season_modifies_same_core(self):
+        from c06_narrative import basis
+        from story_report import count_elements
+        a,b=[person(1985,m,d,16) for m,d in ((1,11),(6,10))]
+        self.assertEqual(count_elements(a),count_elements(b))
+        self.assertEqual(a['day_pillar'][0],b['day_pillar'][0])
+        texts=[basis('당신',extract(p)) for p in (a,b)]
+        for text in texts:
+            self.assertTrue(text.startswith('당신의 일간은 **경금(庚)**'))
+            self.assertLess(text.index('일간'),text.index('월령'))
+            self.assertIn('명확한 약속과 일관성',text)
+            self.assertIn('일간과 비교',text)
+        self.assertIn('겨울',texts[0]);self.assertIn('정인',texts[0])
+        self.assertIn('여름',texts[1]);self.assertIn('정관',texts[1])
+        self.assertNotEqual(texts[0],texts[1])
+
     def test_conventional_tables_and_season_roots(self):
         p=person(1985,1,11,16)
         x=extract(p)
