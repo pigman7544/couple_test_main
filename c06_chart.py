@@ -111,7 +111,7 @@ def enrich(result,a,b):
     # so the full-chart reading is the main argument, not an appendix to it.
     role_intro=result['roles'].split('\n\n')[0]
     result['roles'] = (role_intro+'\n\n◆ **기둥 전체에서 고른 관계의 실마리**\n'
-        f'당신 쪽의 중심 주제는 **{ta[0]}**, 상대방 쪽의 중심 주제는 **{tb[0]}**이에요. '
+        f'당신에게서는 **{ta[0]}**, 상대방에게서는 **{tb[0]}**에 주목했어요. '
         '태어난 계절과 가까운 관계를 비추는 자리, 입력한 경우 태어난 시간의 표현을 먼저 보고 나머지 글자를 함께 살폈어요. '
         '앞의 배역은 기존 기준을 유지하지만, 아래 현실 장면은 이 추가 근거로 달라져요.\n\n'
         + evidence_text('당신',aa)+'\n\n'+evidence_text('상대방',bb)
@@ -124,9 +124,10 @@ def enrich(result,a,b):
         '위의 전승과 아래 상징적 질문은 구분해 읽어 주세요. 백소정이 삶을 지키려 한 선택과 허선이 낯선 모습을 마주한 일을 거울로 삼아 봐요. '
         f'당신에게는 “{ta[5]}”, 상대방에게는 “{tb[5]}”를 건네요.')
     result['saju_a'] += ('\n\n◆ **같은 배역, 서로 다른 끌림**\n'
-        f'당신의 {ta[0]}이라는 주제를 일상에 옮기면, {ta[1]} 상대방의 {tb[0]}이라는 주제에서는, {tb[1]} '
+        f'당신 쪽은 ‘{ta[0]}’의 관점으로 일상을 살펴봐요. {ta[1]} 상대방 쪽은 ‘{tb[0]}’의 관점으로 읽어요. {tb[1]} '
         '이 두 배려가 서로에게 반가운지는 직접 물어봐야 해요. 사주의 상징은 실제 마음의 증거가 아니니까요.')
     for label,x in [('당신',aa),('상대방',bb)]:
+        if GROUP[x['anchors']['day']]==x['theme']:continue
         day_theme=THEMES[GROUP[x['anchors']['day']]]
         result['saju_a'] += f'\n\n{label}의 일지에 담긴 중심 글자는 가까운 관계의 비유로 보았어요. {day_theme[1]}'
     link_text=' / '.join(f"당신 {LABELS[x['a']]}·상대방 {LABELS[x['b']]} {x['chars']} {x['kind']}" for x in links)
@@ -142,7 +143,7 @@ def enrich(result,a,b):
         f'각 명식 안의 합충: {internal or "검사한 육합·육충 없음"}. '
         '합을 다른 오행으로 변했다고 가정하거나 충을 실제 사건으로 바꾸지 않았어요.')
     for label,x in [('당신',aa),('상대방',bb)]:
-        if not x['missing_hour']:
+        if not x['missing_hour'] and GROUP[x['anchors']['hour']]!=x['theme']:
             h=THEMES[GROUP[x['anchors']['hour']]]
             result['crisis'] += (f'\n\n{label}의 시주를 혼자 하루를 정리하는 시간에 비춰 본다면: {h[2]} '
                                 '시주가 반드시 사적인 성격을 결정한다는 뜻은 아니에요.')
@@ -156,8 +157,9 @@ def enrich(result,a,b):
         f'당신에게: {ta[4]}\n\n상대방에게: {tb[4]}\n\n함께: {bridge} '
         '일주일 뒤 그 약속이 편했는지 확인하고, 맞지 않았다면 실제 바람에 맞춰 바꾸세요.')
     for label,x in [('당신',aa),('상대방',bb)]:
+        if GROUP[x['anchors'].get('hour',x['anchors']['day'])]==x['theme']:continue
         h=THEMES[GROUP[x['anchors'].get('hour',x['anchors']['day'])]]
         result['tip'] += f'\n\n{label}의 하루 끝에 더해 볼 선택: {h[4]}'
     result['questions']=[f'당신에게: {ta[5]}',f'상대방에게: {tb[5]}',bridge]
-    result['ending']=f'**{ta[0]}과 {tb[0]}**, 둘 다 대화에 놓아 주세요. 두 분의 실제 답이 사주의 비유보다 먼저예요.'
+    result['ending']=f'두 주제를 대화에 놓아 주세요: **{ta[0]}**, **{tb[0]}**. 두 분의 실제 답이 사주의 비유보다 먼저예요.'
     return result

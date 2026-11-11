@@ -34,7 +34,7 @@
 
 ## 로컬 검증
 
-`python -m unittest test_v67.py test_c06_report.py test_c06_chart.py test_all_couples.py test_report_paths.py` — 초기 29개 통과. 마지막으로 기존 癸×丙 고정 원고 우회 제거와 나머지 11종의 시작 커밋 대비 출력 보존 검사를 보강했다.
+`python -m unittest test_v67.py test_c06_report.py test_c06_chart.py test_all_couples.py test_report_paths.py` — 30개 통과. 기존 癸×丙 고정 원고 우회 제거와 나머지 11종의 시작 커밋 대비 출력 보존도 포함한다.
 
 처음 실행 때 최신 브랜치의 `test_all_couples.py`가 자신과 같은 rival ID를 전달해 44개 하위 검사에서 오류가 있었다. 유효한 기본 비교 대상을 쓰도록 테스트 호출만 수정했다. 강조 마커 때문에 문자열 검사가 실패하던 부분도 본문을 기준으로 비교하도록 고쳤다. c06의 2장은 전승 본문만 보존하고 질문은 달라진다는 새 요구에 맞춰 검사를 갱신했다.
 
