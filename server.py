@@ -8,7 +8,6 @@ from relationship_v08 import relation
 from matcher import rank
 from narrative import describe
 from story_report import make_report
-from c06_editorial import apply as apply_c06_editorial
 
 ROOT=Path(__file__).resolve().parent
 MAX_BODY=8192
@@ -31,8 +30,6 @@ def compute(payload, unlock=False):
     ranked=rank(rel['vector']);couple=ranked[0][2]
     story=describe(rel['vector'],couple['id'],ranked[1][2]['id'])
     full=make_report(a,b,rel,couple,story)
-    if couple['id']=='c06' and a['day_pillar'][0]=='癸' and b['day_pillar'][0]=='丙':
-        full=apply_c06_editorial(full)
     full['gender_a']=payload['a'].get('gender','other')
     full['gender_b']=payload['b'].get('gender','other')
     if unlock:
@@ -42,7 +39,13 @@ def compute(payload, unlock=False):
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path=urlparse(self.path).path
-        if path=='/health':raw=b'OK';mime='text/plain; charset=utf-8'
+        if path in ('/api/c06-sample/A','/api/c06-sample/B'):
+            cases=json.loads((ROOT/'tests/fixtures/c06_comparison.json').read_text(encoding='utf8'))
+            sample=next(x for x in cases if x['id']==path.rsplit('/',1)[1])
+            response=compute(sample['payload'],unlock=True)
+            response['sample_payload']=sample['payload']
+            raw=json.dumps(response,ensure_ascii=False).encode('utf8');mime='application/json; charset=utf-8'
+        elif path=='/health':raw=b'OK';mime='text/plain; charset=utf-8'
         elif path in ('/preview','/preview.html'):
             raw=(ROOT/'preview.html').read_bytes();mime='text/html; charset=utf-8'
         elif path in ('/','/index.html'):

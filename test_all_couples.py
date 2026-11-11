@@ -18,7 +18,7 @@ class EditorialTests(unittest.TestCase):
     def test_all_twelve_have_five_chapters(self):
         for couple in DB:
             with self.subTest(couple=couple['id']):
-                story=describe(self.rel['vector'],couple['id'],couple['id'])
+                story=describe(self.rel['vector'],couple['id'])
                 report=make_report(self.a,self.b,self.rel,couple,story)
                 self.assertEqual(len(report['chapters']),5)
                 self.assertEqual([c['key'] for c in report['chapters']],['roles','story','saju_a','crisis','tip'])
@@ -33,23 +33,28 @@ class EditorialTests(unittest.TestCase):
         for couple in DB:
             if couple['id'] not in EDITION:continue
             with self.subTest(couple=couple['id']):
-                report=make_report(self.a,self.b,self.rel,couple,describe(self.rel['vector'],couple['id'],couple['id']))
+                report=make_report(self.a,self.b,self.rel,couple,describe(self.rel['vector'],couple['id']))
                 self.assertIn(EDITION[couple['id']][0],report['roles'])
-                self.assertIn(EDITION[couple['id']][1],report['story'])
+                self.assertIn(EDITION[couple['id']][1].replace('**',''),report['story'].replace('**',''))
                 self.assertNotIn('백소정',report['roles']+report['story']+report['crisis']+report['tip'])
     def test_input_swap_preserves_archetype_and_story(self):
         for couple in DB:
             with self.subTest(couple=couple['id']):
-                story=describe(self.rel['vector'],couple['id'],couple['id'])
+                story=describe(self.rel['vector'],couple['id'])
                 ab=make_report(self.a,self.b,self.rel,couple,story)
                 ba=make_report(self.b,self.a,self.rel,couple,story)
-                self.assertEqual(ab['story'],ba['story'])
+                if couple['id']=='c06':
+                    from c06_report import TALE
+                    self.assertTrue(ab['story'].replace('**','').startswith(TALE.replace('**','')))
+                    self.assertTrue(ba['story'].replace('**','').startswith(TALE.replace('**','')))
+                else:
+                    self.assertEqual(ab['story'],ba['story'])
                 self.assertEqual([c['title'] for c in ab['chapters']],[c['title'] for c in ba['chapters']])
     def test_no_unverified_deterministic_claims(self):
         for couple in DB:
             if couple['id'] not in EDITION:continue
             with self.subTest(couple=couple['id']):
-                report=make_report(self.a,self.b,self.rel,couple,describe(self.rel['vector'],couple['id'],couple['id']))
+                report=make_report(self.a,self.b,self.rel,couple,describe(self.rel['vector'],couple['id']))
                 for key in ('roles','saju_a'):
                     self.assertNotIn('당신은 반드시',report[key])
                     self.assertNotIn('운명적으로',report[key])

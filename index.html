@@ -96,7 +96,7 @@ function setupCoupleCard(couple,report){
  const link=document.createElement('a');link.href=url;link.download='연연_'+couple.id+'_이야기카드.svg';link.textContent='카드 저장하기 (SVG)';link.style.cssText='display:block;text-align:center;margin:14px auto;padding:14px;background:#f5e6ed;color:#754662;border-radius:12px;text-decoration:none;font-weight:800;max-width:380px';
  holder.append(img,link);
 }
-function fill(x){setReportChapters(x.chapters);for(const [id,key] of [['story','story'],['sajuA','saju_a'],['roles','roles'],['crisis','crisis'],['scene','scene'],['tip','tip']])$(id).innerHTML=renderProse(x[key]);$('ending').innerHTML=renderProse(x.ending||'');$('questions').replaceChildren();for(const q of x.questions||[]){const p=document.createElement('p');p.textContent='♥ '+q;$('questions').append(p)}}
+function fill(x){window.__yeonyeonFullChart=!!x.chart_evidence;setReportChapters(x.chapters);for(const [id,key] of [['story','story'],['sajuA','saju_a'],['roles','roles'],['crisis','crisis'],['scene','scene'],['tip','tip']])$(id).innerHTML=renderProse(x[key]);$('ending').innerHTML=renderProse(x.ending||'');$('questions').replaceChildren();for(const q of x.questions||[]){const p=document.createElement('p');p.textContent='♥ '+q;$('questions').append(p)}}
 
 // Every result describes a romantic couple; friendship archetypes describe relational dynamics.
 function setRelationshipCopy(couple){
@@ -149,7 +149,7 @@ function show(i){
  if(!document.getElementById('premiumReport').classList.contains('hide'))nav.scrollIntoView({behavior:'smooth',block:'start'});
 }
 window.yeonyeonInitReader=function(couple){
- const root=document.getElementById('premiumReport');window.__yeonyeonIsC06=couple?.id==='c06';
+ const root=document.getElementById('premiumReport');window.__yeonyeonIsC06=couple?.id==='c06'&&!window.__yeonyeonFullChart;
  sections=[...root.querySelectorAll('.section')].filter(el=>!el.classList.contains('hide')&&el.querySelector('.chapter')?.textContent.startsWith('CHAPTER'));
  root.querySelectorAll('[data-report-chapter]').forEach(el=>{el.removeAttribute('data-report-chapter');el.classList.remove('chapter-visible')});
  sections.forEach(el=>el.setAttribute('data-report-chapter','true'));
@@ -161,4 +161,25 @@ window.yeonyeonInitReader=function(couple){
  root.classList.add('reading-mode');show(0);
 };
 })();
+</script><script>
+// Two public synthetic review cases; reports are recomputed by the real engine.
+(async function(){
+ const sample=new URLSearchParams(location.search).get('sample');
+ if(!['c06-A','c06-B'].includes(sample))return;
+ try{
+  const r=await fetch('/api/c06-sample/'+sample.slice(-1));
+  if(!r.ok)throw Error('비교 리포트를 불러오지 못했어요.');
+  const d=await r.json();lastPayload=d.sample_payload;
+  fillPairName(d.couple.name);fill(d.full_report);setupCoupleCard(d.couple,d.full_report);
+  $('formSection').classList.add('hide');$('result').classList.remove('hide');
+  $('paywall').classList.add('hide');$('blurTeaser').classList.add('hide');
+  $('premiumReport').classList.remove('hide');arrangeFinalChapter();
+  // The old fire/water sample illustration describes one fixed chart only.
+  window.yeonyeonInitReader({...d.couple,id:'c06-review'});
+  const notice=document.createElement('p');notice.className='subtitle';notice.id='sampleNotice';
+  notice.textContent='비교용 가상 입력 '+sample.slice(-1)+' · 당신 '+lastPayload.a.date+' '+lastPayload.a.time+' / 상대방 '+lastPayload.b.date+' '+lastPayload.b.time+' · 실제 청구 없는 테스트 리포트';
+  $('premiumReport').prepend(notice);
+ }catch(e){$('error').textContent=e.message;}
+})();
+$('back').addEventListener('click',()=>document.getElementById('sampleNotice')?.remove());
 </script></body></html>

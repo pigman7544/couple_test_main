@@ -1,0 +1,86 @@
+import copy
+import json
+from pathlib import Path
+import subprocess
+import unittest
+from c06_chart import extract,cross,HIDDEN,THEMES
+from c06_report import TALE
+from engine import person
+from server import compute
+from story_report import ten_god,make_report
+from matcher import DB
+from relationship_v08 import relation
+
+class FullChartTests(unittest.TestCase):
+    def test_conventional_tables_and_season_roots(self):
+        p=person(1985,1,11,16)
+        x=extract(p)
+        self.assertEqual(x['season'],'겨울')
+        self.assertEqual(HIDDEN['丑'],'己癸辛')
+        self.assertEqual(ten_god('甲','己'),'정재')
+        self.assertEqual(ten_god('甲','癸'),'정인')
+        self.assertEqual(p['day_pillar'],'庚戌')
+        self.assertEqual(x['roots'],['month_pillar','day_pillar','hour_pillar'])
+
+    def test_real_same_count_same_day_stem_but_all_chapters_differ(self):
+        cases=json.loads(Path('tests/fixtures/c06_comparison.json').read_text(encoding='utf8'))
+        reports=[compute(c['payload'],True) for c in cases]
+        a,b=[r['full_report'] for r in reports]
+        self.assertTrue(all(r['couple']['id']=='c06' for r in reports))
+        self.assertEqual(cases[0]['counts_a'],cases[1]['counts_a'])
+        self.assertEqual(cases[0]['counts_b'],cases[1]['counts_b'])
+        self.assertEqual(a['chart_evidence']['a']['pillars']['day_pillar'][0],b['chart_evidence']['a']['pillars']['day_pillar'][0])
+        for key in a['sections']+['questions','ending']:
+            self.assertNotEqual(a[key],b[key],key)
+        for c,r in zip(cases,reports):
+            self.assertEqual(r,compute(c['payload'],True))
+            self.assertTrue(r['full_report']['story'].replace('**','').startswith(TALE.replace('**','')))
+            self.assertEqual(r,c['response'])
+
+    def test_hour_unknown_does_not_get_invented(self):
+        p=person(1992,3,18)
+        x=extract(p)
+        self.assertTrue(x['missing_hour'])
+        self.assertNotIn('hour',x['anchors'])
+        self.assertNotIn('hour_pillar',x['hidden'])
+        self.assertFalse(any(r['a']=='hour_pillar' for r in cross(p,person(1992,4,30,1))))
+
+    def test_hour_alone_changes_reading_without_mutating_inputs(self):
+        a,b=person(1992,3,18,1),person(1992,4,30,1)
+        later=person(1992,3,18,16)
+        self.assertEqual(a['day_pillar'],later['day_pillar'])
+        original=copy.deepcopy((a,b))
+        self.assertNotEqual(extract(a),extract(later))
+        c=next(c for c in DB if c['id']=='c06')
+        r=make_report(a,b,relation(a,b),c,{})
+        s=make_report(later,b,relation(later,b),c,{})
+        for k in ('roles','crisis','tip'): self.assertNotEqual(r[k],s[k])
+        self.assertEqual((a,b),original)
+
+    def test_cross_positions_and_no_transformation(self):
+        a={'year_pillar':'甲子','month_pillar':'丙寅','day_pillar':'甲午','hour_pillar':None}
+        b={'year_pillar':'己丑','month_pillar':'丁卯','day_pillar':'辛酉','hour_pillar':'庚申'}
+        links=cross(a,b)
+        self.assertIn(dict(a='year_pillar',b='year_pillar',chars='甲己',kind='천간합'),links)
+        self.assertIn(dict(a='month_pillar',b='hour_pillar',chars='寅申',kind='육충'),links)
+
+    def test_calculator_matcher_and_other_types_unchanged_from_start(self):
+        for path in ('engine.py','relationship_v08.py','matcher.py','couples.json','archetypes.json'):
+            before=subprocess.check_output(['git','show','388179f:'+path])
+            self.assertEqual(Path(path).read_bytes().replace(b'\r\n',b'\n'),before)
+        namespace={}
+        exec(compile(subprocess.check_output(['git','show','388179f:story_report.py']).decode('utf8'),'baseline_story_report.py','exec'),namespace)
+        a,b=person(1992,3,18,16),person(1992,4,30,1)
+        rel=relation(a,b)
+        for couple in DB:
+            if couple['id']=='c06':continue
+            self.assertEqual(make_report(a,b,rel,couple,{}),namespace['make_report'](a,b,rel,couple,{}),couple['id'])
+
+    def test_original_water_fire_sample_no_longer_overwrites_full_chart(self):
+        p={'a':{'date':'1992-03-18','time':'16:00'},'b':{'date':'1992-04-30','time':'01:00'}}
+        r=compute(p,True)
+        self.assertEqual(r['couple']['id'],'c06')
+        self.assertIn('chart_evidence',r['full_report'])
+        self.assertIn('기둥 전체',r['full_report']['roles'])
+
+if __name__=='__main__': unittest.main()

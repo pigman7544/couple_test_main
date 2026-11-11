@@ -66,7 +66,10 @@ class C06Report(unittest.TestCase):
         for key in ('roles', 'saju_a', 'crisis', 'tip'):
             self.assertNotEqual(base[key], r[key], key)
         self.assertIn('시주를 빼고', r['roles'])
-        self.assertEqual(base['story'], r['story'])
+        # The source tale stays fixed; the explicitly separated reading question varies.
+        from c06_report import TALE
+        self.assertTrue(base['story'].replace('**','').startswith(TALE.replace('**','')))
+        self.assertTrue(r['story'].replace('**','').startswith(TALE.replace('**','')))
 
     def test_roles_swap_and_gender_do_not_change_assignment(self):
         # Unequal drive: physical person retains role after swapping inputs.
