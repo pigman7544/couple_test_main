@@ -25,8 +25,23 @@ const base = process.env.QA_BASE || 'http://127.0.0.1:8771';
     const txt=(await page.locator('#'+id).innerText()).replace(/\s+/g,'');
     assert.doesNotMatch(txt,/\d+(?:\.\d+)?\/(?:10|100)(?!\d)|\d+점|궁합(?:점수|등급)/);
     assert.equal(txt,report[key].replaceAll('**','').replaceAll('◆','').replace(/\s+/g,''));
+    const rendered=await page.locator('#'+id).evaluate(el=>[...el.querySelectorAll('p')].map(p=>{
+     const body=p.cloneNode(true);body.querySelectorAll('.subhead').forEach(h=>h.remove());
+     return [...body.querySelectorAll('strong')].map(s=>s.textContent);
+    }));
+    const expected=report[key].split(/\n\n+/).map(block=>{
+     const lines=block.split('\n');if(lines[0].startsWith('◆ '))lines.shift();
+     return [...lines.join('\n').matchAll(/\*\*(.+?)\*\*/g)].map(m=>m[1]);
+    });
+    assert.deepEqual(rendered,expected);assert.ok(rendered.every(spans=>spans.length<=2));
+    if(i===0)for(const word of ['경금','단단한 쇠','병화','태양']){
+     const strong=page.locator('#roles strong').filter({hasText:word});
+     assert.equal(await strong.count(),1);
+     assert.ok(Number(await strong.evaluate(el=>getComputedStyle(el).fontWeight))>=600);
+    }
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
-    if(width===390)await page.locator('#'+id).screenshot({path:`tests/qa-c06-chart-${c.id}-ch${i+1}.png`});
+    if(process.env.QA_SHOTS)await page.locator('#'+id).screenshot({path:`tests/qa-role-${c.id}-${width}-ch${i+1}.png`});
+    else if(width===390)await page.locator('#'+id).screenshot({path:`tests/qa-c06-chart-${c.id}-ch${i+1}.png`});
     if(i<4)await page.locator('#chapterReaderBottom .reader-next').click();
    }
    assert.ok(await page.locator('#artSection').isVisible());

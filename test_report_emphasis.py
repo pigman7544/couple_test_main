@@ -10,6 +10,28 @@ from report_emphasis import emphasize
 
 
 class EmphasisTests(unittest.TestCase):
+    def test_c06_symbols_density_and_no_repeated_body_emphasis(self):
+        import json
+        from pathlib import Path
+        from server import compute
+        for c in json.loads(Path('tests/fixtures/c06_comparison.json').read_text(encoding='utf8')):
+            r=compute(c['payload'],True)['full_report']
+            for section in r['sections']:
+                seen=set()
+                for block in r[section].split('\n\n'):
+                    lines=block.split('\n')
+                    if lines[0].startswith('◆ '): lines.pop(0)
+                    body='\n'.join(lines)
+                    spans=re.findall(r'\*\*(.+?)\*\*',body)
+                    self.assertLessEqual(len(spans),2)
+                    for phrase in spans:
+                        self.assertNotIn(phrase,seen)
+                        self.assertLessEqual(len(phrase),32)
+                        self.assertLess(len(phrase),len(body.replace('**','')))
+                        seen.add(phrase)
+            for phrase in ('경금','단단한 쇠','병화','태양'):
+                self.assertEqual(r['roles'].count('**'+phrase+'**'),1)
+
     def test_literal_selection_and_quiet_paragraphs(self):
         value = '◆ **제목**\n짧은 설명이에요.\n\n먼저 설득하지 마세요. 서로 다른 기대를 확인해요.'
         self.assertEqual(emphasize(value, 'c06', 'crisis'),
@@ -38,7 +60,7 @@ class EmphasisTests(unittest.TestCase):
                             lines.pop(0)
                         body = '\n'.join(lines)
                         found = re.findall(r'\*\*(.+?)\*\*', body)
-                        self.assertLessEqual(len(found), 1)
+                        self.assertLessEqual(len(found), 2 if couple['id'] == 'c06' else 1)
                         for phrase in found:
                             self.assertLessEqual(len(phrase), 32)
                             self.assertLess(len(phrase), len(body.replace('**', '')))

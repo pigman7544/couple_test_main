@@ -12,6 +12,23 @@ from matcher import DB
 from relationship_v08 import relation
 
 class FullChartTests(unittest.TestCase):
+    def test_roles_connect_actual_assignment_to_tale_and_chart(self):
+        from story_report import role_assignment
+        c = next(c for c in DB if c['id']=='c06')
+        for a,b in ((person(1985,1,11,16),person(1992,4,30,1)),
+                    (person(1992,4,30,1),person(1985,6,10,16))):
+            r=make_report(a,b,relation(a,b),c,{})
+            text=r['roles'].replace('**','')
+            lead=role_assignment(a,b)[0]
+            label='당신' if lead=='첫 번째 사람' else '상대방'
+            self.assertIn(label+'은 백소정',text)
+            self.assertLess(text.index('당신의 일간은'),text.index('은 백소정'))
+            for phrase in ('우산을 빌려주며','영초를 구하러','명확한 약속과 일관성',
+                           '이 대목과 맞닿아','둘이 함께 이 이야기를 닮은 이유'):
+                self.assertIn(phrase,text)
+            for phrase in ('경금','단단한 쇠','병화','태양'):
+                self.assertIn('**'+phrase+'**',r['roles'])
+
     def test_day_master_leads_and_season_modifies_same_core(self):
         from c06_narrative import basis
         from story_report import count_elements

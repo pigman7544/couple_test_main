@@ -1,8 +1,8 @@
 """Reviewed literal excerpts: typography only, never sentence-position heuristics.
 
 The source tales and protected prose stay byte-identical after removing markers.
-Unlisted paragraphs deliberately remain quiet. One excerpt per paragraph keeps
-the reading rhythm even when several editorial messages appear together.
+Unlisted paragraphs deliberately remain quiet. Most types use one excerpt per
+paragraph; c06 allows two reviewed symbols or short relationship excerpts.
 """
 import re
 
@@ -92,6 +92,8 @@ BY_TYPE = {
 
 
 def emphasize(value, cid, section):
+    if cid == 'c06':
+        return emphasize_c06(value, section)
     blocks = []
     for block in value.split('\n\n'):
         lines = block.split('\n')
@@ -106,5 +108,42 @@ def emphasize(value, cid, section):
         if section == 'roles' and '**' not in body:
             body = re.sub(r'가까운 사이에서는 (.+?)을 바라는',
                           r'가까운 사이에서는 **\1**을 바라는', body, count=1)
+        blocks.append((heading + ('\n' if body else '') if heading else '') + body)
+    return '\n\n'.join(blocks)
+
+
+def emphasize_c06(value, section):
+    """Reviewed source spans and literal symbols; at most two per paragraph."""
+    from story_report import STEM_NAME, STEM_DESC
+    seen = set()
+    blocks = []
+    for block in value.split('\n\n'):
+        lines = block.split('\n')
+        heading = lines.pop(0) if lines and lines[0].lstrip().startswith(('◆ ', '#')) else None
+        source = '\n'.join(lines)
+        body = source.replace('**', '')
+        candidates = []
+        if section == 'roles' and '의 일간은 ' in body:
+            for stem, name in STEM_NAME.items():
+                if f'의 일간은 {name}({stem})' in body:
+                    image = {'庚': '단단한 쇠', '丙': '태양'}.get(stem, STEM_DESC[stem][0])
+                    candidates = [name, image]
+                    break
+        else:
+            candidates = re.findall(r'\*\*(.+?)\*\*', source)
+            candidates += list(BY_TYPE['c06'] + COMMON)
+        selected = []
+        for phrase in candidates:
+            if (phrase in seen or phrase not in body or len(phrase) > 32
+                    or len(phrase) == len(body) or any(phrase in p or p in phrase for p in selected)):
+                continue
+            selected.append(phrase)
+            if len(selected) == 2:
+                break
+        # Mark exact nonoverlapping spans in one pass; never match inside markup.
+        spans = sorted((body.index(p), body.index(p) + len(p), p) for p in selected)
+        for start, end, phrase in reversed(spans):
+            body = body[:start] + '**' + body[start:end] + '**' + body[end:]
+        seen.update(selected)
         blocks.append((heading + ('\n' if body else '') if heading else '') + body)
     return '\n\n'.join(blocks)
