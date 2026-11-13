@@ -92,7 +92,7 @@ BY_TYPE = {
 
 
 def emphasize(value, cid, section):
-    if cid == 'c06':
+    if cid in ('c06', 'c11'):
         return emphasize_c06(value, section)
     blocks = []
     for block in value.split('\n\n'):

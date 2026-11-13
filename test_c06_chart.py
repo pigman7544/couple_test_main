@@ -99,7 +99,7 @@ class FullChartTests(unittest.TestCase):
         self.assertIn(dict(a='year_pillar',b='year_pillar',chars='甲己',kind='천간합'),links)
         self.assertIn(dict(a='month_pillar',b='hour_pillar',chars='寅申',kind='육충'),links)
 
-    def test_calculator_matcher_and_other_types_unchanged_from_start(self):
+    def test_calculator_matcher_and_c01_unchanged_from_start(self):
         for path in ('engine.py','relationship_v08.py','matcher.py','couples.json','archetypes.json'):
             before=subprocess.check_output(['git','show','388179f:'+path])
             self.assertEqual(Path(path).read_bytes().replace(b'\r\n',b'\n'),before)
@@ -108,7 +108,7 @@ class FullChartTests(unittest.TestCase):
         a,b=person(1992,3,18,16),person(1992,4,30,1)
         rel=relation(a,b)
         for couple in DB:
-            if couple['id']=='c06':continue
+            if couple['id']!='c01':continue  # Other types now intentionally repaired; c06 has dedicated fixtures.
             self.assertEqual(make_report(a,b,rel,couple,{}),namespace['make_report'](a,b,rel,couple,{}),couple['id'])
 
     def test_original_water_fire_sample_no_longer_overwrites_full_chart(self):

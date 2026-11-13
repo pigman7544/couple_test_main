@@ -1,0 +1,62 @@
+.........................FFFFF...F.....F..............
+======================================================================
+FAIL: test_all_twelve_have_comparable_length_and_distinct_readings (test_editorial_readings.EditorialReadings.test_all_twelve_have_comparable_length_and_distinct_readings)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\user\OneDrive\����\ChatGPT\�������� ����\review-repo\test_editorial_readings.py", line 20, in test_all_twelve_have_comparable_length_and_distinct_readings
+    self.assertGreaterEqual(size / baseline, .90, (cid, size, baseline))
+AssertionError: 0.41500559910414336 not greater than or equal to 0.9 : ('c02', 1853, 4465)
+
+======================================================================
+FAIL: test_all_ten_have_unique_original_scenes (test_individual_scenes.EditorialQuality.test_all_ten_have_unique_original_scenes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\user\OneDrive\����\ChatGPT\�������� ����\review-repo\test_individual_scenes.py", line 32, in test_all_ten_have_unique_original_scenes
+    self.assertIn('������ �� ����� ģ�������',r['tip'])
+AssertionError: '������ �� ����� ģ�������' not found in '�츮�� �ٸ� �ḻ�� ���� �� �������?\n\n�� **ù ��° ���� \u2014 ��ȭ�� �����ϱ�**\n������ �̹� �� �� �� �� �� ��ҿ��� �����ƴ� �⿩�� �ϳ� ���� ������.\n\n�� **�� ��° ���� \u2014 ���� ��õ���� �ű��**\n�̹� �� ��밡 �� �� ������ �ʴ� ���� �ϳ� ��ü������ �������ؿ�. ������ �������� ���� ������ �þ� ����.\n\n�� **�� ��° ���� \u2014 �Բ� ���ϱ�**\n���� �ٶ�� ���� �� ���徿 ���ϰ�, �̹� �� ��õ�� ���� ��� �ϳ��� �Բ� ��� ������. �������� ���״��� ä���ϱ⺸�� � ������ �����ߴ��� ������.\n\n������ ���� �̸� ������ �ʰ�, ���� ��� �Ϳ��� �����ؿ�.'
+
+======================================================================
+FAIL: test_gender_and_missing_birth_time (test_individual_scenes.EditorialQuality.test_gender_and_missing_birth_time)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\user\OneDrive\����\ChatGPT\�������� ����\review-repo\test_individual_scenes.py", line 58, in test_gender_and_missing_birth_time
+    self.assertIn('���ִ� ��꿡�� ����',r['roles'])
+AssertionError: '���ִ� ��꿡�� ����' not found in '��ŵ��� �߿�� ������ �̾߱⸦ ��Ҿ��.\n\n�߿�� ����� ������ �Ϸ縸���� ����� ������ �� ���� ������̿���. ��ٸ��� ���ȿ��� ���� ��� ���� �� �Ϸ簡 �־����ϱ��.\n\n�� **��ſ��Լ� �д� �߿��� ���**\n����� �ϰ��� ��(����)�̿���. ���� ��鸮�� �ʴ� ū ���̶�� �ڿ��� ������ ���� �ŷڿ� �ϻ��� ������ �߿��ϰ� ����� ����� ����� �� �� �־��. �߿��� ������ �״�� �ݺ��Ѵٴ� ���� �ƴϿ���.\n\n�� **���濡�Լ� �д� ������ ���**\n������ �ϰ��� ܰ(��ȭ)�̿���. ������ ���ߴ� �¾��̶�� ��¡������ ������ ǥ���� �Բ� ���� ������ ���ø� �� �־��. �� ����� �ٸ� ������� ���踦 �����Ѵٴ� ���� �ָ��� ����.\n\n�� ������ ����� ũ�⳪ ������ �ƴ�, ���� �ٸ� ������ ���Ǳ� ���� ������ ��������.'
+
+======================================================================
+FAIL: test_six_axes_change_independently (test_individual_scenes.EditorialQuality.test_six_axes_change_independently)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\user\OneDrive\����\ChatGPT\�������� ����\review-repo\test_individual_scenes.py", line 49, in test_six_axes_change_independently
+    self.assertEqual(len(set(r[chapter] for r in reports)),3,(c['id'],axis))
+AssertionError: 1 != 3 : ('c02', 'attraction')
+
+======================================================================
+FAIL: test_birth_charts_change_scenes_even_with_identical_scores (test_personalized_reading.PersonalizedReading.test_birth_charts_change_scenes_even_with_identical_scores)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\user\OneDrive\����\ChatGPT\�������� ����\review-repo\test_personalized_reading.py", line 22, in test_birth_charts_change_scenes_even_with_identical_scores
+    self.assertNotEqual(first[key], second[key], (couple['id'], key))
+AssertionError: '�츮�� �ٸ� �ḻ�� ���� �� �������?\n\n�� **ù ��° ���� \u2014 ��ȭ�� �����ϱ�**\n������ ���� ���� ���� �� ���ٸ�, �̹� �� ������ �Ϸ縦 ���ϴ� ���� ����� ���� ������.\n\n�� **�� ��° ���� \u2014 ���� ��õ���� �ű��**\n���� ��¥�� �ƴ϶� ������ �ִ� ���� ���� ����� �Բ� ���ؿ�. ������ ���� ���� ������ �����ϱ⺸�� ������ �ð��� �������.\n\n�� **�� ��° ���� \u2014 �Բ� ���ϱ�**\n���� �ٶ�� ���� �� ���徿 ���ϰ�, �̹� �� ��õ�� ���� ��� �ϳ��� �Բ� ��� ������. �������� ���״��� ä���ϱ⺸�� � ������ �����ߴ��� ������.\n\n������ ���� �̸� ������ �ʰ�, ���� ��� �Ϳ��� �����ؿ�.' == '�츮�� �ٸ� �ḻ�� ���� �� �������?\n\n�� **ù ��° ���� \u2014 ��ȭ�� �����ϱ�**\n������ ���� ���� ���� �� ���ٸ�, �̹� �� ������ �Ϸ縦 ���ϴ� ���� ����� ���� ������.\n\n�� **�� ��° ���� \u2014 ���� ��õ���� �ű��**\n���� ��¥�� �ƴ϶� ������ �ִ� ���� ���� ����� �Բ� ���ؿ�. ������ ���� ���� ������ �����ϱ⺸�� ������ �ð��� �������.\n\n�� **�� ��° ���� \u2014 �Բ� ���ϱ�**\n���� �ٶ�� ���� �� ���徿 ���ϰ�, �̹� �� ��õ�� ���� ��� �ϳ��� �Բ� ��� ������. �������� ���״��� ä���ϱ⺸�� � ������ �����ߴ��� ������.\n\n������ ���� �̸� ������ �ʰ�, ���� ��� �Ϳ��� �����ؿ�.' : ('c02', 'tip')
+
+======================================================================
+FAIL: test_all_twelve_preserve_source_and_score_prose (test_reading_voice.EssayVoice.test_all_twelve_preserve_source_and_score_prose)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\user\OneDrive\����\ChatGPT\�������� ����\review-repo\test_reading_voice.py", line 52, in test_all_twelve_preserve_source_and_score_prose
+    self.assertEqual(old['crisis'].replace('**',''),r['crisis'].replace('**',''),cid)
+AssertionError: '������ [121 chars]n�� ���� 8/10\n������ ��ȹ�� �޶��� �� ������ ���� Ȯ������ �������. �ǰ�[673 chars]�־��.' != '������ [121 chars]n�� ����\n������ ��ȹ�� �޶��� �� ������ ���� Ȯ������ �������. �ǰ��� �ε���[656 chars]�־��.'
+Diff is 1180 characters long. Set self.maxDiff to None to see it. : c01
+
+======================================================================
+FAIL: test_all_types_bands_preserve_prose_headings_and_inputs (test_report_emphasis.EmphasisTests.test_all_types_bands_preserve_prose_headings_and_inputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\user\OneDrive\����\ChatGPT\�������� ����\review-repo\test_report_emphasis.py", line 69, in test_all_types_bands_preserve_prose_headings_and_inputs
+    self.assertTrue(spans, (couple['id'], score, key))
+AssertionError: [] is not true : ('c02', 30, 'roles')
+
+----------------------------------------------------------------------
+Ran 54 tests in 5.490s
+
+FAILED (failures=7)

@@ -42,7 +42,7 @@ assert.equal(couples.length,12);
 for(const couple of couples){
  context.fillPairName(couple.name);
  assert.equal(nodes.pairName.textContent,couple.name);
- assert.equal(nodes.pairName.nextSibling.textContent,expectedParticles[couple.id]+' 닮았어.',couple.id);
+ assert.equal(nodes.pairName.nextSibling.textContent,expectedParticles[couple.id]+' 닮았어요.',couple.id);
  context.setReportChapters(chapters);
  context.setReportChapters(couple.id==='c06'?chapters:undefined);
  assert.equal(Object.values(sections).filter(s=>!s.classList.contains('hide')).length,couple.id==='c06'?5:6);

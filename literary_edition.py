@@ -133,5 +133,28 @@ def enrich(result,a,b,rel,couple):
         {'key':'crisis','title':'그런데 왜 사랑하면서도 어긋날까?'},
         {'key':'tip','title':'우리는 다른 결말을 만들 수 있을까?'},
     ]
+    # The final edition used to erase all score-band and chart-specific prose.
+    # Restore those reader-facing distinctions after composing the source story.
+    from other_reports import AXIS_TEXT, ADVICE, LABELS
+    from editorial_readings import READINGS
+    result['story'] += '\n\n' + READINGS[cid]
+    from c06_report import band
+    for key, axes in (('saju_a', ('attraction','security','growth')),
+                      ('crisis', ('conflict','expression','autonomy'))):
+        result[key] += '\n\n' + '\n\n'.join(
+            f'◆ **{LABELS[axis]}**\n{AXIS_TEXT[axis][band(rel["vector"][axis])]}' for axis in axes)
+    result['tip'] += '\n\n' + '\n\n'.join(ADVICE[axis][band(rel['vector'][axis])]
+        for axis in ('attraction','security','growth','conflict','expression','autonomy'))
+    from personalized_reading import enrich as personalize
+    result = personalize(result, a, b, rel, couple)
+    if not a.get('hour_pillar') or not b.get('hour_pillar'):
+        result['roles'] += '\n\n출생시간을 모르는 사람의 시주는 계산에서 제외했어요.'
+    if couple.get('relationship_kind') == 'friendship':
+        result['roles'] = result['roles'].replace('사랑의 크기', '친밀함의 크기')
+        result['crisis'] = result['crisis'].replace('사랑하면서도', '가까운데도')
+        for chapter in result['chapters']:
+            chapter['title'] = chapter['title'].replace('사랑하면서도', '가까운데도')
+        for key in ('story','saju_a','crisis','tip'):
+            result[key] = result[key].replace('사랑에는', '동행에는').replace('데이트', '만남').replace('애정 표현', '마음을 전하는 방법')
     result['sections']=['roles','story','saju_a','crisis','tip']
     return result

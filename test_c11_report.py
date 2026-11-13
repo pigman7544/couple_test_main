@@ -1,0 +1,70 @@
+"""Production-matched A/B, full-chart evidence, source boundaries and roles."""
+import copy
+import json
+import re
+import unittest
+from pathlib import Path
+from engine import person
+from matcher import DB
+from relationship_v08 import relation
+from server import compute
+from story_report import make_report
+from c06_chart import extract
+from c11_report import TALE
+
+class C11ReportTests(unittest.TestCase):
+    def test_real_samples_differ_and_preserve_source(self):
+        reports=[]
+        for case in json.loads(Path('tests/fixtures/c11_comparison.json').read_text(encoding='utf8')):
+            response=compute(case['payload'],True)
+            self.assertEqual(response['couple']['id'],'c11')
+            self.assertEqual(response,compute(case['payload'],True))
+            r=response['full_report'];reports.append(r)
+            self.assertEqual(len(r['chapters']),5)
+            heads=re.findall(r'^◆ \*\*(.*?)\*\*',r['roles'],re.M)
+            self.assertEqual(len(heads),2)
+            self.assertEqual({h.split('를 닮은')[0] for h in heads},{'엘리자베스','다아시'})
+            self.assertTrue(r['story'].replace('**','').startswith(TALE.replace('**','')))
+            self.assertIn('가상 장면',r['crisis'])
+            for key in r['sections']:
+                self.assertNotRegex(r[key],r'\d+(?:\.\d+)?/(?:10|100)|\d+점|지장간|월령|십성|상극')
+                for para in r[key].split('\n\n'):
+                    lines=para.split('\n')
+                    if lines[0].startswith('◆ '): lines.pop(0)
+                    self.assertLessEqual(len(re.findall(r'\*\*(.+?)\*\*','\n'.join(lines))),2)
+            self.assertFalse(r['chart_evidence']['a']['missing_hour'])
+        self.assertEqual(reports[0]['story'],reports[1]['story'])
+        for key in ('roles','saju_a','crisis','tip'):
+            self.assertNotEqual(reports[0][key],reports[1][key])
+        self.assertEqual(reports[0]['chart_evidence']['a']['theme'],'care')
+        self.assertEqual(reports[1]['chart_evidence']['a']['theme'],'reflect')
+        self.assertIn('예약',reports[0]['crisis']);self.assertIn('예약',reports[0]['tip'])
+        self.assertIn('저녁 8시',reports[1]['tip'])
+
+    def test_same_day_and_scores_other_pillars_change_reading(self):
+        a,b=person(1999,1,22,1),person(1998,11,9,21)
+        rel=relation(a,b);couple=next(c for c in DB if c['id']=='c11')
+        original=copy.deepcopy((a,b,rel))
+        r=make_report(a,b,rel,couple,{})
+        # Synthetic chart sensitivity probe, never submitted as a real date.
+        changed=dict(a,month_pillar='甲寅',hour_pillar='丙寅')
+        s=make_report(changed,b,rel,couple,{})
+        self.assertEqual(a['day_pillar'],changed['day_pillar'])
+        for key in ('roles','saju_a','crisis','tip'):
+            self.assertNotEqual(r[key],s[key],key)
+        self.assertEqual((a,b,rel),original)
+        self.assertEqual(r['chart_evidence']['a'],extract(a))
+
+    def test_missing_time_gender_and_swap(self):
+        a,b=person(1996,12,13),person(1986,10,21)
+        c=next(c for c in DB if c['id']=='c11');rel=relation(a,b)
+        r=make_report(a,b,rel,c,{})
+        self.assertTrue(r['chart_evidence']['a']['missing_hour'])
+        self.assertNotIn('hour',r['chart_evidence']['a']['anchors'])
+        self.assertIn('시주는 계산에서 제외',r['roles'])
+        self.assertEqual(r,make_report(dict(a,gender='male'),dict(b,gender='female'),rel,c,{}))
+        swapped=make_report(b,a,relation(b,a),c,{})
+        self.assertEqual(r['story'],swapped['story'])
+        self.assertEqual(r['chart_evidence']['a'],swapped['chart_evidence']['b'])
+
+if __name__=='__main__': unittest.main()

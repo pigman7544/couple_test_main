@@ -166,9 +166,9 @@ window.yeonyeonInitReader=function(couple){
 // Two public synthetic review cases; reports are recomputed by the real engine.
 (async function(){
  const sample=new URLSearchParams(location.search).get('sample');
- if(!['c06-A','c06-B'].includes(sample))return;
+ if(!['c06-A','c06-B','c11-A','c11-B'].includes(sample))return;
  try{
-  const r=await fetch('/api/c06-sample/'+sample.slice(-1));
+  const r=await fetch('/api/'+sample.slice(0,3)+'-sample/'+sample.slice(-1));
   if(!r.ok)throw Error('비교 리포트를 불러오지 못했어요.');
   const d=await r.json();lastPayload=d.sample_payload;
   fillPairName(d.couple.name);fill(d.full_report);setupCoupleCard(d.couple,d.full_report);
@@ -176,7 +176,7 @@ window.yeonyeonInitReader=function(couple){
   $('paywall').classList.add('hide');$('blurTeaser').classList.add('hide');
   $('premiumReport').classList.remove('hide');arrangeFinalChapter();
   // The old fire/water sample illustration describes one fixed chart only.
-  window.yeonyeonInitReader({...d.couple,id:'c06-review'});
+  window.yeonyeonInitReader({...d.couple,id:d.couple.id+'-review'});
   const notice=document.createElement('p');notice.className='subtitle';notice.id='sampleNotice';
   notice.textContent='비교용 가상 입력 '+sample.slice(-1)+' · 당신 '+lastPayload.a.date+' '+lastPayload.a.time+' / 상대방 '+lastPayload.b.date+' '+lastPayload.b.time+' · 실제 청구 없는 테스트 리포트';
   $('premiumReport').prepend(notice);

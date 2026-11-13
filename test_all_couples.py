@@ -34,8 +34,13 @@ class EditorialTests(unittest.TestCase):
             if couple['id'] not in EDITION:continue
             with self.subTest(couple=couple['id']):
                 report=make_report(self.a,self.b,self.rel,couple,describe(self.rel['vector'],couple['id']))
-                self.assertIn(EDITION[couple['id']][0],report['roles'])
-                self.assertIn(EDITION[couple['id']][1].replace('**',''),report['story'].replace('**',''))
+                if couple['id'] == 'c11':
+                    self.assertIn('엘리자베스',report['roles'])
+                    self.assertIn('다아시',report['roles'])
+                    self.assertIn('거절과 편지',report['story'])
+                else:
+                    self.assertIn(EDITION[couple['id']][0],report['roles'])
+                    self.assertIn(EDITION[couple['id']][1].replace('**',''),report['story'].replace('**',''))
                 self.assertNotIn('백소정',report['roles']+report['story']+report['crisis']+report['tip'])
     def test_input_swap_preserves_archetype_and_story(self):
         for couple in DB:

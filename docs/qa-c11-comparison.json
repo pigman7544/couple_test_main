@@ -1,0 +1,459 @@
+[
+  {
+    "id": "A",
+    "before_chars": 1817,
+    "after_chars": 4115,
+    "changed_sections": [
+      "roles",
+      "story",
+      "saju_a",
+      "crisis",
+      "tip"
+    ],
+    "envelope_and_preview_preserved": true,
+    "chart_evidence": {
+      "version": "c11-chart-v1",
+      "a": {
+        "pillars": {
+          "year_pillar": "戊寅",
+          "month_pillar": "乙丑",
+          "day_pillar": "甲戌",
+          "hour_pillar": "乙丑"
+        },
+        "season": "겨울",
+        "hidden": {
+          "year_pillar": [
+            {
+              "stem": "甲",
+              "god": "비견"
+            },
+            {
+              "stem": "丙",
+              "god": "식신"
+            },
+            {
+              "stem": "戊",
+              "god": "편재"
+            }
+          ],
+          "month_pillar": [
+            {
+              "stem": "己",
+              "god": "정재"
+            },
+            {
+              "stem": "癸",
+              "god": "정인"
+            },
+            {
+              "stem": "辛",
+              "god": "정관"
+            }
+          ],
+          "day_pillar": [
+            {
+              "stem": "戊",
+              "god": "편재"
+            },
+            {
+              "stem": "辛",
+              "god": "정관"
+            },
+            {
+              "stem": "丁",
+              "god": "상관"
+            }
+          ],
+          "hour_pillar": [
+            {
+              "stem": "己",
+              "god": "정재"
+            },
+            {
+              "stem": "癸",
+              "god": "정인"
+            },
+            {
+              "stem": "辛",
+              "god": "정관"
+            }
+          ]
+        },
+        "visible_gods": {
+          "year_pillar": "편재",
+          "month_pillar": "겁재",
+          "hour_pillar": "겁재"
+        },
+        "roots": [
+          "year_pillar"
+        ],
+        "anchors": {
+          "month": "정재",
+          "day": "편재",
+          "hour": "겁재"
+        },
+        "theme": "care",
+        "editorial_weights": {
+          "care": 7.0,
+          "self": 4.25,
+          "voice": 0.5,
+          "reflect": 0.5,
+          "promise": 0.75
+        },
+        "internal": [],
+        "missing_hour": false
+      },
+      "b": {
+        "pillars": {
+          "year_pillar": "戊寅",
+          "month_pillar": "癸亥",
+          "day_pillar": "庚申",
+          "hour_pillar": "丁亥"
+        },
+        "season": "겨울",
+        "hidden": {
+          "year_pillar": [
+            {
+              "stem": "甲",
+              "god": "편재"
+            },
+            {
+              "stem": "丙",
+              "god": "편관"
+            },
+            {
+              "stem": "戊",
+              "god": "편인"
+            }
+          ],
+          "month_pillar": [
+            {
+              "stem": "壬",
+              "god": "식신"
+            },
+            {
+              "stem": "甲",
+              "god": "편재"
+            }
+          ],
+          "day_pillar": [
+            {
+              "stem": "庚",
+              "god": "비견"
+            },
+            {
+              "stem": "壬",
+              "god": "식신"
+            },
+            {
+              "stem": "戊",
+              "god": "편인"
+            }
+          ],
+          "hour_pillar": [
+            {
+              "stem": "壬",
+              "god": "식신"
+            },
+            {
+              "stem": "甲",
+              "god": "편재"
+            }
+          ]
+        },
+        "visible_gods": {
+          "year_pillar": "편인",
+          "month_pillar": "상관",
+          "hour_pillar": "정관"
+        },
+        "roots": [
+          "day_pillar"
+        ],
+        "anchors": {
+          "month": "식신",
+          "day": "비견",
+          "hour": "정관"
+        },
+        "theme": "voice",
+        "editorial_weights": {
+          "voice": 4.75,
+          "self": 2.25,
+          "promise": 3.25,
+          "reflect": 1.5,
+          "care": 0.75
+        },
+        "internal": [
+          {
+            "positions": [
+              "year_pillar",
+              "month_pillar"
+            ],
+            "branches": "寅亥",
+            "kind": "육합"
+          },
+          {
+            "positions": [
+              "year_pillar",
+              "day_pillar"
+            ],
+            "branches": "寅申",
+            "kind": "육충"
+          },
+          {
+            "positions": [
+              "year_pillar",
+              "hour_pillar"
+            ],
+            "branches": "寅亥",
+            "kind": "육합"
+          }
+        ],
+        "missing_hour": false
+      },
+      "cross": [
+        {
+          "a": "year_pillar",
+          "b": "month_pillar",
+          "chars": "寅亥",
+          "kind": "육합"
+        },
+        {
+          "a": "year_pillar",
+          "b": "month_pillar",
+          "chars": "戊癸",
+          "kind": "천간합"
+        },
+        {
+          "a": "year_pillar",
+          "b": "day_pillar",
+          "chars": "寅申",
+          "kind": "육충"
+        },
+        {
+          "a": "year_pillar",
+          "b": "hour_pillar",
+          "chars": "寅亥",
+          "kind": "육합"
+        },
+        {
+          "a": "month_pillar",
+          "b": "day_pillar",
+          "chars": "乙庚",
+          "kind": "천간합"
+        },
+        {
+          "a": "hour_pillar",
+          "b": "day_pillar",
+          "chars": "乙庚",
+          "kind": "천간합"
+        }
+      ],
+      "policy": "c06 전체 명식 편집 규칙 재사용. 계산·점수·매칭·기존 배역 보존. 합화·신강약·용신·대운 판단 없음."
+    }
+  },
+  {
+    "id": "B",
+    "before_chars": 1813,
+    "after_chars": 4129,
+    "changed_sections": [
+      "roles",
+      "story",
+      "saju_a",
+      "crisis",
+      "tip"
+    ],
+    "envelope_and_preview_preserved": true,
+    "chart_evidence": {
+      "version": "c11-chart-v1",
+      "a": {
+        "pillars": {
+          "year_pillar": "丙子",
+          "month_pillar": "庚子",
+          "day_pillar": "甲申",
+          "hour_pillar": "乙亥"
+        },
+        "season": "겨울",
+        "hidden": {
+          "year_pillar": [
+            {
+              "stem": "癸",
+              "god": "정인"
+            }
+          ],
+          "month_pillar": [
+            {
+              "stem": "癸",
+              "god": "정인"
+            }
+          ],
+          "day_pillar": [
+            {
+              "stem": "庚",
+              "god": "편관"
+            },
+            {
+              "stem": "壬",
+              "god": "편인"
+            },
+            {
+              "stem": "戊",
+              "god": "편재"
+            }
+          ],
+          "hour_pillar": [
+            {
+              "stem": "壬",
+              "god": "편인"
+            },
+            {
+              "stem": "甲",
+              "god": "비견"
+            }
+          ]
+        },
+        "visible_gods": {
+          "year_pillar": "식신",
+          "month_pillar": "편관",
+          "hour_pillar": "겁재"
+        },
+        "roots": [
+          "hour_pillar"
+        ],
+        "anchors": {
+          "month": "정인",
+          "day": "편관",
+          "hour": "겁재"
+        },
+        "theme": "reflect",
+        "editorial_weights": {
+          "reflect": 4.0,
+          "promise": 3.25,
+          "self": 3.25,
+          "voice": 1,
+          "care": 0.25
+        },
+        "internal": [],
+        "missing_hour": false
+      },
+      "b": {
+        "pillars": {
+          "year_pillar": "丙寅",
+          "month_pillar": "戊戌",
+          "day_pillar": "戊戌",
+          "hour_pillar": "丁巳"
+        },
+        "season": "가을",
+        "hidden": {
+          "year_pillar": [
+            {
+              "stem": "甲",
+              "god": "편관"
+            },
+            {
+              "stem": "丙",
+              "god": "편인"
+            },
+            {
+              "stem": "戊",
+              "god": "비견"
+            }
+          ],
+          "month_pillar": [
+            {
+              "stem": "戊",
+              "god": "비견"
+            },
+            {
+              "stem": "辛",
+              "god": "상관"
+            },
+            {
+              "stem": "丁",
+              "god": "정인"
+            }
+          ],
+          "day_pillar": [
+            {
+              "stem": "戊",
+              "god": "비견"
+            },
+            {
+              "stem": "辛",
+              "god": "상관"
+            },
+            {
+              "stem": "丁",
+              "god": "정인"
+            }
+          ],
+          "hour_pillar": [
+            {
+              "stem": "丙",
+              "god": "편인"
+            },
+            {
+              "stem": "戊",
+              "god": "비견"
+            },
+            {
+              "stem": "庚",
+              "god": "식신"
+            }
+          ]
+        },
+        "visible_gods": {
+          "year_pillar": "편인",
+          "month_pillar": "비견",
+          "hour_pillar": "정인"
+        },
+        "roots": [
+          "year_pillar",
+          "month_pillar",
+          "day_pillar",
+          "hour_pillar"
+        ],
+        "anchors": {
+          "month": "비견",
+          "day": "비견",
+          "hour": "정인"
+        },
+        "theme": "self",
+        "editorial_weights": {
+          "self": 7.0,
+          "reflect": 5.0,
+          "promise": 0.25,
+          "voice": 0.75
+        },
+        "internal": [],
+        "missing_hour": false
+      },
+      "cross": [
+        {
+          "a": "day_pillar",
+          "b": "year_pillar",
+          "chars": "申寅",
+          "kind": "육충"
+        },
+        {
+          "a": "day_pillar",
+          "b": "hour_pillar",
+          "chars": "申巳",
+          "kind": "육합"
+        },
+        {
+          "a": "hour_pillar",
+          "b": "year_pillar",
+          "chars": "亥寅",
+          "kind": "육합"
+        },
+        {
+          "a": "hour_pillar",
+          "b": "hour_pillar",
+          "chars": "亥巳",
+          "kind": "육충"
+        }
+      ],
+      "policy": "c06 전체 명식 편집 규칙 재사용. 계산·점수·매칭·기존 배역 보존. 합화·신강약·용신·대운 판단 없음."
+    }
+  }
+]
