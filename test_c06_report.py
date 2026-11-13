@@ -96,8 +96,8 @@ class C06Report(unittest.TestCase):
             if c['id'] in ('c06', 'c01'):
                 continue
             r = make_report(self.a, self.b, self.rel, c, describe(self.rel['vector'], c['id']))
-            self.assertEqual(len(r['chapters']), 5, c['id'])
-            self.assertEqual(len(r['sections']), 5, c['id'])
+            self.assertEqual(len(r['chapters']), 3 if c['id']=='c11' else 5, c['id'])
+            self.assertEqual(len(r['sections']), 3 if c['id']=='c11' else 5, c['id'])
             self.assertIn(c['name'].split('·')[0], r['roles'], c['id'])
             self.assertTrue(all(r[key] for key in r['sections']), c['id'])
 

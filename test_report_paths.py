@@ -37,7 +37,7 @@ class ReportPaths(unittest.TestCase):
                     with self.subTest(couple=couple['id'], with_time=with_time):
                         story = describe(rel['vector'], couple['id'])
                         report = make_report(a, b, rel, couple, story)
-                        for key in SECTIONS:
+                        for key in (('tagline','roles','saju_a','tip','ending') if couple['id']=='c11' else SECTIONS):
                             self.assertTrue(report[key], key)
                         self.assertTrue(report['questions'])
                         text = json.dumps(report, ensure_ascii=False)
@@ -108,7 +108,7 @@ class HttpPaths(unittest.TestCase):
                     self.assertNotIn('full_report', data)
                 else:
                     self.assertTrue(data['test_mode'])
-                    for key in SECTIONS:
+                    for key in (('tagline','roles','saju_a','tip','ending') if expected_id=='c11' else SECTIONS):
                         self.assertTrue(data['full_report'][key], key)
 
     def test_real_matching_preview_and_unlock(self):

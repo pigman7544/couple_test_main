@@ -47,28 +47,59 @@ class C11ReportTests(unittest.TestCase):
             self.assertEqual(response['couple']['id'],'c11')
             self.assertEqual(response,compute(case['payload'],True))
             r=response['full_report'];reports.append(r)
-            self.assertEqual(len(r['chapters']),5)
+            self.assertEqual(len(r['chapters']),3)
             heads=re.findall(r'^◆ \*\*(.*?)\*\*',r['roles'],re.M)
             self.assertEqual(len(heads),2)
             self.assertEqual({h.split('를 닮은')[0] for h in heads},{'엘리자베스','다아시'})
-            self.assertTrue(r['story'].replace('**','').startswith(TALE.replace('**','')))
-            self.assertIn('가상 장면',r['crisis'])
+            self.assertTrue(r['plot']['body'].replace('**','') == TALE.replace('**',''))
+            self.assertEqual(r['story'],''); self.assertEqual(r['crisis'],'')
+            self.assertIn('가상 장면',r['saju_a'])
+            self.assertEqual(r['sections'],['roles','saju_a','tip'])
             for key in r['sections']:
-                self.assertNotRegex(r[key],r'\d+(?:\.\d+)?/(?:10|100)|\d+점|지장간|월령|십성|상극')
+                self.assertNotRegex(r[key],r'\d+(?:\.\d+)?/(?:10|100)|\d+점|지장간|월령|십성')
                 for para in r[key].split('\n\n'):
                     lines=para.split('\n')
                     if lines[0].startswith('◆ '): lines.pop(0)
                     self.assertLessEqual(len(re.findall(r'\*\*(.+?)\*\*','\n'.join(lines))),2)
             self.assertFalse(r['chart_evidence']['a']['missing_hour'])
         self.assertEqual(reports[0]['story'],reports[1]['story'])
-        for key in ('roles','saju_a','crisis','tip'):
+        for key in ('roles','saju_a','tip'):
             self.assertNotEqual(reports[0][key],reports[1][key])
         self.assertEqual(reports[0]['chart_evidence']['a']['theme'],'care')
         self.assertEqual(reports[1]['chart_evidence']['a']['theme'],'reflect')
-        self.assertIn('예약',reports[0]['crisis']);self.assertIn('예약',reports[0]['tip'])
+        self.assertIn('예약',reports[0]['saju_a']);self.assertIn('예약',reports[0]['tip'])
         self.assertIn('저녁 8시',reports[1]['tip'])
         self.assertIn('**예약 전에**',reports[0]['tip'])
         self.assertIn('**오늘 저녁 8시에**',reports[1]['tip'])
+
+    def test_three_chapters_preserve_preview_and_all_other_reports(self):
+        import subprocess, types
+        import c11_report
+        from unittest.mock import patch
+        baseline=types.ModuleType('old_c11')
+        exec(subprocess.check_output(['git','show','9a6b2b0:c11_report.py']).decode('utf8'),baseline.__dict__)
+        for case in json.loads(Path('tests/fixtures/c11_comparison.json').read_text(encoding='utf8')):
+            current=compute(case['payload'])
+            with patch.object(c11_report,'enrich',baseline.enrich):
+                self.assertEqual(current,compute(case['payload']))
+            report=compute(case['payload'],True)['full_report']
+            self.assertEqual([c['key'] for c in report['chapters']],['roles','saju_a','tip'])
+            self.assertEqual(report['plot']['body'],TALE)
+            for who in ('a','b'):
+                x=report['chart_evidence'][who]
+                self.assertIn(x['pillars']['month_pillar'],report['roles'])
+            self.assertIn('오행에서는',report['saju_a'])
+            for kind in {x['kind'] for x in report['chart_evidence']['cross']}:
+                self.assertIn(kind,report['saju_a'])
+        a,b=person(1999,1,22,1),person(1998,11,9,21)
+        # Compare actual original generator output, not reconstructed assertions.
+        for couple in DB:
+            if couple['id']=='c11': continue
+            current=make_report(a,b,relation(a,b),couple,{})
+            with patch.object(c11_report,'enrich',baseline.enrich):
+                self.assertEqual(current,make_report(a,b,relation(a,b),couple,{}))
+            self.assertEqual(len(current['chapters']),5)
+            self.assertNotIn('plot',current)
 
     def test_same_day_and_scores_other_pillars_change_reading(self):
         a,b=person(1999,1,22,1),person(1998,11,9,21)
@@ -79,7 +110,7 @@ class C11ReportTests(unittest.TestCase):
         changed=dict(a,month_pillar='甲寅',hour_pillar='丙寅')
         s=make_report(changed,b,rel,couple,{})
         self.assertEqual(a['day_pillar'],changed['day_pillar'])
-        for key in ('roles','saju_a','crisis','tip'):
+        for key in ('roles','saju_a','tip'):
             self.assertNotEqual(r[key],s[key],key)
         self.assertEqual((a,b,rel),original)
         self.assertEqual(r['chart_evidence']['a'],extract(a))

@@ -20,8 +20,8 @@ class EditorialQuality(unittest.TestCase):
         for c in DB:
             if c['id'] not in SCENES: continue
             r=make_report(self.a,self.b,self.rel,c,{})
-            self.assertEqual(len(r['chapters']),5,c['id'])
-            self.assertEqual(r['sections'],['roles','story','saju_a','crisis','tip'])
+            self.assertEqual(len(r['chapters']),3 if c['id']=='c11' else 5,c['id'])
+            self.assertEqual(r['sections'],(['roles','saju_a','tip'] if c['id']=='c11' else ['roles','story','saju_a','crisis','tip']))
             for text in SCENES[c['id']]:
                     if c['id'] == 'c11': continue  # Source-reviewed replacement: test_c11_report.
                     self.assertIn(text.replace('**',''),(r['story']+r['crisis']+r['tip']).replace('**',''),c['id'])

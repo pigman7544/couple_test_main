@@ -20,9 +20,9 @@ class EditorialTests(unittest.TestCase):
             with self.subTest(couple=couple['id']):
                 story=describe(self.rel['vector'],couple['id'])
                 report=make_report(self.a,self.b,self.rel,couple,story)
-                self.assertEqual(len(report['chapters']),5)
-                self.assertEqual([c['key'] for c in report['chapters']],['roles','story','saju_a','crisis','tip'])
-                for key in ('roles','story','saju_a','crisis','tip','ending'):
+                self.assertEqual(len(report['chapters']),3 if couple['id']=='c11' else 5)
+                self.assertEqual([c['key'] for c in report['chapters']],(['roles','saju_a','tip'] if couple['id']=='c11' else ['roles','story','saju_a','crisis','tip']))
+                for key in report['sections']+['ending']:
                     self.assertGreater(len(report[key].strip()),40 if key!='ending' else 12)
                 self.assertTrue(report.get('questions'))
                 self.assertEqual(len({q.strip() for q in report['questions']}),len(report['questions']))
@@ -37,7 +37,7 @@ class EditorialTests(unittest.TestCase):
                 if couple['id'] == 'c11':
                     self.assertIn('엘리자베스',report['roles'])
                     self.assertIn('다아시',report['roles'])
-                    self.assertIn('첫인상에서 편지까지',report['story'])
+                    self.assertIn('첫인상에서 편지까지',report['plot']['body'])
                 else:
                     self.assertIn(EDITION[couple['id']][0],report['roles'])
                     self.assertIn(EDITION[couple['id']][1].replace('**',''),report['story'].replace('**',''))

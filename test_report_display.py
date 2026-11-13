@@ -62,7 +62,7 @@ class ReportDisplayTests(unittest.TestCase):
                 self.assertEqual(rel,original)
                 for key in ('tagline','teaser','roles','story','saju_a','saju_b','chemistry','crisis','scene','tip','ending','questions'):
                     self.assertNotRegex(str(report.get(key,'')),forbidden,(couple['id'],value,key))
-                self.assertEqual(len(report['chapters']),5)
+                self.assertEqual(len(report['chapters']),3 if couple['id']=='c11' else 5)
             other=next(c for c in DB if c['id']!=couple['id'])
             with patch('server.rank',return_value=[(0,couple['id'],couple),(1,other['id'],other)]):
                 payload={'a':{'date':'1992-03-18'},'b':{'date':'1992-04-30'}}

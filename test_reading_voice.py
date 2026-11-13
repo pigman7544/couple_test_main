@@ -43,7 +43,8 @@ class EssayVoice(unittest.TestCase):
                 self.assertTrue(r['story'].replace('**','').startswith(TALE.replace('**','')))
             elif couple['id']=='c11':
                 from c11_report import TALE
-                self.assertTrue(r['story'].replace('**','').startswith(TALE.replace('**','')))
+                self.assertEqual(r['plot']['body'],TALE)
+                self.assertEqual(r['story'],'')
             elif couple['id']!='c01':
                 from individual_scenes import SCENES
                 self.assertIn(SCENES[couple['id']][0].replace('**',''),r['story'].replace('**',''))
