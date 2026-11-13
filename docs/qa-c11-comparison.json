@@ -2,7 +2,7 @@
   {
     "id": "A",
     "before_chars": 1817,
-    "after_chars": 4115,
+    "after_chars": 4143,
     "changed_sections": [
       "roles",
       "story",
@@ -254,7 +254,7 @@
   {
     "id": "B",
     "before_chars": 1813,
-    "after_chars": 4129,
+    "after_chars": 4173,
     "changed_sections": [
       "roles",
       "story",
