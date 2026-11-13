@@ -36,3 +36,16 @@
 
 배포 후 실행 커밋·배포 ID·live 상태 및 원격 검증을 아래에 추가한다.
 실제 휴대전화 하드웨어·Safari·화면낭독기 기기 검증은 미실행. Chrome 화면 크기와 키보드 동작으로 검증했다. 다른 유형의 3장 확장은 이번 범위 밖이다.
+
+## 배포 완료와 원격 재검증
+
+- 실행 커밋: `03707d2238a04d9930929b0d4da6f471bf0fb107`.
+- Render 미리보기 배포: `dep-dbr9jbivcj2c73elus2g`, **live**, 완료 2026-11-13 14:02:20 KST. 자동 배포를 확인했으며 중복 배포를 요청하지 않았다.
+- 원격 c11 A/B × 360·390·1440px × 3장 = 18개 장: 최종 로컬 API 예상 응답과 동일. 실제 입력→무료→언락 6회, 모달 키보드·세 가지 닫기·초점 복귀 6회, 카드 실제 다운로드 6회, 다른 11종 5장 표시 호환성 통과. /health 200. [원격 c11 결과](qa-c11-structure-remote.json).
+- 원격 c06 A/B × 390·1440px × 5장 = 20개 장: 기존 fixture와 전체 응답 동일, 일반 입력·무료·언락·카드 PNG 두 종 통과. [원격 c06 결과](qa-c06-structure-remote.json).
+- [GitHub 품질·분포 감사](https://github.com/pigman7544/couple_test_main/actions/runs/43369274649): success. 워크플로의 감사 테스트 및 2,400개 표본·30회 재현성 검사 통과.
+- 배포 후 앱 로그에서 `Unhandled match error` 없음.
+- 운영 main SHA `9a8e43dca8ac6399058e71b0710ab24f78d53e1e`, 운영 Render updatedAt `2026-11-09T10:16:50.59908Z`로 시작 기록과 동일. 운영 쓰기 없음. 보호한 계산·매칭·c06 원고·일러스트 파일은 시작 커밋 대비 diff 없음.
+- [c11 A](https://yeonyeon-preview-pr17.onrender.com/?sample=c11-A) · [c11 B](https://yeonyeon-preview-pr17.onrender.com/?sample=c11-B).
+
+이후 검수 기록만 `[skip render]` 커밋으로 개발 브랜치에 저장한다. 미리보기 실행 코드는 위 `03707d2`와 동일하다.
