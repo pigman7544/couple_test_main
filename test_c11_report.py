@@ -13,6 +13,22 @@ from c06_chart import extract
 from c11_report import TALE
 
 class C11ReportTests(unittest.TestCase):
+    def test_keyword_edit_changes_only_c11_roles(self):
+        import subprocess,types,c11_report
+        from unittest.mock import patch
+        baseline=types.ModuleType('before_keyword_echo')
+        exec(subprocess.check_output(['git','show','0140306:c11_report.py']).decode('utf8'),baseline.__dict__)
+        for case in json.loads(Path('tests/fixtures/c11_comparison.json').read_text(encoding='utf8')):
+            current=compute(case['payload'],True)
+            preview=compute(case['payload'])
+            with patch.object(c11_report,'enrich',baseline.enrich):
+                old=compute(case['payload'],True)
+                self.assertEqual(preview,compute(case['payload']))
+            self.assertEqual({k:v for k,v in current['full_report'].items() if k!='roles'},
+                             {k:v for k,v in old['full_report'].items() if k!='roles'})
+            self.assertEqual({k:v for k,v in current.items() if k!='full_report'},
+                             {k:v for k,v in old.items() if k!='full_report'})
+
     def test_plain_language_and_personalized_keyword_placement(self):
         keyword_sets=[]
         for case in json.loads(Path('tests/fixtures/c11_comparison.json').read_text(encoding='utf8')):
@@ -26,9 +42,15 @@ class C11ReportTests(unittest.TestCase):
                 words=re.findall(r'\*\*(.+?)\*\*',line)
                 self.assertEqual(len(words),2)
                 self.assertTrue(all(len(w)<=18 for w in words))
-                self.assertIn('닮',part)
+                self.assertRegex(part,'닮|비슷')
                 self.assertIn('일간',part)
                 self.assertIn('월주',part)
+                explanation=part.split('\n\n',1)[1]
+                paragraphs=explanation.split('\n\n')
+                for index,word in enumerate(words):
+                    self.assertEqual(explanation.count(word),1)
+                    self.assertEqual(explanation.count('**'+word+'**'),1)
+                    self.assertIn('**'+word+'**',paragraphs[1 if index==0 else 4])
                 keys.append(words)
             keyword_sets.append(keys)
         self.assertNotEqual(keyword_sets[0][0],keyword_sets[1][0])

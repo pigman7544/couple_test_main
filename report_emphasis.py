@@ -124,11 +124,14 @@ def emphasize_c06(value, section, cid='c06'):
     """Reviewed source spans and literal symbols; at most two per paragraph."""
     from story_report import STEM_NAME, STEM_DESC
     seen = set()
+    role_keywords = set()
     blocks = []
     for block in value.split('\n\n'):
         lines = block.split('\n')
         heading = lines.pop(0) if lines and lines[0].lstrip().startswith(('◆ ', '#')) else None
         source = '\n'.join(lines)
+        if cid == 'c11' and section == 'roles' and heading:
+            role_keywords = set(re.findall(r'\*\*(.+?)\*\*', source))
         body = source.replace('**', '')
         candidates = []
         if section == 'roles' and '의 일간은 ' in body:
@@ -142,7 +145,8 @@ def emphasize_c06(value, section, cid='c06'):
             candidates += list(BY_TYPE[cid] + COMMON)
         selected = []
         for phrase in candidates:
-            if (phrase in seen or phrase not in body or len(phrase) > 32
+            keyword_echo = (phrase in role_keywords and '**'+phrase+'**' in source)
+            if ((phrase in seen and not keyword_echo) or phrase not in body or len(phrase) > 32
                     or len(phrase) == len(body) or any(phrase in p or p in phrase for p in selected)):
                 continue
             selected.append(phrase)

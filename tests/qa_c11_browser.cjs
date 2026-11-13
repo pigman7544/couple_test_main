@@ -52,6 +52,12 @@ const base=process.env.QA_BASE || 'http://127.0.0.1:8931';
      }));
      const expected=r.roles.split(/◆ \*\*.+?를 닮은 (?:당신|상대방)\*\*\n/).slice(1).map(p=>[...p.split('\n')[0].matchAll(/\*\*(.+?)\*\*/g)].map(m=>m[1]));
      assert.deepEqual(keywords,expected);assert.ok(keywords.every(k=>k.length===2));
+     const echoes=await el.evaluate(e=>[...e.querySelectorAll('.subhead')].map(h=>{
+      const p=h.closest('p'),body=[];let n=p.nextElementSibling;
+      while(n&&!n.querySelector('.subhead')){body.push(n);n=n.nextElementSibling;}
+      return body.flatMap(n=>[...n.querySelectorAll('strong')].map(s=>s.textContent));
+     }));
+     for(let person=0;person<2;person++)for(const word of expected[person])assert.equal(echoes[person].filter(s=>s===word).length,1);
      for(const strong of await el.locator('strong').all())assert.ok(Number(await strong.evaluate(e=>getComputedStyle(e).fontWeight))>=600);
     }
     await el.screenshot({path:`tests/qa-structure-c11-${c.id}-${width}-ch${i+1}.png`});
