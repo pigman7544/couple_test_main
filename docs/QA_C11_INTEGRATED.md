@@ -44,3 +44,9 @@
 ## 배포 및 원격 검증
 
 로컬 최종 전체 unittest **67개 통과** (기본 test_v67.py 5개와 c11 관련 13개 포함). 앞서 생긴 HTTP 통신 오류는 재실행에서 해소됐다. 배포 커밋과 원격 결과는 아래에 기록한다.
+
+- 실행 커밋 `a312031621089ef7fc4a972765e9dc43caa547bd`. 지정 개발 브랜치에만 push했다. 자동 배포 `dep-dbrabce7bikc73eo51a0`의 상태 **live**, 완료 **2026-11-13 14:53:27 KST**. 서비스·환경 설정 변경이나 수동 중복 배포 없음.
+- 원격 c11 A/B × 360·390·1440px × 3장 = **18개 화면 통과**. 실제 원격 unlock 전체 응답이 로컬 fixture와 같으며 DOM도 일치한다. 인물별 키워드 두 개 및 본문 각각 strong 1회, 강조 밀도·점수 비노출·가로 넘침·페이지 오류 검증. 실제 입력→무료→언락, 모달 키보드·닫기·초점 복귀, 카드 다운로드 각 6회. 다른 11종 렌더 호환 및 health 200. [원격 c11 결과](qa-c11-integrated-remote.json).
+- 원격 c06 A/B × 390·1440px × 5장 = **20개 화면 통과**. 기존 match/unlock 전체 응답 동일, 일반 입력·무료·언락·카드 통과. [원격 c06 결과](qa-c06-integrated-remote.json). 배포된 모바일 A 1장 캡처를 직접 열어 키워드·본문 강조와 줄바꿈을 확인했다.
+- 배포 후 원격 main SHA와 운영 Render updatedAt이 시작 값과 동일하다. 운영 main·운영 Render 쓰기 없음. 기존 비추적 파일은 그대로 남겼고 이번 변경 파일만 명시해 커밋했다.
+- [A 보기](https://yeonyeon-preview-pr17.onrender.com/?sample=c11-A) · [B 보기](https://yeonyeon-preview-pr17.onrender.com/?sample=c11-B). 원격 검사 결과는 `[skip render]` 기록 커밋으로 추가해 실행 버전을 유지한다.
