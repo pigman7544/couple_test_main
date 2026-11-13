@@ -29,3 +29,16 @@ PR17은 개발 브랜치 커밋 시 자동 배포된다. 배포 전 live는 `037
 운영 main 시작 SHA `9a8e43dca8ac6399058e71b0710ab24f78d53e1e`, 운영 Render `srv-dbmu4pijnfac73bfmqq0` updatedAt `2026-11-09T10:16:50.59908Z`. 운영 쓰기 없음. 새 배포 결과는 아래 추가한다.
 
 실제 휴대전화 하드웨어·Safari·화면낭독기 검증은 미실행. Chrome의 모바일·데스크톱 화면 크기와 키보드로 검증했다.
+
+## 배포 완료·원격 재검증
+
+- 실행 커밋 `d893b53bbec53db28e1222c5fd1dbfdb68630421`, 배포 `dep-dbr9rh68bjmc73bi0pqg`, **live**. 완료: 2026-11-13 14:19:41 KST. 지정 브랜치의 자동 배포만 사용했다.
+- 원격 c11 A/B × 360·390·1440px × 3장 = **18개 화면**. 실행 API가 최종 로컬 fixture와 동일하고 DOM도 동일하다. 소제목 바로 뒤 키워드 두 개·실제 굵기·강조 밀도·점수 비노출·가로 넘침·페이지 오류 검증 통과. 실제 입력→무료→언락, 모달 키보드·닫기·초점 복귀, 카드 다운로드 각 6회 통과. 다른 11종 표시 호환성 및 /health 200. [원격 c11](qa-c11-edit-remote.json).
+- 원격 모바일 B 1장 캡처도 직접 열어 확인했다.
+- 원격 c06 A/B × 390·1440px × 5장 = **20개 화면**, 기존 fixture와 match/unlock 전체 응답 동일. 일반 입력→무료→언락·카드 두 종·점수 비노출·넘침 없음·페이지 오류 없음 검증 통과. [원격 c06](qa-c06-edit-remote.json).
+- [GitHub 품질·분포 감사](https://github.com/pigman7544/couple_test_main/actions/runs/43371229749): **success**.
+- 배포 이후 앱 로그에서 `Unhandled match error` 없음.
+- 운영 main SHA와 운영 Render updatedAt은 위 시작 기록과 동일. 운영 변경 없음.
+- [c11 A 보기](https://yeonyeon-preview-pr17.onrender.com/?sample=c11-A) · [c11 B 보기](https://yeonyeon-preview-pr17.onrender.com/?sample=c11-B).
+
+최종 원격 기록은 `[skip render]` 문서 커밋으로 저장해 실행 코드를 다시 배포하지 않는다.
