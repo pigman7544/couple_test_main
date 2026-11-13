@@ -1,9 +1,10 @@
 """Pride and Prejudice: chart-led editorial analogy, unchanged matching/roles.
 
-Source: Austen, chapters 3, 34–36, 43, 52, 58. No translated quotations.
-The c06 evidence extractor is reused without changing its editorial weights.
+Source: Austen, chapters 3, 7, 34–36, 43, 52, 58. No translated quotations.
+The c11 synthesis uses c06 facts without changing shared editorial weights.
 """
-from c06_chart import extract, cross, GROUP
+from c06_chart import cross
+from c11_integrated import extract, character_keywords, person_text, pair_context
 from c06_narrative import block, particle
 from story_report import relationship_style, count_elements
 
@@ -54,94 +55,6 @@ TALE = (
 )
 
 
-def personal_basis(label,x):
-    from story_report import STEM_DESC, STEM_NAME
-    from c06_narrative import GOD_MEANING
-    stem=x['pillars']['day_pillar'][0]
-    desc=STEM_DESC[stem]
-    month=x['pillars']['month_pillar']
-    center=x['hidden']['month_pillar'][0]['stem']
-    month_meaning=GOD_MEANING[GROUP[x['anchors']['month']]]
-    day_meaning=GOD_MEANING[GROUP[x['anchors']['day']]]
-    year_meaning=GOD_MEANING[GROUP[x['visible_gods']['year_pillar']]]
-    text=(f"{label}의 일간은 **{STEM_NAME[stem]}({stem})**이에요. 자신을 상징하는 글자로, **{desc[0]}**에 비유돼요. "
-          +f"{desc[1]}을 떠올릴 수 있죠. 가까운 사이에서는 {desc[2]}{particle(desc[2],'을','를')} 중요하게 여길 수 있어요.")
-    text+=(f"\n\n태어난 달을 나타내는 월주 {month}에는 {x['season']}의 특성이 담겨 있어요. "
-           +f"{month[1]} 속 {STEM_NAME[center]}{particle(STEM_NAME[center],'과','와')} 일간의 관계에서는 {month_meaning}{particle(month_meaning,'을','를')} 읽어요. "
-           +{'care':'내 뜻을 말하는 것뿐 아니라 만날 시간과 식사처럼 실제로 필요한 것을 챙기는 데 마음을 쓸 수 있죠.',
-             'reflect':'마음이 있어도 바로 답하기보다 상대의 뜻과 내 마음을 충분히 이해하고 싶을 수 있죠.',
-             'voice':'혼자 생각하는 데서 그치지 않고 하루의 기쁨이나 불편함을 대화로 나누고 싶을 수 있죠.',
-             'promise':'좋아한다는 말이 다음 만남이나 연락 약속으로 이어질 때 더 안심할 수 있죠.',
-             'self':'가까워져도 자기 취향과 일정을 직접 고를 여유가 필요할 수 있죠.'}[GROUP[x['anchors']['month']]])
-    if GROUP[x['anchors']['day']]!=GROUP[x['anchors']['month']]:
-        text+=' 가까운 일상을 나타내는 일주의 아래 글자에서는 '+day_meaning+'도 함께 떠올릴 수 있어요.'
-    text+=f"\n\n태어난 해인 연주 {x['pillars']['year_pillar']}에서도 {year_meaning}{particle(year_meaning,'을','를')} 볼 수 있어요. "
-    if not x['missing_hour']:
-        hour_meaning=GOD_MEANING[GROUP[x['anchors']['hour']]]
-        if hour_meaning==year_meaning:
-            text+=f"태어난 시간인 시주 {x['pillars']['hour_pillar']}도 같은 바람을 나타내요. "
-        else:
-            text+=f"태어난 시간인 시주 {x['pillars']['hour_pillar']}에는 {hour_meaning}도 있어요. "
-    return text
-
-
-def character_keywords(x):
-    """Two brief traits, selected from this reader's stem and chart theme."""
-    stem=x['pillars']['day_pillar'][0]
-    first={'甲':'분명한 자기 기준','乙':'세심한 관찰','丙':'솔직한 애정 표현',
-           '丁':'작은 배려','戊':'쉽게 흔들리지 않는 믿음','己':'생활 속 배려',
-           '庚':'분명한 판단','辛':'존중을 바라는 마음','壬':'열린 시야','癸':'신중한 이해'}[stem]
-    second={'care':'행동으로 전하는 애정','reflect':'판단을 돌아보는 신중함',
-            'voice':'마음을 전하는 대화','promise':'말보다 행동으로 쌓는 신뢰',
-            'self':'스스로 고르는 관계'}[x['theme']]
-    return first,second
-
-
-def character_echo(label,x,role):
-    stem=x['pillars']['day_pillar'][0]
-    # Each analogy starts from the reader's own stem, then the selected whole-chart theme.
-    stem_echo={
-      '甲':'자신이 옳다고 여긴 방향을 쉽게 버리지 않으면서도, 함께할 사람을 위해 그 방향을 돌아보는 모습',
-      '乙':'상대의 말과 태도를 세심하게 살피며, 새로 알게 된 마음에 맞춰 관계를 조정하는 모습',
-      '丙':'마음이 움직였을 때 숨기기보다 직접 표현하고, 그 표현이 어떻게 들렸는지도 돌아보는 모습',
-      '丁':'가까운 사람의 작은 말과 행동을 오래 기억하고, 조용한 배려로 마음을 이어 가는 모습',
-      '戊':'쉽게 흔들리지 않던 믿음도 실제로 본 행동 앞에서는 다시 확인하는 모습',
-      '己':'상대의 사정과 생활을 살피며, 함께 지낼 수 있는 방법을 찾는 모습',
-      '庚':'모호했던 사실을 확인하고, 잘못된 판단에는 분명하게 선을 긋는 모습',
-      '辛':'존중받지 못한 말투를 그냥 넘기지 않으면서, 달라진 태도도 세심하게 알아보는 모습',
-      '壬':'한 가지 설명에 머무르지 않고, 새로 알게 된 사정까지 받아들여 시야를 넓히는 모습',
-      '癸':'겉으로 드러난 말만으로 단정하지 않고, 시간을 들여 속사정을 헤아리는 모습',
-    }[stem]
-    if role=='다아시':
-        event={
-          'care':'다아시는 리디아와 위컴의 일로 엘리자베스의 가족이 곤경에 처하자, 두 사람을 찾아 결혼에 필요한 비용과 합의를 마련해요. 자신이 도왔다는 사실을 앞세우지 않고 어려운 일을 직접 처리하죠.',
-          'reflect':'다아시는 첫 청혼을 거절당하고 엘리자베스의 비판을 들은 뒤, 편지로 사실을 설명해요. 하지만 해명만으로 끝내지 않아요. 나중에 펨벌리에서 그녀와 가디너 부부를 만났을 때는 정중한 행동으로 달라진 태도를 보여 줘요.',
-          'voice':'다아시는 첫 청혼에서 마음을 솔직히 고백하지만, 그녀의 집안을 낮춰 말해 상처를 줘요. 다시 고백할 때는 그녀의 마음이 여전하다면 더는 말하지 않겠다고 해요. 표현하려는 마음에 상대의 대답을 들을 준비가 더해진 거예요.',
-          'promise':'다아시는 제인의 마음을 잘못 판단해 빙리를 멀어지게 했다는 사실을 인정하고, 두 사람이 다시 만날 수 있도록 바로잡아요. 자신이 옳다는 확신보다 실제로 책임지는 행동을 택한 장면이에요.',
-          'self':'다아시는 집안의 지위를 따지던 태도를 돌아보고 엘리자베스에게 다시 마음을 전해요. 이번에는 그녀가 거절할 수 있다는 뜻도 함께 받아들여요. 자기 마음을 지키면서도 상대의 선택까지 대신하지 않는 거예요.',
-        }[x['theme']]
-    else:
-        event={
-          'care':'엘리자베스는 언니 제인의 아픔을 가볍게 넘기지 않고, 첫 청혼 자리에서 다아시에게 두 사람을 갈라놓은 일을 따져 물어요. 가까운 사람을 챙기는 마음이 상대에게 불편한 질문도 하는 행동으로 드러나요.',
-          'reflect':'엘리자베스는 다아시의 편지를 여러 번 읽으며, 직접 본 사실과 위컴에게 들은 말을 되짚어요. 상처받았다는 이유로 모든 설명을 밀어내기보다 자신의 판단도 살펴보는 쪽을 택해요.',
-          'voice':'엘리자베스는 첫 청혼을 받았을 때 다아시의 말에 상처받은 이유를 직접 이야기해요. 마지막에는 달라진 마음 역시 자기 말로 전하죠. 솔직한 대화가 거절에도 새로운 시작에도 필요했던 사람이에요.',
-          'promise':'엘리자베스는 재산과 지위만으로 다아시의 청혼을 받아들이지 않아요. 자신과 가족을 존중하는 태도가 있는지 중요하게 봐요. 이후 펨벌리에서의 예의와 가족을 도운 행동을 알게 되면서 믿음을 새로 쌓아 가죠.',
-          'self':'엘리자베스는 부유한 다아시의 청혼도 자신의 마음과 맞지 않으면 거절해요. 나중에 그의 도움을 알고도 빚을 갚듯 관계를 선택하지 않아요. 달라진 자기 마음을 확인한 뒤 다시 만나기로 해요.',
-        }[x['theme']]
-    stem_event=(
-        '다아시는 제인의 마음을 잘못 판단해 빙리와 멀어지게 했다는 사실을 인정해요. 이후 빙리에게 사실을 알리고 두 사람이 다시 만나도록 돕죠. 처음에는 자기 판단이 옳다고 믿었지만, 잘못을 알게 된 뒤에도 고집하지는 않아요. 믿는 바가 분명하다는 것은 남의 말을 듣지 않는다는 뜻과 달라요. 상대가 겪은 일을 듣고 내 행동을 고치는 데에도 그 단단함을 쓸 수 있죠.'
-        if role=='다아시' else
-        '엘리자베스는 재산이 많다는 이유로 다아시의 첫 청혼을 받아들이지 않아요. 자신과 가족을 존중하지 않는 말에 분명히 반대하죠. 한편 위컴에 대해서는 그의 말을 믿었다가, 다아시의 편지와 이후의 행동을 확인한 뒤 생각을 바꿔요. 자기 기준을 지키면서도 직접 확인한 사실은 받아들인 거예요. 믿음을 지키는 일만큼 잘못 알았던 사실을 인정하는 일도 중요했던 거예요.')
-    first,second=character_keywords(x)
-    return (stem_event+' '+f'{label}의 **{first}**도 {stem_echo}과 비슷해요.'
-        +'\n\n'+event+' '
-        +{'care':f'{label}도 좋아하는 사람에게 필요한 일을 직접 챙기는 **{second}**을 중요하게 여긴다는 점이 비슷해요.',
-          'reflect':f'서둘러 결론을 내리기보다 충분히 이해하고 답하려는 {label}의 **{second}**도 이런 모습과 닮았어요.',
-          'voice':f'{label}도 혼자 짐작하게 두기보다 **{second}**를 바란다는 점이 비슷해요.',
-          'promise':f'{label}도 좋은 말보다 실제로 지키는 약속을 보며 **{second}**를 중요하게 여긴다는 점이 닮았어요.',
-          'self':f'{label}도 좋아하는 마음과 별개로 **{second}**를 바란다는 점이 비슷해요.'}[x['theme']])
-
-
 def day_relationship(a,b):
     from story_report import elem, STEM_NAME, NICK
     from relationship_v08 import GEN, CTRL
@@ -159,45 +72,17 @@ def day_relationship(a,b):
     return opening+f'오행에서는 {NICK[giver]}{particle(NICK[giver],"이","가")} {NICK[receiver]}의 움직임에 제동을 거는 **상극**의 관계예요. 서로 싫어한다는 뜻으로 읽을 필요는 없어요. {source}의 방향 제시가 {target}에게 새로운 시도나 놓쳤던 문제를 보여 줄 수 있죠. 다르게 보는 사람이어서 자꾸 마음이 가기도 해요. 반면 방향을 제안하는 말이 상대의 방식을 고치라는 요구가 되면 밀려나는 기분이 들 수 있어요. 함께 정할 일과 각자 고를 일을 구분할수록, 자극을 받으면서도 자기 자리를 지킬 수 있어요.'
 
 
-def chart_relationship(aa,bb,links):
-    from c06_narrative import GOD_MEANING
-    pos={'year_pillar':'연주','month_pillar':'월주','day_pillar':'일주','hour_pillar':'시주'}
-    text=(f"당신은 {aa['season']}의 월주 {aa['pillars']['month_pillar']}, "
-        +f"상대방은 {bb['season']}의 월주 {bb['pillars']['month_pillar']}에 태어났어요. "
-        +'각자의 월주와 일간의 관계에는 '+GOD_MEANING[GROUP[aa['anchors']['month']]]+'과 '
-        +GOD_MEANING[GROUP[bb['anchors']['month']]]+'이 각각 나타나요. '
-        +f"다른 기둥까지 보면 당신은 **{character_keywords(aa)[1]}**, 상대방은 **{character_keywords(bb)[1]}**{particle(character_keywords(bb)[1],'을','를')} 중요하게 여길 수 있어요. "
-        +'서로의 방식이 필요한 순간에는 든든하지만, 내가 바라는 방식으로만 답을 기다리면 같은 호의도 다르게 들릴 수 있어요.')
-    for kind in ('육합','천간합','육충'):
-        link=next((x for x in links if x['kind']==kind),None)
-        if not link: continue
-        where=f"당신의 {pos[link['a']]}와 상대방의 {pos[link['b']]}"
-        meaning={
-          '육합':'서로 가까워지려는 성질을 뜻해요. 취향이 달라도 상대가 좋아하는 일을 함께 해 보고 싶을 수 있죠. 다만 쉽게 맞출 수 있을 것 같다는 기대가 커지면, 싫다는 말을 뒤로 미루기 쉬워요.',
-          '천간합':'서로에게 관심을 갖고 공통점을 찾으려는 성질을 뜻해요. 다음에 만날 곳을 같이 고르며 즐거워하는 모습처럼요. 가까워지고 싶은 마음이 있다고 해서 원하는 선택까지 같아지는 것은 아니에요.',
-          '육충':'서로 다른 움직임이 맞부딪히는 상징이에요. 익숙한 생각을 바꾸는 자극이 되기도 하지만, 약속을 정하거나 답을 기다리는 속도에서 긴장을 느낄 수도 있어요. 의견이 다를 때 누가 틀렸는지보다 지금 무엇을 원하는지 먼저 들어야 해요.',
-        }[kind]
-        text+=f"\n\n{where} 사이의 {link['chars']}에는 **{kind}**이 있어요. "+meaning
-    if not links:
-        text+='\n\n두 명식 사이에서 육합·육충·천간합이 확인되지 않아도 끌림이나 갈등이 없다는 뜻은 아니에요. 서로 다른 바람이 실제 대화에서 어떻게 만나는지가 더 구체적인 이야기를 만들어 줘요.'
-    return text
-
-
 def enrich(result,a,b,rel,couple):
     aa,bb=extract(a),extract(b)
-    result['chart_evidence']=dict(version='c11-chart-v1',a=aa,b=bb,cross=cross(a,b),
-        policy='c06 전체 명식 편집 규칙 재사용. 계산·점수·매칭·기존 배역 보존. 합화·신강약·용신·대운 판단 없음.')
+    result['chart_evidence']=dict(version='c11-integrated-v2',a=aa,b=bb,cross=cross(a,b),
+        policy='c11 일간 중심 관계망과 조건 결합 편집. 계산·점수·매칭·기존 배역 보존. 합화·신강약·용신·대운 판단 없음.')
     def strength(p):
         return count_elements(p)['earth']+count_elements(p)['metal']+(relationship_style(p)['god'] in ('정관','정재','비견'))
     first=strength(a)>=strength(b)
     roles=('엘리자베스','다아시') if first else ('다아시','엘리자베스')
     parts=[]
     for label,x,role in zip(('당신','상대방'),(aa,bb),roles):
-        basis=personal_basis(label,x).split('\n\n',1)
-        echo=character_echo(label,x,role).split('\n\n',1)
-        parts.append(block(f'{role}를 닮은 {label}',
-            ' · '.join('**'+k+'**' for k in character_keywords(x))+'\n\n'
-            +basis[0]+'\n\n'+echo[0]+'\n\n'+basis[1]+'\n\n'+echo[1]))
+        parts.append(block(f'{role}를 닮은 {label}',person_text(label,x,role)))
     result['roles']='\n\n'.join(parts)+'\n\n두 사람이 처음부터 같은 생각을 해야 하는 건 아니에요. 엘리자베스와 다아시도 서로의 설명을 듣고 달라진 행동을 보면서 가까워졌어요. 내 생각을 솔직하게 말하면서도 상대를 잘못 알았던 점은 고칠 수 있다면, 두 사람도 서로를 더 잘 알아갈 수 있겠죠.'
     if aa['missing_hour'] or bb['missing_hour']:
         result['roles']+='\n\n출생시간을 모르는 사람의 시주는 계산에서 제외했어요.'
@@ -214,8 +99,19 @@ def enrich(result,a,b,rel,couple):
     result['saju_a']+='\n\n'+block('반가웠던 차이를 오래 알아가기','처음에는 나와 다른 점이 신선하게 느껴져도 익숙해지면 같은 차이가 낯설어지는 날이 있어요. 말을 많이 나누던 사람이 유난히 조용한 날, 늘 준비하던 사람이 오늘은 아무것도 고르고 싶지 않은 날처럼요. 한 번 보았던 모습으로 오늘의 마음까지 정하지 않으면 상대방도 달라진 바람을 말하기 쉬워져요. “너는 원래 그렇잖아” 대신 “오늘은 어때?”라고 묻는 시간이 두 사람에게 남아 있으면 좋겠어요.')
     result['tip']+='\n\n다음 만남에는 오늘 정한 약속을 다시 살펴보세요. 편해진 점 하나와 아직 어려운 점 하나를 나누면 충분해요. 바로 달라지지 않았다고 실패한 대화로 정할 필요는 없어요. 다만 같은 상처가 반복된다면 더 참는 것보다 무엇을 바꿀 수 있는지 솔직하게 말해야 해요. 서로의 설명을 듣는 일과 나의 불편함을 지키는 일은 함께 할 수 있어요.'
     result['saju_a'] = (block('서로 다른 일간이 만날 때', day_relationship(a,b))
-        +'\n\n'+block('두 명식에서 함께 보이는 끌림과 긴장', chart_relationship(aa,bb,result['chart_evidence']['cross']))
+        +'\n\n'+block('두 명식에서 함께 보이는 끌림과 긴장', pair_context(aa,bb,result['chart_evidence']['cross']))
         +'\n\n'+result['saju_a']+'\n\n'+result['crisis'])
+    result['tip']+='\n\n'+block('서로 다른 바람을 함께 남기기',
+        f"당신에게는 {character_keywords(aa)[1]}, 상대방에게는 {character_keywords(bb)[1]}{particle(character_keywords(bb)[1],'이','가')} 필요한 장면으로 생각해 볼 수 있어요. "
+        +'먼저 이렇게 물어보세요. “'+ARCS[aa['theme']][5]+'” 이어서 상대방의 바람도 들어 보세요. “'+ARCS[bb['theme']][5]+'”'
+        +' 서로 답을 듣고 지금 가능한 약속 하나만 골라 보세요.')
+    result['saju_a']+='\n\n'+block('같은 장면에서 상대방이 바라는 것',
+        '이 장면에서 상대방은 '+{'care':'준비한 수고를 알아주되 필요한 배려는 함께 골라 주기를',
+        'reflect':'바로 답을 요구하기보다 생각할 시간과 다음 연락을 함께 정하기를',
+        'voice':'말투만으로 마음을 정하지 말고 무슨 뜻이었는지 다시 물어 주기를',
+        'promise':'확정한 약속과 아직 확인 중인 일을 나누어 말해 주기를',
+        'self':'다른 의견도 관계를 거절하는 말로 듣지 않기를'}[bb['theme']]
+        +' 바랄 수 있어요. 당신이 바라는 반응과 함께 놓고 어느 부분을 맞출 수 있는지 확인해 보세요.')
     result['crisis']=''
     result['scene']=''
     result['sections']=['roles','saju_a','tip']

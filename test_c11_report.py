@@ -9,25 +9,27 @@ from matcher import DB
 from relationship_v08 import relation
 from server import compute
 from story_report import make_report
-from c06_chart import extract
+from c11_integrated import extract
 from c11_report import TALE
 
 class C11ReportTests(unittest.TestCase):
-    def test_keyword_edit_changes_only_c11_roles(self):
+    def test_integration_preserves_non_editorial_response(self):
         import subprocess,types,c11_report
         from unittest.mock import patch
-        baseline=types.ModuleType('before_keyword_echo')
-        exec(subprocess.check_output(['git','show','0140306:c11_report.py']).decode('utf8'),baseline.__dict__)
+        baseline=types.ModuleType('before_integration')
+        exec(subprocess.check_output(['git','show','00f833f:c11_report.py']).decode('utf8'),baseline.__dict__)
         for case in json.loads(Path('tests/fixtures/c11_comparison.json').read_text(encoding='utf8')):
             current=compute(case['payload'],True)
             preview=compute(case['payload'])
             with patch.object(c11_report,'enrich',baseline.enrich):
                 old=compute(case['payload'],True)
                 self.assertEqual(preview,compute(case['payload']))
-            self.assertEqual({k:v for k,v in current['full_report'].items() if k!='roles'},
-                             {k:v for k,v in old['full_report'].items() if k!='roles'})
             self.assertEqual({k:v for k,v in current.items() if k!='full_report'},
                              {k:v for k,v in old.items() if k!='full_report'})
+            for key in ('plot','sections','chapters','questions','ending'):
+                self.assertEqual(current['full_report'][key],old['full_report'][key])
+            for key in ('roles','saju_a','tip'):
+                self.assertNotEqual(current['full_report'][key],old['full_report'][key])
 
     def test_plain_language_and_personalized_keyword_placement(self):
         keyword_sets=[]
@@ -50,7 +52,7 @@ class C11ReportTests(unittest.TestCase):
                 for index,word in enumerate(words):
                     self.assertEqual(explanation.count(word),1)
                     self.assertEqual(explanation.count('**'+word+'**'),1)
-                    self.assertIn('**'+word+'**',paragraphs[1 if index==0 else 4])
+                    self.assertIn('**'+word+'**',paragraphs[1 if index==0 else 3])
                 keys.append(words)
             keyword_sets.append(keys)
         self.assertNotEqual(keyword_sets[0][0],keyword_sets[1][0])
@@ -67,7 +69,7 @@ class C11ReportTests(unittest.TestCase):
             with patch.object(c11_report,'enrich',baseline.enrich):
                 old=compute(case['payload'],True)
                 self.assertEqual(preview,compute(case['payload']))
-            for key in ('chart_evidence','plot','sections','chapters','questions','ending'):
+            for key in ('plot','sections','chapters','questions','ending'):
                 self.assertEqual(current['full_report'][key],old['full_report'][key])
             self.assertEqual({k:v for k,v in current.items() if k!='full_report'},
                              {k:v for k,v in old.items() if k!='full_report'})
