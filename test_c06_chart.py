@@ -124,7 +124,9 @@ class FullChartTests(unittest.TestCase):
         for c in cases:
             r=compute(c['payload'],True)['full_report']
             text=' '.join(r[k] for k in r['sections'])
-            self.assertNotRegex(text,r'월령|정인|정관|편인|통근|지장간|십성|시주|일지[의를에]|명식|읽어 볼게요|확인해 주세요|다음 장에서는')
+            self.assertNotRegex(text,r'월령|정인|정관|편인|통근|지장간|십성|일지[의를에]|명식|읽어 볼게요|확인해 주세요|다음 장에서는')
+            for word in ('일간','월주','연주','시주'):
+                self.assertIn(word,r['roles'])
             self.assertIn('문학적 해설',r['story'])
             self.assertIn('가상 장면',r['crisis'])
             self.assertIn('같은 장면을 다시',r['tip'])

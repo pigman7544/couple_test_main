@@ -65,9 +65,9 @@ def basis(label,x):
               'voice':'좋았던 일도 속상했던 일도 함께 나누고 싶은 마음이 겹쳐요. 하루 끝에 주고받는 짧은 이야기가 유난히 반가울 수 있죠.',
               'promise':'약속을 가볍게 넘기고 싶지 않은 마음이 겹쳐요. 언제 만날지, 어디까지 함께할 수 있을지 분명해질수록 편안해질 수 있죠.',
               'self':'좋아하는 사람 곁에서도 자기 뜻을 지키고 싶은 마음이 겹쳐요. 서로 다른 취향을 말할 수 있을 때 함께 있는 시간도 편안해질 수 있죠.'}
-    s+=f"{x['season']}에 태어난 {STEM_NAME[stem]}의 이미지에는 "+seasonal[month]
+    s+=f"태어난 달의 월주가 보여 주는 {x['season']}의 계절감과 그 안의 중심 글자를 함께 읽으면, "+seasonal[month]
     if day!=month:
-        s+=' '+{'reflect':'가까워질수록 혼자 생각을 정리할 시간도 소중해질 수 있어요.',
+        s+=' 일주의 아래 글자에서는 '+{'reflect':'가까워질수록 혼자 생각을 정리할 시간도 소중해질 수 있어요.',
                  'care':'가까운 사람에게는 말보다 작은 수고로 마음을 전하고 싶어질 수 있어요.',
                  'voice':'마음이 놓이는 사람 앞에서는 사소한 감정도 말로 나누고 싶어질 수 있어요.',
                  'promise':'친밀한 사이일수록 작은 약속을 지키는 일이 오래 마음에 남을 수 있어요.',
@@ -78,6 +78,16 @@ def basis(label,x):
                  'voice':'쌓아 둔 마음은 일상의 작은 이야기를 주고받으며 조금씩 드러날 수 있어요.',
                  'promise':'그 마음이 오래 이어지려면 서로 지킬 수 있는 약속이 필요하겠죠.',
                  'self':'그 안에서도 직접 고르고 결정하고 싶은 마음은 남아 있어요.'}[x['theme']]
+    # Describe only computed stem relationships. Do not infer childhood, family
+    # history, future events, or qi strength from a pillar's position.
+    year=GROUP[x['visible_gods']['year_pillar']]
+    s+='\n\n태어난 해인 연주의 겉글자를 일간과 함께 읽으면 '+GOD_MEANING[year]+'도 보여요.'
+    if not x['missing_hour']:
+        hour=GROUP[x['anchors']['hour']]
+        if hour==year:
+            s+=' 태어난 시간의 시주에서도 같은 상징이 이어져요.'
+        else:
+            s+=' 태어난 시간의 시주에는 '+GOD_MEANING[hour]+'도 있어요.'
     return s
 
 def daily_core(x):

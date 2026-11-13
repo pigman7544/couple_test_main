@@ -37,7 +37,7 @@ class EditorialTests(unittest.TestCase):
                 if couple['id'] == 'c11':
                     self.assertIn('엘리자베스',report['roles'])
                     self.assertIn('다아시',report['roles'])
-                    self.assertIn('거절과 편지',report['story'])
+                    self.assertIn('첫인상에서 편지까지',report['story'])
                 else:
                     self.assertIn(EDITION[couple['id']][0],report['roles'])
                     self.assertIn(EDITION[couple['id']][1].replace('**',''),report['story'].replace('**',''))
