@@ -81,7 +81,15 @@ BY_TYPE = {
             '다시 이야기할 시간을', '방법을 같이 찾을까, 그냥 들어줄까',
             '꼭 비워 두고 싶은 시간', '오늘의 마음을 한 번 더'),
     'c10': ('선택할 여유', '주변의 반대', '둘의 속도'),
-    'c11': ('잘못 알았던 부분을 인정', '첫 판단', '새롭게 이해할 여지'),
+    'c11': ('잘못 알았던 부분을 인정', '첫 판단', '새롭게 이해할 여지',
+            '직접 고를 기회', '예약 전에', '다시 연락할 때', '생각할 시간',
+            '오늘 저녁 8시에', '언제 답할지만', '같은 마음이 되어야',
+            '상대가 다른 답을 할 수', '오늘 정한 약속', '사실을 새로 아는 일',
+            '잘못한 행동을 바꾸는 일', '서로가 새롭게 선택한 만남',
+            '답장이 짧다는 사실', '마음이 식었다는 추측', '구체적으로 사과',
+            '확정한 일과 확인 중인 일', '다음 약속을 지키는 행동',
+            '다른 의견이 곧 애정의 부족함은 아니죠', '원하는 시간을 구체적으로',
+            '상대의 설명과 행동을 함께', '거절을 단순한 오해 탓으로', '오늘은 어때?'),
     'c13': ('각자의 삶을 존중', '서로를 확인할 권리', '달라진 모습'),
     'c18': ('지금 서로가 원하는 삶', '과거의 이미지', '지금의 상대'),
     'f01': ('상대의 기여', '꾸준한 동행', '판단과 공감'),
@@ -93,7 +101,7 @@ BY_TYPE = {
 
 def emphasize(value, cid, section):
     if cid in ('c06', 'c11'):
-        return emphasize_c06(value, section)
+        return emphasize_c06(value, section, cid)
     blocks = []
     for block in value.split('\n\n'):
         lines = block.split('\n')
@@ -112,7 +120,7 @@ def emphasize(value, cid, section):
     return '\n\n'.join(blocks)
 
 
-def emphasize_c06(value, section):
+def emphasize_c06(value, section, cid='c06'):
     """Reviewed source spans and literal symbols; at most two per paragraph."""
     from story_report import STEM_NAME, STEM_DESC
     seen = set()
@@ -131,7 +139,7 @@ def emphasize_c06(value, section):
                     break
         else:
             candidates = re.findall(r'\*\*(.+?)\*\*', source)
-            candidates += list(BY_TYPE['c06'] + COMMON)
+            candidates += list(BY_TYPE[cid] + COMMON)
         selected = []
         for phrase in candidates:
             if (phrase in seen or phrase not in body or len(phrase) > 32

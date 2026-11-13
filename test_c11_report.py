@@ -40,6 +40,8 @@ class C11ReportTests(unittest.TestCase):
         self.assertEqual(reports[1]['chart_evidence']['a']['theme'],'reflect')
         self.assertIn('예약',reports[0]['crisis']);self.assertIn('예약',reports[0]['tip'])
         self.assertIn('저녁 8시',reports[1]['tip'])
+        self.assertIn('**예약 전에**',reports[0]['tip'])
+        self.assertIn('**오늘 저녁 8시에**',reports[1]['tip'])
 
     def test_same_day_and_scores_other_pillars_change_reading(self):
         a,b=person(1999,1,22,1),person(1998,11,9,21)
