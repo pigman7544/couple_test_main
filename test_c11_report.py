@@ -13,6 +13,49 @@ from c06_chart import extract
 from c11_report import TALE
 
 class C11ReportTests(unittest.TestCase):
+    def test_plain_language_and_personalized_keyword_placement(self):
+        keyword_sets=[]
+        for case in json.loads(Path('tests/fixtures/c11_comparison.json').read_text(encoding='utf8')):
+            r=compute(case['payload'],True)['full_report']
+            body='\n'.join(r[k] for k in r['sections'])
+            self.assertNotRegex(body,r'겹쳐|닿아|맞닿|교차해|의 결(?:[ ,.!]|$)|비춰 보|비춰 볼|해석 방법')
+            parts=re.split(r'^◆ \*\*.+?를 닮은 (?:당신|상대방)\*\*\n',r['roles'],flags=re.M)[1:]
+            keys=[]
+            for part in parts:
+                line=part.split('\n')[0]
+                words=re.findall(r'\*\*(.+?)\*\*',line)
+                self.assertEqual(len(words),2)
+                self.assertTrue(all(len(w)<=18 for w in words))
+                self.assertIn('닮',part)
+                self.assertIn('일간',part)
+                self.assertIn('월주',part)
+                keys.append(words)
+            keyword_sets.append(keys)
+        self.assertNotEqual(keyword_sets[0][0],keyword_sets[1][0])
+        self.assertNotEqual(keyword_sets[0][1],keyword_sets[1][1])
+
+    def test_edit_preserves_preview_plot_evidence_and_other_types(self):
+        import subprocess,types,c11_report
+        from unittest.mock import patch
+        baseline=types.ModuleType('before_edit')
+        exec(subprocess.check_output(['git','show','a376cc6:c11_report.py']).decode('utf8'),baseline.__dict__)
+        for case in json.loads(Path('tests/fixtures/c11_comparison.json').read_text(encoding='utf8')):
+            current=compute(case['payload'],True)
+            preview=compute(case['payload'])
+            with patch.object(c11_report,'enrich',baseline.enrich):
+                old=compute(case['payload'],True)
+                self.assertEqual(preview,compute(case['payload']))
+            for key in ('chart_evidence','plot','sections','chapters','questions','ending'):
+                self.assertEqual(current['full_report'][key],old['full_report'][key])
+            self.assertEqual({k:v for k,v in current.items() if k!='full_report'},
+                             {k:v for k,v in old.items() if k!='full_report'})
+        a,b=person(1999,1,22,1),person(1998,11,9,21)
+        for couple in DB:
+            if couple['id']=='c11': continue
+            current=make_report(a,b,relation(a,b),couple,{})
+            with patch.object(c11_report,'enrich',baseline.enrich):
+                self.assertEqual(current,make_report(a,b,relation(a,b),couple,{}))
+
     def test_pillar_provenance_and_story_for_new_readers(self):
         from c06_narrative import basis, GOD_MEANING
         from c06_chart import GROUP

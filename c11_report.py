@@ -65,10 +65,9 @@ def personal_basis(label,x):
     day_meaning=GOD_MEANING[GROUP[x['anchors']['day']]]
     year_meaning=GOD_MEANING[GROUP[x['visible_gods']['year_pillar']]]
     text=(f"{label}의 일간은 **{STEM_NAME[stem]}({stem})**이에요. 자신을 상징하는 글자로, **{desc[0]}**에 비유돼요. "
-          +f"{desc[1]}을 떠올릴 수 있죠. 가까운 사이에서는 {desc[2]}을 중요하게 여기고, ‘{desc[3]}’을 느낄 때 마음이 놓일 수 있어요.")
-    text+=(f"\n\n태어난 달의 월주 {month}에는 {x['season']}의 계절감이 있어요. "
-           +f"그 아래 글자 {month[1]}에 중심으로 담긴 {STEM_NAME[center]}{particle(STEM_NAME[center],'을','를')} {STEM_NAME[stem]}{particle(STEM_NAME[stem],'과','와')} 함께 읽으면, "
-           +month_meaning+'이 더해져요. '
+          +f"{desc[1]}을 떠올릴 수 있죠. 가까운 사이에서는 {desc[2]}{particle(desc[2],'을','를')} 중요하게 여길 수 있어요.")
+    text+=(f"\n\n태어난 달을 나타내는 월주 {month}에는 {x['season']}의 특성이 담겨 있어요. "
+           +f"{month[1]} 속 {STEM_NAME[center]}{particle(STEM_NAME[center],'과','와')} 일간의 관계에서는 {month_meaning}{particle(month_meaning,'을','를')} 읽어요. "
            +{'care':'내 뜻을 말하는 것뿐 아니라 만날 시간과 식사처럼 실제로 필요한 것을 챙기는 데 마음을 쓸 수 있죠.',
              'reflect':'마음이 있어도 바로 답하기보다 상대의 뜻과 내 마음을 충분히 이해하고 싶을 수 있죠.',
              'voice':'혼자 생각하는 데서 그치지 않고 하루의 기쁨이나 불편함을 대화로 나누고 싶을 수 있죠.',
@@ -76,18 +75,30 @@ def personal_basis(label,x):
              'self':'가까워져도 자기 취향과 일정을 직접 고를 여유가 필요할 수 있죠.'}[GROUP[x['anchors']['month']]])
     if GROUP[x['anchors']['day']]!=GROUP[x['anchors']['month']]:
         text+=' 가까운 일상을 나타내는 일주의 아래 글자에서는 '+day_meaning+'도 함께 떠올릴 수 있어요.'
-    text+=f"\n\n연주 {x['pillars']['year_pillar']}의 겉글자는 일간과 만나 {year_meaning}으로 읽혀요. "
+    text+=f"\n\n태어난 해인 연주 {x['pillars']['year_pillar']}에서도 {year_meaning}{particle(year_meaning,'을','를')} 볼 수 있어요. "
     if not x['missing_hour']:
         hour_meaning=GOD_MEANING[GROUP[x['anchors']['hour']]]
-        text+=f"입력된 시주 {x['pillars']['hour_pillar']}에는 {hour_meaning}도 있어요. "
-    text+='한 가지 성향으로만 움직이기보다, 가까운 사람 앞에서도 이런 바람들이 함께 나타날 수 있어요.'
+        if hour_meaning==year_meaning:
+            text+=f"태어난 시간인 시주 {x['pillars']['hour_pillar']}도 같은 바람을 나타내요. "
+        else:
+            text+=f"태어난 시간인 시주 {x['pillars']['hour_pillar']}에는 {hour_meaning}도 있어요. "
     return text
 
 
-def character_echo(label,x,role):
-    from story_report import STEM_DESC, STEM_NAME
+def character_keywords(x):
+    """Two brief traits, selected from this reader's stem and chart theme."""
     stem=x['pillars']['day_pillar'][0]
-    heart=STEM_DESC[stem][2]
+    first={'甲':'분명한 자기 기준','乙':'세심한 관찰','丙':'솔직한 애정 표현',
+           '丁':'작은 배려','戊':'쉽게 흔들리지 않는 믿음','己':'생활 속 배려',
+           '庚':'분명한 판단','辛':'존중을 바라는 마음','壬':'열린 시야','癸':'신중한 이해'}[stem]
+    second={'care':'행동으로 전하는 애정','reflect':'판단을 돌아보는 신중함',
+            'voice':'마음을 전하는 대화','promise':'말보다 행동으로 쌓는 신뢰',
+            'self':'스스로 고르는 관계'}[x['theme']]
+    return first,second
+
+
+def character_echo(label,x,role):
+    stem=x['pillars']['day_pillar'][0]
     # Each analogy starts from the reader's own stem, then the selected whole-chart theme.
     stem_echo={
       '甲':'자신이 옳다고 여긴 방향을 쉽게 버리지 않으면서도, 함께할 사람을 위해 그 방향을 돌아보는 모습',
@@ -109,7 +120,6 @@ def character_echo(label,x,role):
           'promise':'다아시는 제인의 마음을 잘못 판단해 빙리를 멀어지게 했다는 사실을 인정하고, 두 사람이 다시 만날 수 있도록 바로잡아요. 자신이 옳다는 확신보다 실제로 책임지는 행동을 택한 장면이에요.',
           'self':'다아시는 집안의 지위를 따지던 태도를 돌아보고 엘리자베스에게 다시 마음을 전해요. 이번에는 그녀가 거절할 수 있다는 뜻도 함께 받아들여요. 자기 마음을 지키면서도 상대의 선택까지 대신하지 않는 거예요.',
         }[x['theme']]
-        meeting='펨벌리에서의 예의와 드러내지 않은 도움을 통해, 자기 기준에 머물던 마음이 상대에게 닿는 행동으로 달라지는 과정'
     else:
         event={
           'care':'엘리자베스는 언니 제인의 아픔을 가볍게 넘기지 않고, 첫 청혼 자리에서 다아시에게 두 사람을 갈라놓은 일을 따져 물어요. 가까운 사람을 챙기는 마음이 상대에게 불편한 질문도 하는 행동으로 드러나요.',
@@ -118,15 +128,17 @@ def character_echo(label,x,role):
           'promise':'엘리자베스는 재산과 지위만으로 다아시의 청혼을 받아들이지 않아요. 자신과 가족을 존중하는 태도가 있는지 중요하게 봐요. 이후 펨벌리에서의 예의와 가족을 도운 행동을 알게 되면서 믿음을 새로 쌓아 가죠.',
           'self':'엘리자베스는 부유한 다아시의 청혼도 자신의 마음과 맞지 않으면 거절해요. 나중에 그의 도움을 알고도 빚을 갚듯 관계를 선택하지 않아요. 달라진 자기 마음을 확인한 뒤 다시 만나기로 해요.',
         }[x['theme']]
-        meeting='자신의 기준을 지키면서도 편지와 이후의 행동을 살펴보고, 처음의 판단을 바꾸는 과정'
-    return (event+'\n\n'+f'앞서 {label}의 {STEM_NAME[stem]}에서 읽은 바람은 {heart}이었어요. '
-        +f'{stem_echo}을 이 인물의 선택에 겹쳐 볼 수 있어요. '
-        +'여기에 '
-        +{'care':'마음을 생활 속 수고로 옮기려는 면', 'reflect':'충분히 이해한 뒤 답하고 싶은 면',
-          'voice':'느낀 것을 말로 나누고 싶은 면', 'promise':'말과 행동이 일치할 때 안심하는 면',
-          'self':'관계 안에서도 스스로 선택하고 싶은 면'}[x['theme']]
-        +f'이 특히 닿아 있죠.\n\n{role}가 보여 준 {meeting}에서 {label}에게도 소중할 만한 선택을 발견할 수 있어요. '
-        +f'{label} 역시 자신에게 중요한 것을 지키면서, 새로 들은 설명과 달라진 행동을 보고 마음을 다시 고를 수 있겠죠.')
+    stem_event=(
+        '다아시는 제인의 마음을 잘못 판단해 빙리와 멀어지게 했다는 사실을 인정해요. 이후 빙리에게 사실을 알리고 두 사람이 다시 만나도록 돕죠. 처음에는 자기 판단이 옳다고 믿었지만, 잘못을 알게 된 뒤에도 고집하지는 않아요. 믿는 바가 분명하다는 것은 남의 말을 듣지 않는다는 뜻과 달라요. 상대가 겪은 일을 듣고 내 행동을 고치는 데에도 그 단단함을 쓸 수 있죠.'
+        if role=='다아시' else
+        '엘리자베스는 재산이 많다는 이유로 다아시의 첫 청혼을 받아들이지 않아요. 자신과 가족을 존중하지 않는 말에 분명히 반대하죠. 한편 위컴에 대해서는 그의 말을 믿었다가, 다아시의 편지와 이후의 행동을 확인한 뒤 생각을 바꿔요. 자기 기준을 지키면서도 직접 확인한 사실은 받아들인 거예요. 믿음을 지키는 일만큼 잘못 알았던 사실을 인정하는 일도 중요했던 거예요.')
+    return (stem_event+' '+f'{stem_echo}이 {label}과 닮은 점이에요.'
+        +'\n\n'+event+' '
+        +{'care':f'좋아하는 사람에게 필요한 일을 직접 챙기려는 점이 {label}과 비슷해요.',
+          'reflect':f'서둘러 결론을 내리기보다 충분히 이해하고 답하려는 점이 {label}과 닮았어요.',
+          'voice':f'마음을 혼자 짐작하게 두기보다 말로 전하려는 점이 {label}과 비슷하죠.',
+          'promise':f'좋은 말보다 실제로 지키는 행동에서 믿음을 얻는 점이 {label}과 닮았어요.',
+          'self':f'좋아하는 마음이 있어도 관계는 스스로 선택하고 싶다는 점이 {label}과 비슷해요.'}[x['theme']])
 
 
 def day_relationship(a,b):
@@ -148,21 +160,20 @@ def day_relationship(a,b):
 
 def chart_relationship(aa,bb,links):
     from c06_narrative import GOD_MEANING
-    from c06_chart import THEMES
     pos={'year_pillar':'연주','month_pillar':'월주','day_pillar':'일주','hour_pillar':'시주'}
-    text=(f"당신의 월주 {aa['pillars']['month_pillar']}에는 {aa['season']}의 계절감과 "
-        +GOD_MEANING[GROUP[aa['anchors']['month']]]+'이, '
-        +f"상대방의 월주 {bb['pillars']['month_pillar']}에는 {bb['season']}의 계절감과 "
-        +GOD_MEANING[GROUP[bb['anchors']['month']]]+'이 겹쳐요. '
-        +f"다른 기둥까지 함께 보면 당신에게는 **{THEMES[aa['theme']][0]}**, 상대방에게는 **{THEMES[bb['theme']][0]}**이 관계에서 눈여겨볼 주제로 남아요. "
+    text=(f"당신은 {aa['season']}의 월주 {aa['pillars']['month_pillar']}, "
+        +f"상대방은 {bb['season']}의 월주 {bb['pillars']['month_pillar']}에 태어났어요. "
+        +'각자의 월주와 일간의 관계에는 '+GOD_MEANING[GROUP[aa['anchors']['month']]]+'과 '
+        +GOD_MEANING[GROUP[bb['anchors']['month']]]+'이 각각 나타나요. '
+        +f"다른 기둥까지 보면 당신은 **{character_keywords(aa)[1]}**, 상대방은 **{character_keywords(bb)[1]}**{particle(character_keywords(bb)[1],'을','를')} 중요하게 여길 수 있어요. "
         +'서로의 방식이 필요한 순간에는 든든하지만, 내가 바라는 방식으로만 답을 기다리면 같은 호의도 다르게 들릴 수 있어요.')
     for kind in ('육합','천간합','육충'):
         link=next((x for x in links if x['kind']==kind),None)
         if not link: continue
         where=f"당신의 {pos[link['a']]}와 상대방의 {pos[link['b']]}"
         meaning={
-          '육합':'서로 다른 것을 이어 보려는 상징이에요. 낯선 취향에도 한 번 같이 해 보고 싶은 마음으로 비춰 볼 수 있죠. 다만 쉽게 맞출 수 있을 것 같다는 기대가 커지면, 싫다는 말을 뒤로 미루기 쉬워요.',
-          '천간합':'서로에게 관심이 향하고 접점을 찾으려는 상징이에요. 같이 계획을 세우는 즐거움과 이어 볼 수 있죠. 가까워지고 싶은 마음이 있다고 해서 원하는 선택까지 같아지는 것은 아니에요.',
+          '육합':'서로 가까워지려는 성질을 뜻해요. 취향이 달라도 상대가 좋아하는 일을 함께 해 보고 싶을 수 있죠. 다만 쉽게 맞출 수 있을 것 같다는 기대가 커지면, 싫다는 말을 뒤로 미루기 쉬워요.',
+          '천간합':'서로에게 관심을 갖고 공통점을 찾으려는 성질을 뜻해요. 다음에 만날 곳을 같이 고르며 즐거워하는 모습처럼요. 가까워지고 싶은 마음이 있다고 해서 원하는 선택까지 같아지는 것은 아니에요.',
           '육충':'서로 다른 움직임이 맞부딪히는 상징이에요. 익숙한 생각을 바꾸는 자극이 되기도 하지만, 약속을 정하거나 답을 기다리는 속도에서 긴장을 느낄 수도 있어요. 의견이 다를 때 누가 틀렸는지보다 지금 무엇을 원하는지 먼저 들어야 해요.',
         }[kind]
         text+=f"\n\n{where} 사이의 {link['chars']}에는 **{kind}**이 있어요. "+meaning
@@ -181,9 +192,12 @@ def enrich(result,a,b,rel,couple):
     roles=('엘리자베스','다아시') if first else ('다아시','엘리자베스')
     parts=[]
     for label,x,role in zip(('당신','상대방'),(aa,bb),roles):
+        basis=personal_basis(label,x).split('\n\n',1)
+        echo=character_echo(label,x,role).split('\n\n',1)
         parts.append(block(f'{role}를 닮은 {label}',
-            personal_basis(label,x)+'\n\n'+character_echo(label,x,role)))
-    result['roles']='\n\n'.join(parts)+'\n\n여기서 일간의 상징은 두 사람의 마음을 인물의 선택에 비춰 보는 비유예요. 소설 속 인물의 사주를 정해 놓은 것은 아니에요. 두 사람을 이어 주는 것은 처음부터 같은 생각을 했다는 사실보다, 서로를 다시 알아보려는 마음이에요. 내 기준을 지키면서도 상대의 설명과 행동을 함께 볼 수 있다면 첫인상 뒤의 사람을 만날 수 있겠죠.'
+            ' · '.join('**'+k+'**' for k in character_keywords(x))+'\n\n'
+            +basis[0]+'\n\n'+echo[0]+'\n\n'+basis[1]+'\n\n'+echo[1]))
+    result['roles']='\n\n'.join(parts)+'\n\n두 사람이 처음부터 같은 생각을 해야 하는 건 아니에요. 엘리자베스와 다아시도 서로의 설명을 듣고 달라진 행동을 보면서 가까워졌어요. 내 생각을 솔직하게 말하면서도 상대를 잘못 알았던 점은 고칠 수 있다면, 두 사람도 서로를 더 잘 알아갈 수 있겠죠.'
     if aa['missing_hour'] or bb['missing_hour']:
         result['roles']+='\n\n출생시간을 모르는 사람의 시주는 계산에서 제외했어요.'
     title,attraction,scene,tension,repair,question=ARCS[aa['theme']]
