@@ -53,3 +53,11 @@
 - [무료 미리보기 별도 비교](qa-c11-language-preview-preserved.json): A/B × 360·1440px의 기존/현재 DOM과 이미지 표시 동일.
 - 모바일 B 1장 캡처를 직접 열어 키워드·본문 강조와 줄바꿈을 확인했다. 최종 문구 수정 후 서버를 재시작해 c11 전체 화면 검사를 다시 통과했다. 환경 재연결로 중단된 별도 미리보기 비교도 재실행해 통과했다.
 - 운영 보호 기준: 원격 main `9a8e43dca8ac6399058e71b0710ab24f78d53e1e`, 운영 Render `srv-dbmu4pijnfac73bfmqq0` updatedAt `2026-11-09T10:16:50.59908Z`. 미리보기 `srv-dbosrsqjnfac73fuhv30`, workspace `tea-dbmlhep5efls73fvq170`, 지정 브랜치와 URL 연결 및 자동 배포 활성화를 읽기로 확인했다. 기존 비추적 자료는 커밋 대상에서 제외한다.
+
+### 미리보기 배포 (2026-11-14)
+
+- 실행 커밋 `accdcceecae99c6c789b33ee00ddb8eaf3c85c58`을 지정 개발 브랜치에만 push했다. 자동 배포 `dep-dbrqcik9v7es73b6k5ag`가 **live**, 완료 시각 **09:08:17 KST**. 서비스 설정 변경·중복 수동 배포 없음.
+- [원격 c06 결과](qa-c06-language-remote.json): A/B × 390·1440px × 5장 = 20개 화면 통과. 기존 fixture와 실제 응답 동일, 입력·무료·언락·카드 유지.
+- [원격 c11 결과](qa-c11-language-remote.json): A/B × 360·390·1440px × 3장 = 18개 화면 통과. 실제 unlock 전체 응답이 로컬 검증본과 동일하고 DOM도 일치한다. 키워드 두 개와 본문 동일 강조, 문단 강조 밀도, 점수 비노출·가로 넘침·페이지 오류 검사 통과. 실제 입력→무료→언락, 모달 키보드·닫기·초점 복귀, 카드 다운로드 각 6회와 다른 11종 표시 호환, health 200 확인. 배포된 모바일 A 1장 캡처도 직접 열어 확인했다.
+- 배포 뒤 운영 main SHA 및 운영 Render updatedAt이 위 시작 값과 동일함을 읽기로 재확인했다. 운영 쓰기 없음.
+- 원격 결과는 `[skip render]` 기록 커밋으로 추가해 실행 커밋은 유지한다. [A 보기](https://yeonyeon-preview-pr17.onrender.com/?sample=c11-A) / [B 보기](https://yeonyeon-preview-pr17.onrender.com/?sample=c11-B).
