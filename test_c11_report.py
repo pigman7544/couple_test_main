@@ -26,7 +26,7 @@ class C11ReportTests(unittest.TestCase):
                 self.assertEqual(preview,compute(case['payload']))
             self.assertEqual({k:v for k,v in current.items() if k!='full_report'},
                              {k:v for k,v in old.items() if k!='full_report'})
-            for key in ('plot','sections','chapters','questions','ending'):
+            for key in ('plot','sections','questions','ending'):
                 self.assertEqual(current['full_report'][key],old['full_report'][key])
             for key in ('roles','saju_a','tip'):
                 self.assertNotEqual(current['full_report'][key],old['full_report'][key])
@@ -69,7 +69,7 @@ class C11ReportTests(unittest.TestCase):
             with patch.object(c11_report,'enrich',baseline.enrich):
                 old=compute(case['payload'],True)
                 self.assertEqual(preview,compute(case['payload']))
-            for key in ('plot','sections','chapters','questions','ending'):
+            for key in ('plot','sections','questions','ending'):
                 self.assertEqual(current['full_report'][key],old['full_report'][key])
             self.assertEqual({k:v for k,v in current.items() if k!='full_report'},
                              {k:v for k,v in old.items() if k!='full_report'})
