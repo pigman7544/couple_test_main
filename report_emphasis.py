@@ -1,0 +1,161 @@
+"""Reviewed literal excerpts: typography only, never sentence-position heuristics.
+
+The source tales and protected prose stay byte-identical after removing markers.
+Unlisted paragraphs deliberately remain quiet. Most types use one excerpt per
+paragraph; c06 allows two reviewed symbols or short relationship excerpts.
+"""
+import re
+
+COMMON = (
+    '지금의 마음을 확인', '말의 강도를 조심', '말하지 못한 마음',
+    '작은 만남을 쌓는', '마음이 커지는 속도', '모든 모습을 안다는 뜻은 아니에요',
+    '일상의 작은 약속', '오늘의 작은 실천', '말하지 않은 외로움',
+    '지금의 선택을 지지', '서로 다른 목표를 응원', '선택권을 남겨',
+    '기다리는 쪽의 마음', '상대가 대답할 시간', '다음 만남도 함께',
+    '상대의 경계도', '일정을 대신 결정하지',
+    '함께하고 싶은 일 하나', '반드시 지킬 수 있는 약속', '지킨 약속 하나',
+    '안부를 나눌 방식', '지금 지키고 싶은 선택', '필요한 도움을',
+    '작은 불편 하나', '지키려는 가치를', '고마움을 직접', '듣고 싶은 애정 표현',
+    '충분히 답할 시간', '다시 만날 약속', '대신 결정하기 전에',
+    '몇 번의 만남 끝에 편안함', '충분히 안다는 뜻은 아니에요',
+    '좋았던 순간을 하나씩', '하루의 여유', '혼자 쉬고 싶다는 요청',
+    '배려가 간섭으로', '다음에 함께할 시간', '함께 정할 일 하나',
+    '서로 다른 시선이 같은 장면', '역할이 계속 고정되면', '중간에 그만둘 기준',
+    '서로 다른 사정', '자기 생활을 지킬 한계', '스스로 다시 선택하는 과정',
+    '모든 충돌이 좋은 관계를', '상처를 정당화하는 말', '둘이 지키려는 것이 무엇인지',
+    '마음이 열리는 속도', '작은 친절', '함께 약방을 꾸려',
+    '마음을 짐작하기보다', '새 고민까지 이미 안다고', '지금의 생활을 지지',
+    '평가받는 느낌', '작은 불편까지 없는지', '서로 다른 순서',
+    '말로는 잘 전달되지', '대답할 틈', '함께 결정해야 편한 범위',
+    '가능한 시간을 먼저', '요즘 달라진 마음', '그 시간을 서로 보장',
+    '안 해도 괜찮아', '변명 없이 끝까지', '오늘 먼저 정할 것 하나',
+    '행동과 마음을 함께', '내가 들은 건 이 뜻이야',
+    '서로의 시간을 아는 일', '기다림의 부담은 실제로 나눌', '오늘의 외로움',
+    '자기 속도로 배울 권리', '지금의 상대를 부족하게', '무엇을 함께 가능하게',
+    '선택할 시간이 줄어드는', '한 번 더 확인할 시간', '도움을 청할 통로',
+    '이미 가진 설명을 내려놓는', '행동에 대한 책임', '사실과 추측했던 뜻',
+    '같은 시간을 서로 다른 자리', '다시 알아보려는 신중함', '지금도 가능한지',
+    '현재의 목소리가 작아지는', '선택권을 대신할 수 없죠', '지금도 그래?',
+    '곁을 지키는 기여', '서로의 시야가 필요', '상대가 존중받는다는 느낌',
+    '먼저 길을 찾고', '먼저 이해하고',
+    '상대에게는 어떤 배려가 편한지', '들은 바람 하나를 되짚어',
+    '이번 주 실제로 할 수 있는 행동', '오늘 정할 일을 작게 나누는',
+    '대화가 멈춘 지점을', '말할 자리를 놓친 것인지',
+    '서로 다른 기대', '답을 채우지 않고 기다릴 때',
+    '답보다 들어 주는 시간', '다시 연결될 시간을 정하는',
+    '각자 쉬고 싶은 시간', '합의하는 대화',
+    '각자의 의견을 동등하게', '내가 고른 일정을', '작은 행동을 꾸준히',
+    '새로운 데이트를 제안', '함께 해 보고 싶은 일', '만날 시간을 미리',
+    '해결책을 먼저', '서로 확인하며 지키는', '내 말로 설명하는 시간',
+    '곁에서 이야기를 들어 주는',
+    '지킬 수 있는 연락 시간', '무엇부터 다시 정할지', '생각할 시간부터',
+    '처음 가 보는 곳을 제안', '반가웠다는 말을 먼저',
+    '각자 편한 시간을 먼저', '어떤 도움이 필요한지', '언제까지 고를지',
+    '작은 약속부터 쌓아', '서로가 안심하는 행동', '고마움을 생략하지는',
+    '지금의 선택을 응원', '성취의 속도를 비교하지', '격려가 압박이 되지',
+    '작은 서운함은 쌓일', '각자가 지키려는 기준', '이해하려는 질문',
+    '짧게라도 직접', '듣고 싶은 말을', '대답할 공간', '혼자 쉴 권리',
+    '각자 결정할 일', '다시 연결되는 약속', '의외의 모습을 알아갈 시간',
+    '처음과 달라진 매력', '서로를 다 안다는 뜻은 아니에요',
+    '새롭게 해 볼 일', '새롭게 발견한 장점', '아직 잘 모르는 점',
+    '꼭 지킬 수 있는 작은 약속', '안심했던 행동', '배려 하나를 고맙다고',
+    '요즘 배우고 싶은 것', '평가하지 말고 필요한 도움', '결정은 상대에게',
+    '한 가지씩 이야기', '각자의 우선순위', '한 문장으로 다시 말해',
+    '고마운 일을 하나 구체적으로', '듣고 싶은 표현', '끝까지 들어',
+    '다시 만날 시간', '혼자 결정할 일', '선택을 대신하지 않고',
+)
+
+BY_TYPE = {
+    'c01': ('약속을 행동으로', '서로를 믿고 성장하려는 선택', '기다림을 혼자',
+            '오늘의 행동으로', '설렘만으로 지킬 수 있는 일이 아니었어요', '둘의 시간이 다르게',
+            '선택의 주체성', '말이 아니라 행동으로'),
+    'c02': ('만나지 못하는 날에도', '함께 보내지 못하는 시간', '연결될 방법',
+            '매일 새로 감당해야 하는 생활'),
+    'c03': ('응원이 평가', '성장의 속도', '서로의 선택', '성공했기 때문에'),
+    'c06': ('일관성', '명확한 약속', '솔직한 표현', '함께 즐기는 경험', '표현의 온도', '서로를 이해하는 속도', '언제 다시 이야기할지', '직접 고를 시간', '상대가 직접 고를 기회', '대화를 이어 가고 싶다는', '원래 계획', '쉬고 싶은 마음', '다음에는 무엇을 바꿀지', '마음을 여는 속도', '돌봄의 방식', '답을 대신 채우지 않고', '구체적인 수고', '상대방이 원하는 것을', '언제 끝날지 알 수 없으면', '생각할 여유', '서로 고를 자리', '오늘 밤 9시에 다시 얘기하자', '예약 전에', '혼자 쉴 시간', '오늘의 마음을 다시 물어보는 일', '함께할 삶을 위해 먼저 길을', '낯선 일을 이해하며 믿음을',
+            '서로의 하루에 들어갈 자리', '같은 집으로 돌아가', '어떻게 다시 마주 앉을 것인가',
+            '서로를 어떻게 이해할 것인지', '대화 부족 탓으로 돌릴 수는 없어요',
+            '속도를 높일 필요는 없어요', '일상의 약속을 통해', '선택의 이유를 들을 때',
+            '내 의견은 왜 빠졌어', '듣고 싶은 말과 건네는 말', '관심이 통제로',
+            '각자 하고 싶은 일을 하나씩', '누가 언제 할지', '설득 없이 이유를',
+            '다시 이야기할 시간을', '방법을 같이 찾을까, 그냥 들어줄까',
+            '꼭 비워 두고 싶은 시간', '오늘의 마음을 한 번 더'),
+    'c10': ('선택할 여유', '주변의 반대', '둘의 속도'),
+    'c11': ('잘못 알았던 부분을 인정', '첫 판단', '새롭게 이해할 여지',
+            '직접 고를 기회', '예약 전에', '다시 연락할 때', '생각할 시간',
+            '오늘 저녁 8시에', '언제 답할지만', '같은 마음이 되어야',
+            '상대가 다른 답을 할 수', '오늘 정한 약속', '사실을 새로 아는 일',
+            '잘못한 행동을 바꾸는 일', '서로가 새롭게 선택한 만남',
+            '답장이 짧다는 사실', '마음이 식었다는 추측', '구체적으로 사과',
+            '확정한 일과 확인 중인 일', '다음 약속을 지키는 행동',
+            '다른 의견이 곧 애정의 부족함은 아니죠', '원하는 시간을 구체적으로',
+            '상대의 설명과 행동을 함께', '거절을 단순한 오해 탓으로', '오늘은 어때?'),
+    'c13': ('각자의 삶을 존중', '서로를 확인할 권리', '달라진 모습'),
+    'c18': ('지금 서로가 원하는 삶', '과거의 이미지', '지금의 상대'),
+    'f01': ('상대의 기여', '꾸준한 동행', '판단과 공감'),
+    'f02': ('꿈을 비웃지 않고', '위험은 함께 점검', '발밑의 길'),
+    'f03': ('대신 결정하지', '사람의 사정', '무조건 감싸는 일과 이해는 달라'),
+    'f04': ('서로에게 배운 점', '이겨야 할 대상으로만', '서로의 자리를'),
+}
+
+
+def emphasize(value, cid, section):
+    if cid in ('c06', 'c11'):
+        return emphasize_c06(value, section, cid)
+    blocks = []
+    for block in value.split('\n\n'):
+        lines = block.split('\n')
+        heading = lines.pop(0) if lines and lines[0].lstrip().startswith(('◆ ', '#')) else None
+        body = '\n'.join(lines).replace('**', '')
+        for phrase in BY_TYPE.get(cid, ()) + COMMON:
+            if phrase in body:
+                body = body.replace(phrase, '**' + phrase + '**', 1)
+                break
+        # Profile needs vary with the input; emphasize the desired care rather
+        # than the technical symbol. The literal cue preserves the whole prose.
+        if section == 'roles' and '**' not in body:
+            body = re.sub(r'가까운 사이에서는 (.+?)을 바라는',
+                          r'가까운 사이에서는 **\1**을 바라는', body, count=1)
+        blocks.append((heading + ('\n' if body else '') if heading else '') + body)
+    return '\n\n'.join(blocks)
+
+
+def emphasize_c06(value, section, cid='c06'):
+    """Reviewed source spans and literal symbols; at most two per paragraph."""
+    from story_report import STEM_NAME, STEM_DESC
+    seen = set()
+    role_keywords = set()
+    blocks = []
+    for block in value.split('\n\n'):
+        lines = block.split('\n')
+        heading = lines.pop(0) if lines and lines[0].lstrip().startswith(('◆ ', '#')) else None
+        source = '\n'.join(lines)
+        if cid == 'c11' and section == 'roles' and heading:
+            role_keywords = set(re.findall(r'\*\*(.+?)\*\*', source))
+        body = source.replace('**', '')
+        candidates = []
+        if section == 'roles' and '의 일간은 ' in body:
+            for stem, name in STEM_NAME.items():
+                if f'의 일간은 {name}({stem})' in body:
+                    image = {'庚': '단단한 쇠', '丙': '태양'}.get(stem, STEM_DESC[stem][0])
+                    candidates = [name, image]
+                    break
+        else:
+            candidates = re.findall(r'\*\*(.+?)\*\*', source)
+            candidates += list(BY_TYPE[cid] + COMMON)
+        selected = []
+        for phrase in candidates:
+            keyword_echo = (phrase in role_keywords and '**'+phrase+'**' in source)
+            if ((phrase in seen and not keyword_echo) or phrase not in body or len(phrase) > 32
+                    or len(phrase) == len(body) or any(phrase in p or p in phrase for p in selected)):
+                continue
+            selected.append(phrase)
+            if len(selected) == 2:
+                break
+        # Mark exact nonoverlapping spans in one pass; never match inside markup.
+        spans = sorted((body.index(p), body.index(p) + len(p), p) for p in selected)
+        for start, end, phrase in reversed(spans):
+            body = body[:start] + '**' + body[start:end] + '**' + body[end:]
+        seen.update(selected)
+        blocks.append((heading + ('\n' if body else '') if heading else '') + body)
+    return '\n\n'.join(blocks)

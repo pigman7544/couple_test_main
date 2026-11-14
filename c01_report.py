@@ -1,5 +1,4 @@
 """Five-chapter Chunhyang report. Editorial saju symbolism, not psychological prediction."""
-from report_display import ten_point_score
 from c06_report import AXES, band
 
 
@@ -80,16 +79,16 @@ def enrich(result, a, b, rel):
     vector = rel['vector']
     def axis(key, intro):
         label, variants = AXES[key]
-        return f'◆ **{label} {ten_point_score(vector[key])}/10**\n{intro} {variants[band(vector[key])][0]}'
+        return f'◆ **{label}**\n{intro} {variants[band(vector[key])][0]}'
     result['saju_a'] = (
         '춘향과 몽룡에게 끌림은 출발점이었지만, 오래 남은 것은 서로를 믿고 성장하려는 선택이었어요. '
-        '당신들의 관계를 기존 사주 상징 점수로 세 방향에서 읽어 볼게요.\n\n'
+        '두 사람의 마음이 만나는 모습을 세 방향에서 읽어 볼게요.\n\n'
         + '\n\n'.join((
             axis('attraction','광한루의 만남처럼 서로에게 다가가게 되는 순간을 생각해 봐요.'),
             axis('security','약속이 일상의 신뢰로 이어지는 방식을 살펴봐요.'),
             axis('growth','몽룡이 자신의 길을 걸었던 시간처럼 각자의 성장을 존중할 수 있을까요?')
         ))
-        + '\n\n이 점수는 기존 규칙에서 만든 편집용 상징 점수이며, 사랑의 크기나 재회 가능성을 뜻하지 않아요.'
+        + '\n\n이 해석이 두 사람의 사랑이나 재회 가능성을 결정하지는 않아요.'
     )
     # Interpret the three axes independently, rather than assuming distance or abandonment.
     result['crisis'] = (
@@ -101,7 +100,7 @@ def enrich(result, a, b, rel):
             axis('expression','믿는 마음이 말과 행동으로 얼마나 전달되는지 생각해 봐요.'),
             axis('autonomy','각자의 길을 지키면서도 함께할 시간을 만드는 방식을 살펴봐요.')
         ))
-        + '\n\n세 점수는 두 사람의 관계를 비유한 것이지 어느 한 사람의 결함을 가리키지 않아요.'
+        + '\n\n서로 다른 마음을 이해하기 위한 비유이며, 어느 한 사람의 결함을 가리키지 않아요.'
     )
     labels = {'attraction':'끌림','security':'안정감','growth':'성장','conflict':'갈등','expression':'표현','autonomy':'자율성'}
     result['tip'] = (

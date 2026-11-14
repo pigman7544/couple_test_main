@@ -1,0 +1,31 @@
+{
+  "samples": [
+    {
+      "sample": "A",
+      "envelopeUnchanged": true,
+      "evidenceUnchanged": true,
+      "beforeCharacters": 4595,
+      "afterCharacters": 3894,
+      "technicalListsAbsent": true,
+      "scoresAbsent": true
+    },
+    {
+      "sample": "B",
+      "envelopeUnchanged": true,
+      "evidenceUnchanged": true,
+      "beforeCharacters": 4583,
+      "afterCharacters": 3839,
+      "technicalListsAbsent": true,
+      "scoresAbsent": true
+    }
+  ],
+  "unchangedFailures": [
+    "test_all_twelve_have_comparable_length_and_distinct_readings (test_editorial_readings.EditorialReadings.test_all_twelve_have_comparable_length_and_distinct_readings)",
+    "test_all_ten_have_unique_original_scenes (test_individual_scenes.EditorialQuality.test_all_ten_have_unique_original_scenes)",
+    "test_gender_and_missing_birth_time (test_individual_scenes.EditorialQuality.test_gender_and_missing_birth_time)",
+    "test_six_axes_change_independently (test_individual_scenes.EditorialQuality.test_six_axes_change_independently)",
+    "test_birth_charts_change_scenes_even_with_identical_scores (test_personalized_reading.PersonalizedReading.test_birth_charts_change_scenes_even_with_identical_scores)",
+    "test_all_twelve_preserve_source_and_score_prose (test_reading_voice.EssayVoice.test_all_twelve_preserve_source_and_score_prose)",
+    "test_all_types_bands_preserve_prose_headings_and_inputs (test_report_emphasis.EmphasisTests.test_all_types_bands_preserve_prose_headings_and_inputs)"
+  ]
+}

@@ -1,0 +1,82 @@
+[
+  {
+    "attempt": 1,
+    "status": 200,
+    "seconds": 0.25,
+    "type": "c06",
+    "chapters": 5,
+    "body_emphasis": false
+  },
+  {
+    "attempt": 2,
+    "status": 200,
+    "seconds": 0.234,
+    "type": "c06",
+    "chapters": 5,
+    "body_emphasis": false
+  },
+  {
+    "attempt": 3,
+    "status": 200,
+    "seconds": 0.235,
+    "type": "c06",
+    "chapters": 5,
+    "body_emphasis": false
+  },
+  {
+    "attempt": 4,
+    "status": 200,
+    "seconds": 0.765,
+    "type": "c06",
+    "chapters": 5,
+    "body_emphasis": false
+  },
+  {
+    "attempt": 5,
+    "status": 200,
+    "seconds": 0.25,
+    "type": "c06",
+    "chapters": 5,
+    "body_emphasis": false
+  },
+  {
+    "attempt": 6,
+    "status": 200,
+    "seconds": 0.219,
+    "type": "c06",
+    "chapters": 5,
+    "body_emphasis": false
+  },
+  {
+    "attempt": 7,
+    "status": 200,
+    "seconds": 0.219,
+    "type": "c06",
+    "chapters": 5,
+    "body_emphasis": false
+  },
+  {
+    "attempt": 8,
+    "status": 200,
+    "seconds": 0.234,
+    "type": "c06",
+    "chapters": 5,
+    "body_emphasis": false
+  },
+  {
+    "attempt": 9,
+    "status": 200,
+    "seconds": 0.235,
+    "type": "c06",
+    "chapters": 5,
+    "body_emphasis": false
+  },
+  {
+    "attempt": 10,
+    "status": 200,
+    "seconds": 0.234,
+    "type": "c06",
+    "chapters": 5,
+    "body_emphasis": false
+  }
+]

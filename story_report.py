@@ -339,9 +339,18 @@ def make_report(a,b,rel,couple,story):
         from c06_report import enrich
         result = enrich(result, a, b, rel)
     from personalized_reading import enrich as personalize
-    result = personalize(result, a, b, rel, couple)
-    from report_display import reduce_body_bold
+    if couple['id'] == 'c06':
+        from c06_chart import enrich as personalize_chart
+        result = personalize_chart(result, a, b)
+    else:
+        result = personalize(result, a, b, rel, couple)
+        from literary_edition import enrich as enrich_literary
+        result = enrich_literary(result, a, b, rel, couple)
+        if couple['id'] == 'c11':
+            from c11_report import enrich as enrich_c11
+            result = enrich_c11(result, a, b, rel, couple)
+    from report_emphasis import emphasize
     for key in ('roles', 'story', 'saju_a', 'crisis', 'scene', 'tip', 'ending'):
         if isinstance(result.get(key), str):
-            result[key] = reduce_body_bold(result[key])
+            result[key] = emphasize(result[key], couple['id'], key)
     return result

@@ -20,22 +20,23 @@ class EditorialQuality(unittest.TestCase):
         for c in DB:
             if c['id'] not in SCENES: continue
             r=make_report(self.a,self.b,self.rel,c,{})
-            self.assertEqual(len(r['chapters']),5,c['id'])
-            self.assertEqual(r['sections'],['roles','story','saju_a','crisis','tip'])
+            self.assertEqual(len(r['chapters']),3 if c['id']=='c11' else 5,c['id'])
+            self.assertEqual(r['sections'],(['roles','saju_a','tip'] if c['id']=='c11' else ['roles','story','saju_a','crisis','tip']))
             for text in SCENES[c['id']]:
-                self.assertIn(text,r['story']+r['crisis']+r['tip'],c['id'])
+                    if c['id'] == 'c11': continue  # Source-reviewed replacement: test_c11_report.
+                    self.assertIn(text.replace('**',''),(r['story']+r['crisis']+r['tip']).replace('**',''),c['id'])
             self.assertEqual(r['saju_a'].count(LENSES[c['id']][4]),0,c['id'])
             self.assertIn(self.a['day_pillar'][0],r['roles'])
             self.assertIn(self.b['day_pillar'][0],r['roles'])
             self.assertNotIn('백소정',r['story']+r['tip'])
             if c.get('relationship_kind')=='friendship':
-                self.assertIn('원작의 두 사람은 친구였어요',r['tip'])
-                self.assertIn('연인 사이',r['tip'])
-                self.assertIn('사랑을 지키는 작은 실천',r['tip'])
+                self.assertNotIn('사랑하면서도',r['crisis'])
+                self.assertNotIn('연인 사이',r['tip'])
+                self.assertNotIn('사랑을 지키는 작은 실천',r['tip'])
 
     def test_six_axes_change_independently(self):
         for c in DB:
-            if c['id'] not in SCENES: continue
+            if c['id'] not in SCENES or c['id'] == 'c11': continue
             for axis in AXES:
                 reports=[]
                 for value in (30,55,80):

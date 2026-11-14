@@ -3,7 +3,6 @@
 No change to matching or saju calculations. Existing couple metadata supplies
 individual story beats; the thematic lens is specific to each work.
 """
-from report_display import ten_point_score
 from c06_report import band
 from individual_scenes import SCENES
 from editorial_readings import READINGS
@@ -101,11 +100,11 @@ def enrich(result, a, b, rel, couple):
     v=rel['vector']
     def axis(key):
         score=v[key];i=band(score)
-        return f'◆ **{LABELS[key]} {ten_point_score(score)}/10**\n{AXIS_TEXT[key][i]}'
+        return f'◆ **{LABELS[key]}**\n{AXIS_TEXT[key][i]}'
     result['saju_a']=(f'두 사람의 관계를 {theme}이라는 관점에서 읽어 볼게요. '
                       f'당신에게는 {x["desc"][2]}, 상대방에게는 {y["desc"][2]}이 중요하다는 상징으로 해석할 수 있어요.\n\n'
                       +'\n\n'.join(axis(k) for k in ('attraction','security','growth'))
-                      +'\n\n이 점수는 관계를 이야기로 풀기 위한 상징적 지표이며 실제 감정이나 미래를 측정하지 않아요.')
+                      +'\n\n사주의 상징을 빌린 이야기이며, 실제 감정이나 미래를 확정하지 않아요.')
     result['crisis']=(f'**{question}**\n{hook}\n\n{tension}\n\n'
                       +'\n\n'.join(axis(k) for k in ('conflict','expression','autonomy'))
                       +f'\n\n{caution} 서사 속 갈등을 현실의 위험한 행동과 동일시하지 않아요.')

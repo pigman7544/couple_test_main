@@ -39,7 +39,16 @@ def compute(payload, unlock=False):
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path=urlparse(self.path).path
-        if path=='/health':raw=b'OK';mime='text/plain; charset=utf-8'
+        if path in ('/api/c06-sample/A','/api/c06-sample/B','/api/c11-sample/A','/api/c11-sample/B'):
+            cid=path.split('/')[2].split('-')[0]
+            cases=json.loads((ROOT/f'tests/fixtures/{cid}_comparison.json').read_text(encoding='utf8'))
+            sample=next(x for x in cases if x['id']==path.rsplit('/',1)[1])
+            response=compute(sample['payload'],unlock=True)
+            response['sample_payload']=sample['payload']
+            raw=json.dumps(response,ensure_ascii=False).encode('utf8');mime='application/json; charset=utf-8'
+        elif path=='/health':raw=b'OK';mime='text/plain; charset=utf-8'
+        elif path in ('/preview','/preview.html'):
+            raw=(ROOT/'preview.html').read_bytes();mime='text/html; charset=utf-8'
         elif path in ('/','/index.html'):
             raw=(ROOT/'index.html').read_bytes();mime='text/html; charset=utf-8'
         elif path in ('/assets/baek_heo_plain.png','/assets/baek_heo_title.png'):

@@ -32,12 +32,8 @@ const assert = require('node:assert/strict');
    assert.equal(check.overflow,false); assert.equal(check.chapters,5); assert.ok(check.modern);
    const expectedHeadings=['roles','story','saju_a','crisis','scene','tip','ending'].flatMap(key=>fixture.full_report[key].split('\n').filter(line=>line.startsWith('◆ ')).map(line=>line.slice(2).replaceAll('**','')));
    assert.deepEqual(check.headingText,expectedHeadings);
-   assert.equal(check.oldScores,false);assert.equal(check.bodyBold,0);assert.ok(check.headings>=6);
-   for(const scores of check.scores) {assert.equal(scores.length,3);assert.ok(scores.every(n=>Number.isInteger(n)&&n>=1&&n<=10));}
-   for(const [id,key] of [['sajuA','saju_a'],['crisis','crisis']]) {
-    const expected=[...fixture.full_report[key].matchAll(/(?<!\d)(\d+)\/10(?!\d)/g)].map(x=>Number(x[1]));
-    assert.deepEqual(check.scores[id==='sajuA'?0:1],expected);
-   }
+   assert.equal(check.oldScores,false);assert.ok(check.headings>=6);
+   for(const scores of check.scores) assert.deepEqual(scores,[]);
    if(!['c01','c06'].includes(fixture.couple.id)) assert.ok(check.comments);
    results.push({width,id:fixture.couple.id,...check});
    if(fixture.couple.id==='c06'||(width===390&&['c11','f01'].includes(fixture.couple.id))) {
@@ -55,5 +51,5 @@ const assert = require('node:assert/strict');
  }
  await browser.close();
  fs.writeFileSync('docs/qa-display-browser.json',JSON.stringify(results,null,2));
- console.log('PASS: real c06 input/preview/unlock/back; 36 controlled report renders; five chapters; six integer scores; body bold removed; no overflow or page errors');
+ console.log('PASS: real c06 input/preview/unlock/back; 36 controlled report renders; five chapters; no numeric compatibility scores; selective body emphasis; no overflow or page errors');
 })().catch(e=>{console.error(e);process.exit(1)});
