@@ -85,8 +85,6 @@ def enrich(result,a,b,rel,couple):
     for label,x,role in zip(('당신','상대방'),(aa,bb),roles):
         parts.append(block(f'{role}를 닮은 {label}',person_text(label,x,role)))
     result['roles']='\n\n'.join(parts)+'\n\n두 사람이 처음부터 같은 생각을 해야 하는 건 아니에요. 엘리자베스와 다아시도 서로의 설명을 듣고 달라진 행동을 보면서 가까워졌어요. 내 생각을 솔직하게 말하면서도 상대를 잘못 알았던 점은 고칠 수 있다면, 두 사람도 서로를 더 잘 알아갈 수 있겠죠.'
-    if aa['missing_hour'] or bb['missing_hour']:
-        result['roles']+='\n\n출생시간을 모르는 사람의 시주는 계산에서 제외했어요.'
     title,attraction,scene,tension,repair,question=ARCS[aa['theme']]
     result['plot'] = dict(title='《오만과 편견》 줄거리', body=TALE)
     result['story'] = ''

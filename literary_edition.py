@@ -4,6 +4,7 @@ Literary events come from the existing curated SCENES, not from the chart.
 The birth-chart symbolism is an interpretive analogy, never a prediction.
 """
 from individual_scenes import SCENES
+from character_connections import CONNECTIONS
 from story_report import relationship_style, STEM_NAME, elem, GEN, CTRL
 
 # Each archetype has its own moral tension, everyday conflict, and actionable ending.
@@ -112,36 +113,35 @@ def enrich(result,a,b,rel,couple):
     sl,sr=(sa,sb) if a_first else (sb,sa)
     origin,source_tension,source_action=SCENES[cid]
     left_action, right_action = ROLE_ACTIONS[cid]
+    left_link, right_link = CONNECTIONS.get(cid, (
+        '엘리자베스는 편지에서 알게 된 사실을 펨벌리에서 직접 본 행동과 대조해요.',
+        '다아시는 편지에서 할 말을 정리하고 이후에는 달라진 태도를 행동으로 보여 줘요.',
+    ))
     result['roles']=(f'**두 분은 {characters}의 이야기를 닮았어요.**\n\n'
         f'{portrait}\n\n'
         f'◆ **{left}이 닮은 인물 · {first}**\n{left_action} '
         f'{left}의 일간은 **{STEM_NAME[sl["stem"]]}({sl["stem"]})**이에요. '
         f'{sl["desc"][0]}에 비유할 수 있어요. 가까운 사이에서는 {sl["desc"][2]}을 중요하게 여길 수 있어요. '
-        f'비슷한 상황에서 {left}에게 어떤 선택이 편할지 생각해 보세요.\n\n'
+        f'{left_link}\n\n'
         f'◆ **{right}이 닮은 인물 · {second}**\n{right_action} '
         f'{right}의 일간은 **{STEM_NAME[sr["stem"]]}({sr["stem"]})**이에요. '
         f'{sr["desc"][0]}에 비유할 수 있어요. 가까운 사이에서는 {sr["desc"][2]}을 중요하게 여길 수 있어요. '
-        f'{right}에게 그때 어떤 배려가 필요한지도 물어보세요.\n\n'
-        f'**두 역할은 사랑의 크기나 성별이 아닌, 서로 다른 선택을 살피기 위한 문학적 비유예요.**')
+        f'{right_link}')
     result['story']=(f'**{central}**\n\n'
         f'◆ **이야기 속 두 사람**\n{origin}\n\n'
-        f'◆ **이 이야기를 오늘 읽는 이유**\n{tension}\n\n'
-        '※ 원전의 사건과 오늘의 관계에 적용한 해석은 구별해 읽어 주세요. 전승과 판본에 따라 세부가 다를 수 있어요.')
+        f'◆ **두 사람이 놓친 것**\n{tension}')
     ea,eb=elem(a),elem(b)
     if ea==eb: dynamic='두 사람의 일간은 같은 오행이에요. 비슷한 언어로 이해하기 쉬울 수 있지만, 같은 고집이 부딪힐 수도 있어요.'
     elif GEN[ea]==eb or GEN[eb]==ea: dynamic='두 일간은 상생의 관계예요. 서로를 북돋는 이미지지만, 도움을 주는 역할이 한쪽에만 쏠리지 않는지 살펴봐요.'
-    else: dynamic='두 일간은 상극의 관계예요. 이를 불행의 예언으로 보지 않고, 서로 다른 기준이 만나는 장면으로 읽을 수 있어요.'
+    else: dynamic='두 일간은 상극의 관계예요. 한 사람이 먼저 방향을 정하면 다른 사람은 그 결정이 지켜야 할 조건을 짚어 줄 수 있어요.'
     result['saju_a']=(f'**우리는 왜 서로에게 끌렸을까요?**\n\n'
         f'당신은 **{sa["stem"]}({STEM_NAME[sa["stem"]]})**, 상대방은 **{sb["stem"]}({STEM_NAME[sb["stem"]]})**의 일간을 가졌어요. '
         f'당신에게는 {sa["desc"][2]}, 상대방에게는 {sb["desc"][2]}이라는 관계의 이미지가 있어요.\n\n'
-        f'◆ **서로 다른 두 자연의 이미지**\n{dynamic}\n\n'
-        '◆ **상징을 현실과 구별하기**\n오행의 관계가 실제 두 사람의 감정이나 행동을 결정하지는 않아요. 다름을 확인할 때는 서로의 경험과 말에 귀 기울여 주세요.\n\n'
-        '사주는 사람의 실제 성격이나 미래를 판정하지 않아요. 이 비유가 자신의 경험과 맞지 않는다면 실제로 나눈 이야기를 더 중요하게 생각해 주세요.')
+        f'◆ **서로 다른 두 사람의 기준**\n{dynamic}')
     result['crisis']=(f'◆ **서로 좋아해도 의견이 다를 때**\n\n'
         f'◆ **작품에서 갈등이 생긴 이유**\n{source_tension}\n\n'
         f'◆ **우리의 평범한 하루라면**\n{everyday}\n\n'
-        f'**{tension}**\n\n'
-        '이 장면은 실제 두 분이 겪은 사건이 아니라, 서로의 마음을 이야기하기 위한 가상 상황이에요.')
+        f'**{tension}**')
     result['tip']=(f'◆ **비슷한 상황에서 해 볼 일**\n\n'
         f'◆ **첫 번째 선택 — 대화를 시작하기**\n{source_action}\n\n'
         f'◆ **두 번째 선택 — 작은 실천으로 옮기기**\n{action}\n\n'
@@ -172,8 +172,6 @@ def enrich(result,a,b,rel,couple):
         for axis in ('attraction','security','growth','conflict','expression','autonomy'))
     from personalized_reading import enrich as personalize
     result = personalize(result, a, b, rel, couple)
-    if not a.get('hour_pillar') or not b.get('hour_pillar'):
-        result['roles'] += '\n\n출생시간을 모르는 사람의 시주는 계산에서 제외했어요.'
     if couple.get('relationship_kind') == 'friendship':
         result['roles'] = result['roles'].replace('사랑의 크기', '친밀함의 크기')
         result['crisis'] = result['crisis'].replace('사랑하면서도', '가까운데도')
