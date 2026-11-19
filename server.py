@@ -1,5 +1,5 @@
 """Small demo web server. Uses existing Python engine; serves real local image assets."""
-import json, os, mimetypes, traceback
+import json, os, re, traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
@@ -11,6 +11,8 @@ from story_report import make_report
 
 ROOT=Path(__file__).resolve().parent
 MAX_BODY=8192
+COUPLE_ART = {'c06': {'title': '/assets/baek_heo_title.png', 'plain': '/assets/baek_heo_plain.png'}}
+ART_PATHS = {path for art in COUPLE_ART.values() for path in art.values()}
 
 def compute(payload, unlock=False):
     if not isinstance(payload,dict):
@@ -32,9 +34,19 @@ def compute(payload, unlock=False):
     full=make_report(a,b,rel,couple,story)
     full['gender_a']=payload['a'].get('gender','other')
     full['gender_b']=payload['b'].get('gender','other')
+    art = COUPLE_ART.get(couple['id'])
+    if art and not all((ROOT / path.lstrip('/')).is_file() for path in art.values()):
+        art = None
     if unlock:
-        return {'full_report':full,'couple':{'id':couple['id'],'name':couple['name'],'work':couple['work']},'has_art':couple['id']=='c06','test_mode':True}
-    return {'preview':{'tagline':full['tagline'],'teaser':full.get('teaser',''),'story_excerpt':''},'couple':{'id':couple['id'],'name':couple['name'],'work':couple['work']},'theme':full['tagline'],'version':'6.7-yeonyeon','has_art':couple['id']=='c06'}
+        return {'full_report':full,'couple':{'id':couple['id'],'name':couple['name'],'work':couple['work']},'has_art':art is not None,'art':art,'test_mode':True}
+    excerpt = full.get('plot', {}).get('body') or full.get('crisis') or full.get('story', '')
+    excerpt = re.sub(r'^◆ .*\n', '', excerpt.strip(), count=1).split('\n\n')[0].replace('**', '')
+    if len(excerpt) > 95:
+        excerpt = excerpt[:95].rsplit(' ', 1)[0] + '…'
+    teaser = full.get('teaser', '')
+    lines = re.split(r'(?<=[.!?])\s+', teaser)
+    teaser = '\n'.join(lines) if 2 <= len(lines) <= 3 else teaser
+    return {'preview':{'tagline':full['tagline'],'teaser':teaser,'story_excerpt':excerpt},'couple':{'id':couple['id'],'name':couple['name'],'work':couple['work']},'theme':full['tagline'],'version':'6.7-yeonyeon','has_art':art is not None,'art':art}
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -46,12 +58,14 @@ class Handler(BaseHTTPRequestHandler):
             response=compute(sample['payload'],unlock=True)
             response['sample_payload']=sample['payload']
             raw=json.dumps(response,ensure_ascii=False).encode('utf8');mime='application/json; charset=utf-8'
+        elif path=='/manuscripts':
+            raw=(ROOT/'manuscript-shelf.html').read_bytes();mime='text/html; charset=utf-8'
         elif path=='/health':raw=b'OK';mime='text/plain; charset=utf-8'
         elif path in ('/preview','/preview.html'):
             raw=(ROOT/'preview.html').read_bytes();mime='text/html; charset=utf-8'
         elif path in ('/','/index.html'):
             raw=(ROOT/'index.html').read_bytes();mime='text/html; charset=utf-8'
-        elif path in ('/assets/baek_heo_plain.png','/assets/baek_heo_title.png'):
+        elif path in ART_PATHS and (ROOT/path.lstrip('/')).is_file():
             raw=(ROOT/path.lstrip('/')).read_bytes();mime='image/png'
         else:self.send_error(404);return
         self.send_response(200)
@@ -75,7 +89,17 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(status);self.send_header('Content-Type','application/json; charset=utf-8')
         self.send_header('Content-Length',str(len(raw)));self.send_header('Cache-Control','no-store');self.end_headers();self.wfile.write(raw)
 
-if __name__=='__main__':
+def serve(open_browser=False):
     port=int(os.environ.get('PORT','8765'))
-    print('Open http://localhost:'+str(port),flush=True)
-    ThreadingHTTPServer(('0.0.0.0',port),Handler).serve_forever()
+    url=f'http://127.0.0.1:{port}'
+    host = os.environ.get('BIND_HOST', '127.0.0.1')
+    with ThreadingHTTPServer((host,port),Handler) as server:
+        print(f'Open {url}',flush=True)
+        if open_browser:
+            import webbrowser
+            webbrowser.open(url)
+        server.serve_forever()
+
+
+if __name__=='__main__':
+    serve()

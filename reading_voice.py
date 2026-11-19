@@ -29,16 +29,16 @@ def profile(label, style, counts, explain=True):
     element_hanja = dict(wood='木', fire='火', earth='土', metal='金', water='水')
     from relationship_v08 import STEM_ELEM, STEMS
     symbol = stem + element_hanja[STEM_ELEM[STEMS.index(stem)]]
-    intro = '오행은 나무·불·흙·쇠·물, 다섯 자연의 이미지로 사주를 읽는 방식이에요. ' if explain else '이쪽의 글자도 같은 다섯 자연 이미지로 살펴볼게요. '
+    intro = '오행은 나무·불·흙·쇠·물, 다섯 자연의 이미지로 사주를 읽는 방식이에요. ' if explain else ''
     return (
-        f'{label}을 상징하는 사주 글자, 일간은 {STEM_NAME[stem]}({symbol})이에요. '
-        f'{desc[0]}을 떠올려 보세요. 가까운 사이에서는 {desc[2]}을 바라는 모습에 비춰 볼 수 있어요. '
+        f'{label}의 일간은 {STEM_NAME[stem]}({symbol})이에요. '
+        f'{desc[0]}에 비유할 수 있어요. 가까운 사이에서는 {desc[2]}을 바라는 모습으로 해석할 수 있어요. '
         f'이를테면 “{desc[3]}” 같은 배려를 받는 날, 함께하는 시간이 한결 편안할 수 있겠죠.\n\n'
-        f'태어난 달의 글자를 함께 읽으면 또 다른 표현 방식도 떠올라요. {GOD_SCENES[style["god"]]}. '
+        f'태어난 달의 글자에서는 애정을 표현하는 방식을 살펴볼 수 있어요. {GOD_SCENES[style["god"]]}. '
         '앞의 비유와 꼭 같은 모습일 필요는 없어요. 먼저 챙겨 주고 싶은 날에도, 내 마음을 들어 주길 바라는 날이 있으니까요.\n\n'
         + intro +
         f'입력한 글자에서 자주 보이는 이미지는 {images}이에요. {scenes} '
-        '이는 두 사람이 대화를 시작할 실마리예요. 실제로 어떤 배려가 좋은지는 서로의 답을 들어 보세요.'
+        '어떤 배려가 가장 반가운지 서로 물어보세요.'
     )
 
 def connection(a, b):

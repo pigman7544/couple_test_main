@@ -159,3 +159,51 @@ def emphasize_c06(value, section, cid='c06'):
         seen.update(selected)
         blocks.append((heading + ('\n' if body else '') if heading else '') + body)
     return '\n\n'.join(blocks)
+
+
+def add_body_emphasis(sections):
+    """Keep the established bold spans and add a limited number of takeaways."""
+    marked = []
+    candidates = []
+    blocks_by_field = {}
+    for field, value in sections.items():
+        blocks = value.split('\n\n')
+        blocks_by_field[field] = blocks
+        for index, block in enumerate(blocks):
+            body = block.partition('\n')[2] if block.startswith(('◆ ', '#')) else block
+            marked.extend(re.findall(r'\*\*(.+?)\*\*', body))
+            for sentence in re.split(r'(?<=[.!?])\s+', body):
+                if ('**' in sentence or '\n' in sentence or not 16 <= len(sentence) <= 110
+                        or not sentence.endswith(('.', '요?', '죠?')) or sentence.startswith('※')):
+                    continue
+                action = bool(re.search(r'(말해 |물어|정해 |확인|찾아|나눠|들어).*(보세요|주세요|해요|봐요)', sentence))
+                priority = (not action, field in ('roles', 'story', 'plot'))
+                candidates.append((priority, field, index, sentence))
+
+    limit = max(1, (len(marked) + 1) // 2)
+    original_size = sum(map(len, marked))
+    remaining = max(25, original_size)
+    count = 0
+    used = set()
+    for _, field, index, sentence in sorted(candidates, key=lambda item: item[0]):
+        if len(used) == limit or remaining < 5:
+            break
+        if (field, index) in used:
+            continue
+        # Reserve room for shorter emphasis in the other paragraphs.
+        budget = remaining - (limit - len(used) - 1) * 6
+        if count < 2 and len(sentence) <= min(70, budget):
+            phrase = sentence
+            count += 1
+        else:
+            words = sentence.rstrip('.?!').split()
+            phrases = (' '.join(words[-n:]) for n in (3, 2) if len(words) >= n)
+            phrase = next((p for p in phrases if 5 <= len(p) <= min(25, budget)), '')
+        if not phrase:
+            continue
+        blocks = blocks_by_field[field]
+        start = blocks[index].rfind(sentence) + sentence.rfind(phrase)
+        blocks[index] = blocks[index][:start] + '**' + phrase + '**' + blocks[index][start+len(phrase):]
+        remaining -= len(phrase)
+        used.add((field, index))
+    return {field: '\n\n'.join(blocks) for field, blocks in blocks_by_field.items()}

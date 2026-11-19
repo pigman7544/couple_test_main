@@ -79,22 +79,22 @@ def extract(p):
 # First sentence and second sentence form a single response to the same structure.
 PROFILES = {
  'shared_care': ('책임감','독립심',
-   '필요한 일을 직접 챙기는 마음과 나도 상대도 자기 뜻을 갖는다는 마음을 함께 읽을 수 있어요.',
+   '가까운 사람에게 필요한 일을 직접 챙기면서도 서로의 선택은 존중하려는 성향으로 볼 수 있어요.',
    '맡은 일을 챙기면서도 자기 뜻을 지키려는 성향으로 볼 수 있어요. 상대를 도울 때도 무엇이 필요한지 먼저 물어보면 좋겠죠.'),
  'considered_response': ('신중함','자기성찰',
-   '사정을 이해하려는 마음과 빨리 판단해야 한다는 부담이 함께 있는 모습으로 읽을 수 있어요.',
+   '빨리 답해야 한다는 부담이 있어도 상대의 사정을 먼저 이해하고 싶을 수 있어요.',
    '판단을 서두르지 않고 자기 생각도 돌아보려는 성향으로 볼 수 있어요. 다만 생각이 길어질 때는 언제 답할지 알려 주는 편이 좋아요.'),
  'supported_choice': ('주관이 뚜렷함','고집스러움',
-   '도움을 받아도 자신의 선택은 직접 하고 싶은 마음으로 읽을 수 있어요.',
+   '도움을 받아도 자신의 선택은 직접 하고 싶은 마음으로 해석할 수 있어요.',
    '자기 판단을 믿는 만큼 생각을 바꾸기 어려울 수도 있어요. 상대가 다른 의견을 내면 그 이유를 끝까지 들어 보세요.'),
  'measured_voice': ('솔직함','조심성',
-   '표현하고 싶은 마음에 스스로 말을 조절하려는 마음이 함께 있는 모습으로 읽을 수 있어요.',
+   '솔직하게 말하고 싶으면서도 상대가 어떻게 받아들일지 살피는 편일 수 있어요.',
    '솔직하게 말하려다가도 상대의 반응을 의식해 망설일 수 있어요. 말한 뜻이 잘 전해졌는지 물어보면 오해를 줄일 수 있죠.'),
- 'care': ('꼼꼼함','실용적임','생활에 필요한 것을 마련하는 마음으로 읽을 수 있어요.','준비를 시작하기 전에 원하는 것을 서로 확인해 볼 수 있죠.'),
- 'reflect': ('사려 깊음','신중함','바로 답하기보다 뜻을 충분히 이해하려는 마음으로 읽을 수 있어요.','생각하는 중에도 현재 마음을 조금씩 알려 줄 수 있겠죠.'),
- 'self': ('독립심','주관이 뚜렷함','가까워져도 자신의 뜻을 갖고 싶은 마음으로 읽을 수 있어요.','다른 의견이 나오더라도 함께할 방법을 다시 고를 수 있겠죠.'),
- 'voice': ('표현이 솔직함','호기심','속에 둔 생각을 말과 행동으로 나누려는 마음으로 읽을 수 있어요.','말하는 즐거움과 상대의 대답을 듣는 시간을 함께 남겨 볼 수 있죠.'),
- 'promise': ('책임감','원칙을 중시함','관계를 구체적인 약속으로 확인하고 싶은 마음으로 읽을 수 있어요.','확정할 수 있는 일과 기다려야 하는 일을 함께 나누어 볼 수 있죠.'),
+ 'care': ('꼼꼼함','실용적임','생활에 필요한 것을 마련하는 마음으로 해석할 수 있어요.','준비를 시작하기 전에 원하는 것을 서로 확인해 볼 수 있죠.'),
+ 'reflect': ('사려 깊음','신중함','바로 답하기보다 뜻을 충분히 이해하려는 마음으로 해석할 수 있어요.','생각하는 중에도 현재 마음을 조금씩 알려 줄 수 있겠죠.'),
+ 'self': ('독립심','주관이 뚜렷함','가까워져도 자신의 뜻을 갖고 싶은 마음으로 해석할 수 있어요.','다른 의견이 나오더라도 함께할 방법을 다시 고를 수 있겠죠.'),
+ 'voice': ('표현이 솔직함','호기심','속에 둔 생각을 말과 행동으로 나누려는 마음으로 해석할 수 있어요.','말하는 즐거움과 상대의 대답을 듣는 시간을 함께 남겨 볼 수 있죠.'),
+ 'promise': ('책임감','원칙을 중시함','관계를 구체적인 약속으로 확인하고 싶은 마음으로 해석할 수 있어요.','확정할 수 있는 일과 기다려야 하는 일을 함께 나누어 볼 수 있죠.'),
 }
 
 
@@ -131,7 +131,7 @@ def combined_basis(label,x):
     counterpoint=(f"함께 있는 {STEM_NAME[relevant[0]['stem']]}도 {functions[focus]}을 해요. "
                   if relevant else '')
     center_name=STEM_NAME[center]
-    first=(f"{label}의 일간 {STEM_NAME[day]}({day}){particle(STEM_NAME[day],'은','는')} {STEM_DESC[day][0]}에 비유돼요. "
+    first=(f"{label}의 일간 {STEM_NAME[day]}({day}){particle(STEM_NAME[day],'은','는')} {STEM_DESC[day][0]}에 비유할 수 있어요. "
            +f"{x['season']}의 월주 {month} 속 {center_name}{particle(center_name,'은','는')} {action}, {root} "
            +counterpoint+PROFILES[s['rule']][2])
     # Explicit interacting flow, not four positional personality descriptions.
@@ -139,7 +139,7 @@ def combined_basis(label,x):
         path=s['support_paths'][0]; ns={n['id']:n for n in s['nodes']}
         names={'wood':'나무','fire':'불','earth':'흙','metal':'금','water':'물'}
         a,b,c=[names[element(ns[n]['stem'])] for n in path]
-        second=f'{a}에서 {b}, 다시 일간의 {c}로 도움을 잇는 흐름도 있어요. 부담을 느껴도 사정을 더 알아보고 판단하려는 모습으로 읽을 수 있어요. '
+        second=f'{a}에서 {b}를 거쳐 일간의 {c}를 돕는 흐름도 있어요. 부담을 느껴도 사정을 더 알아본 뒤 판단하려는 성향으로 볼 수 있어요. '
     elif s['rule']=='shared_care':
         second='일간이 생활의 일을 다루는 관계에 뿌리와 같은 오행의 도움이 함께 있어요. '
     elif s['rule']=='supported_choice':
@@ -149,7 +149,7 @@ def combined_basis(label,x):
     if x['internal']:
         kinds='·'.join(dict.fromkeys(l['kind'] for l in x['internal']))
         pairs=' · '.join(dict.fromkeys(l['branches'] for l in x['internal']))
-        second+=f'{pairs}의 {kinds}도 있어, 관심을 표현하면서도 서로 다른 뜻을 조율해야 하는 모습으로 읽을 수 있어요. '
+        second+=f'{pairs}의 {kinds}는 가까워지고 싶은 마음과 의견을 맞춰 가는 과정이 함께 있다는 뜻으로 해석할 수 있어요. '
     if s['stem_combinations']:
         second+='겉글자 사이의 합도 있지만, 각 글자의 본래 역할은 그대로 두고 읽었어요. '
     second+=PROFILES[s['rule']][3]
@@ -195,16 +195,24 @@ def person_text(label,x,role):
     if x['synthesis']['rule']=='supported_choice' and role=='다아시':
         events=('다아시는 제인의 마음을 자기 기준으로 판단해 빙리와 멀어지게 해요. 첫 청혼에서도 두 집안의 차이를 따지면서 자기 마음을 전하죠.',
                 '그는 엘리자베스의 뜻을 충분히 듣지 않은 채 자기 판단을 앞세워요. 하지만 청혼을 거절당한 뒤에는 태도를 돌아보고, 빙리에게 제인에 대한 판단이 틀렸다고 인정해요.')
+    stem = STEM_NAME[x['pillars']['day_pillar'][0]]
+    trait = {'주관이 뚜렷함': '뚜렷한 주관', '표현이 솔직함': '솔직한 표현',
+             '사려 깊음': '사려 깊은 태도'}.get(first, first)
+    first_link = (f'{role}의 행동에서 **{trait}**{particle(trait, "이", "가")} 드러나요. '
+                  f'{label}의 {stem} 일간과 다른 사주 글자에서도 이 성향을 살필 수 있어요. '
+                  f'{connection[0]} 두 사람이 닮았다고 볼 수 있죠.')
+    second_link = (f'{label}의 사주에서는 **{second}**도 살펴봤어요. '
+                   f'{connection[1]} {role}{particle(role, "과", "와")} 닮을 수 있어요.')
     return (' · '.join('**'+k+'**' for k in (first,second))+'\n\n'+basis
-            +'\n\n'+events[0]+f" {label}에게서 읽은 **{first}**이라는 성향도 {connection[0]} 이런 모습과 비슷해요."
+            +'\n\n'+events[0]+' '+first_link
             +'\n\n'+adjustment+'\n\n'+events[1]
-            +f' **{second}**이라는 표현은 {connection[1]} 이 인물을 닮았다는 뜻이에요.')
+            +' '+second_link)
 
 
 
 def pair_context(a,b,links):
     ka,kb=character_keywords(a)[0],character_keywords(b)[0]
-    text=f'당신에게서 읽은 성향은 ‘{ka}’, 상대방에게서 읽은 성향은 ‘{kb}’이에요. '
+    text=f'당신에게서 두드러지는 성향은 ‘{ka}’이고, 상대방은 ‘{kb}’이 특징이에요. '
     wishes={'care':'준비한 마음을 알아주길','reflect':'충분히 이해하고 답할 시간을 주길',
             'self':'자기 선택을 존중해 주길','voice':'말을 듣고 뜻을 다시 확인해 주길',
             'promise':'약속을 구체적으로 정해 주길'}

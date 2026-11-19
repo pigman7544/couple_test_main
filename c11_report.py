@@ -73,6 +73,7 @@ def day_relationship(a,b):
 
 
 def enrich(result,a,b,rel,couple):
+    result['tagline'] = '숱한 오해를 넘어 새로운 사랑으로'
     aa,bb=extract(a),extract(b)
     result['chart_evidence']=dict(version='c11-integrated-v2',a=aa,b=bb,cross=cross(a,b),
         policy='c11 일간 중심 관계망과 조건 결합 편집. 계산·점수·매칭·기존 배역 보존. 합화·신강약·용신·대운 판단 없음.')
@@ -91,11 +92,11 @@ def enrich(result,a,b,rel,couple):
     result['story'] = ''
     # The second-person paragraph is about the other reader, so reverse labels.
     other=ARCS[bb['theme']][1].replace('당신','@YOU@').replace('상대방','당신').replace('@YOU@','상대방')
-    result['saju_a']=block(title,attraction)+'\n\n'+block('상대방이 마음을 표현하는 방법',other)+'\n\n엘리자베스와 다아시도 상대를 향한 관심과 상대를 제대로 아는 일 사이에 시간이 필요했어요. 여러분도 고마웠던 행동을 하나 떠올리고, 그 행동이 왜 좋았는지 말해 볼 수 있어요. 비슷해 보이는 말 뒤에도 서로 다른 바람이 있을 수 있으니까요.'
+    result['saju_a']=block(title,attraction)+'\n\n'+block('상대방이 마음을 표현하는 방법',other)+'\n\n엘리자베스와 다아시도 상대를 향한 관심과 상대를 제대로 아는 일 사이에 시간이 필요했어요. 두 분도 상대에게 고마웠던 행동을 하나 떠올리고, 그 행동이 왜 좋았는지 말해 보세요. 비슷해 보이는 말 뒤에도 서로 다른 바람이 있을 수 있으니까요.'
     result['crisis']=block('우리의 하루라면 — 가상 장면',scene)+'\n\n'+tension+'\n\n엘리자베스의 첫인상에는 실제로 무례했던 다아시의 말도 있었어요. 그러니 모든 서운함을 오해라고 지울 필요는 없어요. 무엇이 있었는지, 나는 어떤 뜻으로 받아들였는지, 어떤 행동이 달라져야 하는지를 나누어 이야기해 보세요.'
     result['tip']=block('같은 장면에서 다시 말한다면',repair)+'\n\n'+block('약속한 일을 실천하기','상대의 설명을 들었다고 바로 같은 마음이 되어야 하는 것은 아니에요. 지금 동의한 일을 작게 정하고 다음 만남에서 어떻게 달라졌는지 살펴보세요. 약속을 지키기 어려웠다면 먼저 알려 주고 다시 정해요. 다아시의 두 번째 고백처럼, 상대가 다른 답을 할 수 있다는 점도 받아들여야 해요.')+'\n\n'+block('오늘 나누고 싶은 질문',question)
     result['questions']=list(dict.fromkeys((question,ARCS[bb['theme']][5])))
-    result['ending']='처음의 판단을 고치는 일은 마음이 약해지는 일이 아니에요. 오늘 들은 말과 오늘 본 행동으로 서로를 다시 알아가요.'
+    result['ending']='상대의 뜻을 짐작했던 일이 있다면, 다음에 만나서 직접 물어보세요.'
     result['saju_a']+='\n\n'+block('오늘의 생각을 다시 묻기','처음에는 좋았던 점도 상황에 따라 불편하게 느껴질 수 있어요. 말을 많이 나누던 사람이 유난히 조용한 날, 늘 준비하던 사람이 오늘은 아무것도 고르고 싶지 않은 날처럼요. 지난번 모습을 보고 오늘도 같을 거라고 단정하지 않으면, 상대방도 원하는 것을 말하기 쉬워져요. “너는 원래 그렇잖아” 대신 “오늘은 어때?”라고 물어보세요.')
     result['tip']+='\n\n다음 만남에는 오늘 정한 약속을 다시 살펴보세요. 편해진 점 하나와 아직 어려운 점 하나를 나누면 충분해요. 바로 달라지지 않았다고 실패한 대화로 정할 필요는 없어요. 다만 같은 상처가 반복된다면 더 참는 것보다 무엇을 바꿀 수 있는지 솔직하게 말해야 해요. 서로의 설명을 듣는 일과 내가 불편한 점을 말하는 일은 함께 할 수 있어요.'
     result['saju_a'] = (block('두 사람의 일간으로 본 관계', day_relationship(a,b))

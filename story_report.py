@@ -14,7 +14,7 @@ STEM_DESC={
 '庚':('거친 광석을 다듬는 단단한 쇠','문제를 똑바로 보고 결론을 내리려는 기질','명확한 약속과 일관성','애매함 없이 이야기하는 대화'),
 '辛':('섬세하게 빛나는 보석','말과 태도의 디테일을 중요하게 여기는 기질','존중과 세심한 품격','사소한 변화를 기억해 주는 마음'),
 '壬':('큰 강과 바다','여러 가능성을 한꺼번에 바라보는 기질','넓은 시야와 자유로운 대화','생각을 마음껏 펼칠 수 있는 여유'),
-'癸':('스며드는 비와 이슬','조용히 관찰하며 감정을 깊이 담아두는 기질','안전한 분위기에서 나누는 속마음','재촉하지 않고 기다려 주는 태도')}
+'癸':('비와 이슬','조용히 관찰하며 감정을 깊이 담아두는 기질','안전한 분위기에서 나누는 속마음','재촉하지 않고 기다려 주는 태도')}
 ELEM_DESC={
 'wood':'목은 시작·확장·계획의 이미지야. 사랑에서는 함께 배우고 앞으로 나아가려는 추진력으로 읽을 수 있어.',
 'fire':'화는 온기·표현·활력의 이미지야. 사랑에서는 애정을 표현하고 분위기를 살리는 힘으로 읽을 수 있어.',
@@ -349,8 +349,10 @@ def make_report(a,b,rel,couple,story):
         if couple['id'] == 'c11':
             from c11_report import enrich as enrich_c11
             result = enrich_c11(result, a, b, rel, couple)
-    from report_emphasis import emphasize
+    from report_emphasis import emphasize, add_body_emphasis
     for key in ('roles', 'story', 'saju_a', 'crisis', 'scene', 'tip', 'ending'):
         if isinstance(result.get(key), str):
             result[key] = emphasize(result[key], couple['id'], key)
+    fields = {key: result[key] for key in ('roles', 'story', 'saju_a', 'crisis', 'scene', 'tip', 'ending') if result.get(key)}
+    result.update(add_body_emphasis(fields))
     return result

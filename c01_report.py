@@ -61,7 +61,11 @@ def enrich(result, a, b, rel):
     xm, cm = (xb, cb) if a_chun else (xa, ca)
     def profile(label, character, p, x, counts):
         from reading_voice import profile as reader_profile
-        return f'◆ **{label}에게 비춰 보는 {character}의 마음**\n' + reader_profile(label, x, counts, character == "춘향")
+        action = ('춘향은 변학도의 강요를 거부하고 자신의 선택을 지켜요.'
+                  if character == '춘향' else
+                  '몽룡은 암행어사가 된 뒤 남원으로 돌아와 춘향이 갇힌 일을 바로잡아요.')
+        return (f'◆ **{character}을 닮은 {label}**\n{action} '
+                + reader_profile(label, x, counts, character == '춘향'))
     result['tagline'] = '서로 떨어져 있어도, 마음속 약속을 지키는 사랑'
     result['teaser'] = '서로에 대한 믿음이 관계를 지탱하는 커플이에요. 하지만 그 믿음이 때로는 말하지 못한 외로움과 기다림을 감추기도 해요.'
     result['roles'] = (
@@ -111,7 +115,7 @@ def enrich(result, a, b, rel):
             for key in ('security','expression','autonomy','conflict','growth','attraction')
         )
     )
-    result['ending'] = '사랑은 언젠가 돌아오겠다는 약속만이 아니라, 오늘도 서로를 향해 조금씩 걸어가는 일이에요.'
+    result['ending'] = '멀리 있거나 바쁜 날에도 지킬 수 있는 약속을 하나 정해 보세요.'
     result['questions'] = [
         f'{chun}에게: 지금 지키고 싶은 선택을 상대에게 어떻게 알려 주고 싶나요?',
         f'{mong}에게: 미래의 약속을 오늘의 작은 행동으로 바꾼다면 무엇을 할 수 있나요?',
