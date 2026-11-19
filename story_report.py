@@ -12,7 +12,7 @@ STEM_DESC={
 '戊':('쉽게 흔들리지 않는 큰 산','자기 자리를 지키며 책임을 감당하려는 기질','신뢰와 일상의 안정','말보다 행동으로 쌓이는 믿음'),
 '己':('무언가를 길러 내는 부드러운 밭','상황을 살피며 관계를 돌보는 기질','서로의 생활을 보살피는 리듬','노력을 알아봐 주는 인정'),
 '庚':('거친 광석을 다듬는 단단한 쇠','문제를 똑바로 보고 결론을 내리려는 기질','명확한 약속과 일관성','애매함 없이 이야기하는 대화'),
-'辛':('섬세하게 빛나는 보석','말과 태도의 작은 차이를 중요하게 여기는 기질','분명한 기준과 세심한 배려','사소한 변화를 기억해 주는 마음'),
+'辛':('섬세하게 빛나는 보석','말과 태도의 디테일을 중요하게 여기는 기질','존중과 세심한 품격','사소한 변화를 기억해 주는 마음'),
 '壬':('큰 강과 바다','여러 가능성을 한꺼번에 바라보는 기질','넓은 시야와 자유로운 대화','생각을 마음껏 펼칠 수 있는 여유'),
 '癸':('비와 이슬','조용히 관찰하며 감정을 깊이 담아두는 기질','안전한 분위기에서 나누는 속마음','재촉하지 않고 기다려 주는 태도')}
 ELEM_DESC={
@@ -324,27 +324,31 @@ def make_report(a,b,rel,couple,story):
     return result
 
 
+# Keep all other types and free-preview fields on the existing report path.
 _v66_make_report = make_report
 
-
-def make_report(a, b, rel, couple, story):
-    """Compose each live report once, then apply reader formatting."""
-    result = dict(pillars_a=pillar_text(a), pillars_b=pillar_text(b),
-                  scene='', saju_b='', chemistry='')
-    cid = couple['id']
-    if cid == 'c06':
-        from c06_chart import enrich
-        result = enrich(result, a, b)
+def make_report(a,b,rel,couple,story):
+    result = _v66_make_report(a,b,rel,couple,story)
+    if couple['id'] == 'c01':
+        from c01_report import enrich as enrich_chunhyang
+        result = enrich_chunhyang(result, a, b, rel)
+    if couple['id'] not in ('c06', 'c01'):
+        from other_reports import enrich as enrich_other
+        result = enrich_other(result, a, b, rel, couple)
+    if couple['id'] == 'c06':
+        from c06_report import enrich
+        result = enrich(result, a, b, rel)
+    from personalized_reading import enrich as personalize
+    if couple['id'] == 'c06':
+        from c06_chart import enrich as personalize_chart
+        result = personalize_chart(result, a, b)
     else:
-        if cid == 'c03':
-            from ondal_reading import enrich
-        elif cid == 'c11':
-            from c11_report import enrich
-        else:
-            from edited_reports import enrich
-        result = enrich(result, a, b, rel, couple)
-    if cid != 'c11':
-        result['scene'] = result['crisis'].split('\n\n', 1)[0]
+        result = personalize(result, a, b, rel, couple)
+        from literary_edition import enrich as enrich_literary
+        result = enrich_literary(result, a, b, rel, couple)
+        if couple['id'] == 'c11':
+            from c11_report import enrich as enrich_c11
+            result = enrich_c11(result, a, b, rel, couple)
     from report_emphasis import emphasize, add_body_emphasis
     for key in ('roles', 'story', 'saju_a', 'crisis', 'scene', 'tip', 'ending'):
         if isinstance(result.get(key), str):

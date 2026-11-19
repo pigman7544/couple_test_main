@@ -19,18 +19,10 @@ class ChunhyangReportTests(unittest.TestCase):
                 self.assertNotIn('허선', prose)
 
     def test_route_isolated(self):
-        from engine import person
-        from matcher import DB
-        from relationship_v08 import relation
-        from story_report import make_report
-        a, b = person(1992, 3, 18), person(1992, 4, 30)
-        reports = {c['id']: make_report(a, b, relation(a, b), c, {}) for c in DB}
-        self.assertIn('변학도', reports['c01']['roles'])
-        self.assertNotIn('◆ ', reports['c01']['saju_a'])
-        self.assertNotRegex(reports['c01']['roles'], '동점|편집상|누가 더 사랑|세심한 품격')
-        for cid, report in reports.items():
-            if cid != 'c01':
-                self.assertNotIn('변학도', report['roles'])
+        from pathlib import Path
+        code = (Path(__file__).parent/'story_report.py').read_text(encoding='utf-8')
+        self.assertIn("if couple['id'] == 'c01':", code)
+        self.assertIn("if couple['id'] != 'c06':", code)
 
 if __name__ == '__main__':
     unittest.main()

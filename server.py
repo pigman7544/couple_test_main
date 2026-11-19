@@ -5,19 +5,13 @@ from pathlib import Path
 from urllib.parse import urlparse
 from engine import person
 from relationship_v08 import relation
-from matcher import DB, rank
+from matcher import rank
 from narrative import describe
 from story_report import make_report
 
 ROOT=Path(__file__).resolve().parent
 MAX_BODY=8192
-COUPLE_ART = {
-    couple['id']: {
-        variant: f"/assets/{'baek_heo' if couple['id'] == 'c06' else couple['id']}_{variant}.png"
-        for variant in ('title', 'plain')
-    }
-    for couple in DB
-}
+COUPLE_ART = {'c06': {'title': '/assets/baek_heo_title.png', 'plain': '/assets/baek_heo_plain.png'}}
 ART_PATHS = {path for art in COUPLE_ART.values() for path in art.values()}
 
 def compute(payload, unlock=False):
@@ -45,7 +39,7 @@ def compute(payload, unlock=False):
         art = None
     if unlock:
         return {'full_report':full,'couple':{'id':couple['id'],'name':couple['name'],'work':couple['work']},'has_art':art is not None,'art':art,'test_mode':True}
-    excerpt = full['saju_a']
+    excerpt = full.get('plot', {}).get('body') or full.get('crisis') or full.get('story', '')
     excerpt = re.sub(r'^◆ .*\n', '', excerpt.strip(), count=1).split('\n\n')[0].replace('**', '')
     if len(excerpt) > 95:
         excerpt = excerpt[:95].rsplit(' ', 1)[0] + '…'
@@ -66,9 +60,6 @@ class Handler(BaseHTTPRequestHandler):
             raw=json.dumps(response,ensure_ascii=False).encode('utf8');mime='application/json; charset=utf-8'
         elif path=='/manuscripts':
             raw=(ROOT/'manuscript-shelf.html').read_bytes();mime='text/html; charset=utf-8'
-        elif path in ('/report-glossary.js', '/report-glossary.css'):
-            raw=(ROOT/path.lstrip('/')).read_bytes()
-            mime=('text/javascript' if path.endswith('.js') else 'text/css')+'; charset=utf-8'
         elif path=='/health':raw=b'OK';mime='text/plain; charset=utf-8'
         elif path in ('/preview','/preview.html'):
             raw=(ROOT/'preview.html').read_bytes();mime='text/html; charset=utf-8'

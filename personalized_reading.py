@@ -62,11 +62,13 @@ def enrich(result, a, b, rel, couple):
     v = rel['vector']
     from reading_voice import connection
     result['saju_a'] += '\n\n' + connection(a, b)
-    result['saju_a'] += '\n\n◆ **일상에서 서로 마음을 전하는 법**\n\n' + '\n\n'.join(voices)
-    result['crisis'] += (f'\n\n◆ **{setting}**\n'
+    result['saju_a'] += '\n\n◆ **두 사람의 상징이 일상에서 만난다면**\n\n' + '\n\n'.join(voices)
+    result['crisis'] += (f'\n\n◆ **현실에 비춰 보는 가상 장면 — {setting}**\n'
+                         '아래는 원전의 사건이나 두 분이 실제로 겪은 일이 아닌, 출생정보의 상징을 바탕으로 고른 대화 예시예요. '
                          + CONFLICT[band(v['conflict'])] + '\n\n' + EXPRESSION[band(v['expression'])]
                          + '\n\n' + AUTONOMY[band(v['autonomy'])])
     result['tip'] += (f'\n\n◆ **{question}**\n\n' + '\n\n'.join(tasks)
                       + '\n\n각자의 답에서 이번 주 실제로 할 수 있는 행동을 하나씩 고르세요. '
-                      '언제 할지 정한 뒤, 다음 대화에서는 어떤 점이 편했고 어려웠는지 나눠 보세요.')
+                      '언제 할지 정한 뒤, 다음 대화에서는 지켰는지를 채점하기보다 어떤 점이 편했고 어려웠는지 나눠 보세요. '
+                      '상징이 자신의 경험과 맞지 않는다면, 서로 말해 준 실제 바람을 우선해 약속을 고쳐도 좋아요.')
     return result
