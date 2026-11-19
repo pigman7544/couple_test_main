@@ -80,7 +80,7 @@ class FullChartTests(unittest.TestCase):
         self.assertNotIn('hour_pillar',x['hidden'])
         self.assertFalse(any(r['a']=='hour_pillar' for r in cross(p,person(1992,4,30,1))))
 
-    def test_hour_alone_updates_chart_evidence_without_inventing_a_reading(self):
+    def test_hour_alone_changes_reading_without_mutating_inputs(self):
         a,b=person(1992,3,18,1),person(1992,4,30,1)
         later=person(1992,3,18,16)
         self.assertEqual(a['day_pillar'],later['day_pillar'])
@@ -89,9 +89,7 @@ class FullChartTests(unittest.TestCase):
         c=next(c for c in DB if c['id']=='c06')
         r=make_report(a,b,relation(a,b),c,{})
         s=make_report(later,b,relation(later,b),c,{})
-        self.assertNotEqual(r['chart_evidence']['a'], s['chart_evidence']['a'])
-        for key in ('roles', 'crisis', 'tip'):
-            self.assertEqual(r[key], s[key])
+        for k in ('roles','crisis','tip'): self.assertNotEqual(r[k],s[k])
         self.assertEqual((a,b),original)
 
     def test_cross_positions_and_no_transformation(self):

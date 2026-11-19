@@ -106,12 +106,11 @@ def emphasize(value, cid, section):
     for block in value.split('\n\n'):
         lines = block.split('\n')
         heading = lines.pop(0) if lines and lines[0].lstrip().startswith(('◆ ', '#')) else None
-        body = '\n'.join(lines)
-        if '**' not in body:
-            for phrase in BY_TYPE.get(cid, ()) + COMMON:
-                if phrase in body:
-                    body = body.replace(phrase, '**' + phrase + '**', 1)
-                    break
+        body = '\n'.join(lines).replace('**', '')
+        for phrase in BY_TYPE.get(cid, ()) + COMMON:
+            if phrase in body:
+                body = body.replace(phrase, '**' + phrase + '**', 1)
+                break
         # Profile needs vary with the input; emphasize the desired care rather
         # than the technical symbol. The literal cue preserves the whole prose.
         if section == 'roles' and '**' not in body:
@@ -175,8 +174,6 @@ def add_body_emphasis(sections):
             marked.extend(re.findall(r'\*\*(.+?)\*\*', body))
             for sentence in re.split(r'(?<=[.!?])\s+', body):
                 if ('**' in sentence or '\n' in sentence or not 16 <= len(sentence) <= 110
-                        or re.search(r'[甲乙丙丁戊己庚辛壬癸]|일간|오행|상생|상극', sentence)
-                        or len(re.findall(r'\*\*(.+?)\*\*', body)) >= 2
                         or not sentence.endswith(('.', '요?', '죠?')) or sentence.startswith('※')):
                     continue
                 action = bool(re.search(r'(말해 |물어|정해 |확인|찾아|나눠|들어).*(보세요|주세요|해요|봐요)', sentence))

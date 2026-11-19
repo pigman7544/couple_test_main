@@ -14,15 +14,22 @@ from c11_report import TALE
 
 class C11ReportTests(unittest.TestCase):
     def test_integration_preserves_non_editorial_response(self):
-        cases = json.loads(Path('tests/fixtures/c11_comparison.json').read_text(encoding='utf8'))
-        for case in cases:
-            preview = compute(case['payload'])
-            unlocked = compute(case['payload'], True)
-            for key in ('couple', 'art', 'has_art'):
-                self.assertEqual(preview[key], unlocked[key])
-            self.assertEqual(unlocked['couple']['id'], 'c11')
-            self.assertTrue(unlocked['test_mode'])
-            self.assertNotIn('full_report', preview)
+        import subprocess,types,c11_report
+        from unittest.mock import patch
+        baseline=types.ModuleType('before_integration')
+        exec(subprocess.check_output(['git','show','00f833f:c11_report.py']).decode('utf8'),baseline.__dict__)
+        for case in json.loads(Path('tests/fixtures/c11_comparison.json').read_text(encoding='utf8')):
+            current=compute(case['payload'],True)
+            preview=compute(case['payload'])
+            with patch.object(c11_report,'enrich',baseline.enrich):
+                old=compute(case['payload'],True)
+                self.assertEqual(preview,compute(case['payload']))
+            self.assertEqual({k:v for k,v in current.items() if k!='full_report'},
+                             {k:v for k,v in old.items() if k!='full_report'})
+            for key in ('plot','sections','questions','ending'):
+                self.assertEqual(current['full_report'][key],old['full_report'][key])
+            for key in ('roles','saju_a','tip'):
+                self.assertNotEqual(current['full_report'][key],old['full_report'][key])
 
     def test_plain_language_and_personalized_keyword_placement(self):
         keyword_sets=[]
@@ -51,16 +58,27 @@ class C11ReportTests(unittest.TestCase):
         self.assertNotEqual(keyword_sets[0][0],keyword_sets[1][0])
         self.assertNotEqual(keyword_sets[0][1],keyword_sets[1][1])
 
-    def test_plot_and_chart_evidence_are_preserved(self):
-        from c06_chart import cross
-        a, b = person(1999, 1, 22, 1), person(1998, 11, 9, 21)
-        couple = next(c for c in DB if c['id'] == 'c11')
-        report = make_report(a, b, relation(a, b), couple, {})
-        self.assertEqual(report['plot']['body'], TALE)
-        evidence = report['chart_evidence']
-        self.assertEqual(evidence['a'], extract(a))
-        self.assertEqual(evidence['b'], extract(b))
-        self.assertEqual(evidence['cross'], cross(a, b))
+    def test_edit_preserves_preview_plot_evidence_and_other_types(self):
+        import subprocess,types,c11_report
+        from unittest.mock import patch
+        baseline=types.ModuleType('before_edit')
+        exec(subprocess.check_output(['git','show','a376cc6:c11_report.py']).decode('utf8'),baseline.__dict__)
+        for case in json.loads(Path('tests/fixtures/c11_comparison.json').read_text(encoding='utf8')):
+            current=compute(case['payload'],True)
+            preview=compute(case['payload'])
+            with patch.object(c11_report,'enrich',baseline.enrich):
+                old=compute(case['payload'],True)
+                self.assertEqual(preview,compute(case['payload']))
+            for key in ('plot','sections','questions','ending'):
+                self.assertEqual(current['full_report'][key],old['full_report'][key])
+            self.assertEqual({k:v for k,v in current.items() if k!='full_report'},
+                             {k:v for k,v in old.items() if k!='full_report'})
+        a,b=person(1999,1,22,1),person(1998,11,9,21)
+        for couple in DB:
+            if couple['id']=='c11': continue
+            current=make_report(a,b,relation(a,b),couple,{})
+            with patch.object(c11_report,'enrich',baseline.enrich):
+                self.assertEqual(current,make_report(a,b,relation(a,b),couple,{}))
 
     def test_pillar_provenance_and_story_for_new_readers(self):
         from c06_narrative import basis, GOD_MEANING
@@ -121,14 +139,34 @@ class C11ReportTests(unittest.TestCase):
         self.assertIn('**예약 전에**',reports[0]['tip'])
         self.assertIn('**오늘 저녁 8시에**',reports[1]['tip'])
 
-    def test_three_chapters_and_unbroken_relationship_prose(self):
+    def test_three_chapters_preserve_preview_and_all_other_reports(self):
+        import subprocess, types
+        import c11_report
+        from unittest.mock import patch
+        baseline=types.ModuleType('old_c11')
+        exec(subprocess.check_output(['git','show','9a6b2b0:c11_report.py']).decode('utf8'),baseline.__dict__)
         for case in json.loads(Path('tests/fixtures/c11_comparison.json').read_text(encoding='utf8')):
-            report = compute(case['payload'], True)['full_report']
-            self.assertEqual([c['key'] for c in report['chapters']], ['roles', 'saju_a', 'tip'])
-            self.assertEqual(report['plot']['body'], TALE)
-            for key in ('saju_a', 'tip'):
-                self.assertNotIn('◆ ', report[key])
-                self.assertGreaterEqual(len(report[key].split('\n\n')), 3)
+            current=compute(case['payload'])
+            with patch.object(c11_report,'enrich',baseline.enrich):
+                self.assertEqual(current,compute(case['payload']))
+            report=compute(case['payload'],True)['full_report']
+            self.assertEqual([c['key'] for c in report['chapters']],['roles','saju_a','tip'])
+            self.assertEqual(report['plot']['body'],TALE)
+            for who in ('a','b'):
+                x=report['chart_evidence'][who]
+                self.assertIn(x['pillars']['month_pillar'],report['roles'])
+            self.assertIn('오행에서는',report['saju_a'])
+            for kind in {x['kind'] for x in report['chart_evidence']['cross']}:
+                self.assertIn(kind,report['saju_a'])
+        a,b=person(1999,1,22,1),person(1998,11,9,21)
+        # Compare actual original generator output, not reconstructed assertions.
+        for couple in DB:
+            if couple['id']=='c11': continue
+            current=make_report(a,b,relation(a,b),couple,{})
+            with patch.object(c11_report,'enrich',baseline.enrich):
+                self.assertEqual(current,make_report(a,b,relation(a,b),couple,{}))
+            self.assertEqual(len(current['chapters']),5)
+            self.assertNotIn('plot',current)
 
     def test_same_day_and_scores_other_pillars_change_reading(self):
         a,b=person(1999,1,22,1),person(1998,11,9,21)
@@ -139,10 +177,8 @@ class C11ReportTests(unittest.TestCase):
         changed=dict(a,month_pillar='甲寅',hour_pillar='丙寅')
         s=make_report(changed,b,rel,couple,{})
         self.assertEqual(a['day_pillar'],changed['day_pillar'])
-        self.assertNotEqual(r['chart_evidence']['a'], s['chart_evidence']['a'])
-        for key in ('saju_a', 'tip'):
-            self.assertEqual(r[key], s[key], key)
-        self.assertNotIn('월주', r['roles'] + s['roles'])
+        for key in ('roles','saju_a','tip'):
+            self.assertNotEqual(r[key],s[key],key)
         self.assertEqual((a,b,rel),original)
         self.assertEqual(r['chart_evidence']['a'],extract(a))
 

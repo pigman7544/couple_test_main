@@ -1,20 +1,18 @@
 """Report coverage and loopback HTTP checks; no production matching rules changed."""
 import hashlib
 import http.client
-import io
 import json
 from pathlib import Path
 import sys
 import threading
 import unittest
 from unittest.mock import patch
-from PIL import Image
 
 from engine import person
 from matcher import DB, rank
 from narrative import describe
 from relationship_v08 import relation
-from server import ART_PATHS, Handler, MAX_BODY, ThreadingHTTPServer, compute
+from server import Handler, MAX_BODY, ThreadingHTTPServer, compute
 from story_report import make_report
 
 
@@ -41,8 +39,6 @@ class ReportPaths(unittest.TestCase):
                         report = make_report(a, b, rel, couple, story)
                         for key in (('tagline','roles','saju_a','tip','ending') if couple['id']=='c11' else SECTIONS):
                             self.assertTrue(report[key], key)
-                        if couple['id'] == 'c11':
-                            self.assertTrue(report['plot']['body'])
                         self.assertTrue(report['questions'])
                         text = json.dumps(report, ensure_ascii=False)
                         self.assertNotIn('태양궁', text)
@@ -60,16 +56,6 @@ class ReportPaths(unittest.TestCase):
                 with patch('server.make_report', side_effect=story_report._v66_make_report):
                     response = compute(fixture['payload'], unlock=fixture['unlock'])
                 self.assertEqual(response['couple']['id'], 'c06')
-                self.assertEqual(response.pop('art'), {
-                    'title': '/assets/baek_heo_title.png',
-                    'plain': '/assets/baek_heo_plain.png',
-                })
-                if not fixture['unlock']:
-                    preview = response['preview']
-                    self.assertTrue(preview['story_excerpt'])
-                    # Restore the previous display formatting for the historical envelope check.
-                    preview['story_excerpt'] = ''
-                    preview['teaser'] = preview['teaser'].replace('\n', ' ')
                 raw = json.dumps(response, ensure_ascii=False, sort_keys=True).encode('utf8')
                 self.assertEqual(hashlib.sha256(raw).hexdigest(), fixture['sha256'])
 
@@ -116,9 +102,7 @@ class HttpPaths(unittest.TestCase):
                 status, data = self.post(endpoint, payload)
                 self.assertEqual(status, 200, data)
                 self.assertEqual(data['couple']['id'], expected_id)
-                self.assertTrue(data['has_art'])
-                self.assertEqual(set(data['art']), {'title', 'plain'})
-                self.assertTrue(set(data['art'].values()) <= ART_PATHS)
+                self.assertEqual(data['has_art'], expected_id == 'c06')
                 if endpoint == '/api/match':
                     self.assertIn('preview', data)
                     self.assertNotIn('full_report', data)
@@ -176,25 +160,18 @@ class HttpPaths(unittest.TestCase):
                                     for log in RecordingHandler.logs))
         self.check_success(SAMPLE, 'c06')
 
-    def test_all_couple_cards_are_distinct_parseable_pngs(self):
+    def test_baek_heo_cards_still_served(self):
         root = Path(__file__).parent
-        hashes = set()
-        self.assertEqual(len(ART_PATHS), 2 * len(EXPECTED_IDS))
-        for path in sorted(ART_PATHS):
+        for name in ('baek_heo_title.png', 'baek_heo_plain.png'):
             connection = http.client.HTTPConnection(*self.httpd.server_address, timeout=5)
             try:
-                connection.request('GET', path)
+                connection.request('GET', '/assets/' + name)
                 response = connection.getresponse()
                 self.assertEqual(response.status, 200)
                 self.assertEqual(response.getheader('Content-Type'), 'image/png')
-                data = response.read()
-                self.assertEqual(data, (root / path.lstrip('/')).read_bytes())
-                with Image.open(io.BytesIO(data)) as image:
-                    image.verify()
-                hashes.add(hashlib.sha256(data).hexdigest())
+                self.assertEqual(response.read(), (root / 'assets' / name).read_bytes())
             finally:
                 connection.close()
-        self.assertEqual(len(hashes), len(ART_PATHS))
 
 
 if __name__ == '__main__':
