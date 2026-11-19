@@ -118,7 +118,7 @@ def combined_basis(label,x):
     action='일간과 같은 오행이고' if incoming=='동류' else relation.get((incoming,True),relation.get((outgoing,False),'일간과 다른 역할을 하고'))
     root=(' · '.join(LABELS[k].replace('년주','연주')+' '+x['pillars'][k][1] for k in x['roots'])
           +' 안에는 일간과 같은 오행의 뿌리가 있어요.' if x['roots'] else
-          '입력된 가지 안에서는 일간과 같은 오행의 뿌리가 확인되지 않아요. 이것만으로 마음이 약하다고 판단하지는 않아요.')
+          '다른 자리에서는 일간과 같은 오행의 뿌리가 확인되지 않아요.')
     # Reader language describes functions, evidence keeps exact ten gods.
     functions={'self':'자기 뜻을 지키는 역할','voice':'밖으로 표현하는 역할',
                'care':'생활의 일을 챙기는 역할','promise':'기준을 세우고 조절하는 역할',
@@ -139,7 +139,7 @@ def combined_basis(label,x):
         path=s['support_paths'][0]; ns={n['id']:n for n in s['nodes']}
         names={'wood':'나무','fire':'불','earth':'흙','metal':'금','water':'물'}
         a,b,c=[names[element(ns[n]['stem'])] for n in path]
-        second=f'{a}에서 {b}를 거쳐 일간의 {c}를 돕는 흐름도 있어요. 부담을 느껴도 사정을 더 알아본 뒤 판단하려는 성향으로 볼 수 있어요. '
+        second=f'{a}에서 {b}{particle(b,"을","를")} 거쳐 일간의 {c}{particle(c,"을","를")} 돕는 흐름도 있어요. 부담을 느껴도 사정을 더 알아본 뒤 판단하려는 성향으로 볼 수 있어요. '
     elif s['rule']=='shared_care':
         second='일간이 생활의 일을 다루는 관계에 뿌리와 같은 오행의 도움이 함께 있어요. '
     elif s['rule']=='supported_choice':
@@ -149,9 +149,8 @@ def combined_basis(label,x):
     if x['internal']:
         kinds='·'.join(dict.fromkeys(l['kind'] for l in x['internal']))
         pairs=' · '.join(dict.fromkeys(l['branches'] for l in x['internal']))
-        second+=f'{pairs}의 {kinds}는 가까워지고 싶은 마음과 의견을 맞춰 가는 과정이 함께 있다는 뜻으로 해석할 수 있어요. '
-    if s['stem_combinations']:
-        second+='겉글자 사이의 합도 있지만, 각 글자의 본래 역할은 그대로 두고 읽었어요. '
+        if len(kinds.split('·')) == 1:
+            second+=f'{pairs}에서는 {kinds}도 보여요. '
     second+=PROFILES[s['rule']][3]
     return first,second
 

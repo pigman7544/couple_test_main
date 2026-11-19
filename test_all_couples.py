@@ -7,7 +7,6 @@ from relationship_v08 import relation
 from matcher import DB
 from narrative import describe
 from story_report import make_report
-from literary_edition import EDITION
 
 class EditorialTests(unittest.TestCase):
     @classmethod
@@ -27,21 +26,20 @@ class EditorialTests(unittest.TestCase):
                 self.assertTrue(report.get('questions'))
                 self.assertEqual(len({q.strip() for q in report['questions']}),len(report['questions']))
     def test_ten_other_archetypes_are_distinct(self):
-        self.assertEqual(len(EDITION),10)
-        titles=[v[0] for v in EDITION.values()]
-        self.assertEqual(len(set(titles)),10)
+        titles = set()
         for couple in DB:
-            if couple['id'] not in EDITION:continue
+            if couple['id'] in ('c01', 'c06'):
+                continue
             with self.subTest(couple=couple['id']):
                 report=make_report(self.a,self.b,self.rel,couple,describe(self.rel['vector'],couple['id']))
+                for name in couple['name'].split('·'):
+                    self.assertIn(name, report['roles'])
                 if couple['id'] == 'c11':
-                    self.assertIn('엘리자베스',report['roles'])
-                    self.assertIn('다아시',report['roles'])
                     self.assertIn('첫인상에서 편지까지',report['plot']['body'])
-                else:
-                    self.assertIn(EDITION[couple['id']][0],report['roles'])
-                    self.assertIn(EDITION[couple['id']][1].replace('**',''),report['story'].replace('**',''))
+                self.assertNotIn('◆ ', report['saju_a'])
+                titles.add(report['chapters'][0]['title'])
                 self.assertNotIn('백소정',report['roles']+report['story']+report['crisis']+report['tip'])
+        self.assertEqual(len(titles), 10)
     def test_input_swap_preserves_archetype_and_story(self):
         for couple in DB:
             with self.subTest(couple=couple['id']):
@@ -57,7 +55,6 @@ class EditorialTests(unittest.TestCase):
                 self.assertEqual([c['title'] for c in ab['chapters']],[c['title'] for c in ba['chapters']])
     def test_no_unverified_deterministic_claims(self):
         for couple in DB:
-            if couple['id'] not in EDITION:continue
             with self.subTest(couple=couple['id']):
                 report=make_report(self.a,self.b,self.rel,couple,describe(self.rel['vector'],couple['id']))
                 for key in ('roles','saju_a'):

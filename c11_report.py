@@ -114,6 +114,11 @@ def enrich(result,a,b,rel,couple):
         +' 바랄 수 있어요. 당신이 바라는 반응도 말하고 서로 어디까지 맞출 수 있는지 의논해 보세요.')
     result['crisis']=''
     result['scene']=''
+    for key in ('saju_a', 'tip'):
+        result[key] = '\n\n'.join(
+            paragraph.partition('\n')[2] if paragraph.startswith('◆ ') else paragraph
+            for paragraph in result[key].split('\n\n')
+        )
     result['sections']=['roles','saju_a','tip']
     result['chapters']=[dict(key=k,title=t) for k,t in zip(result['sections'],(
         '우리가 엘리자베스와 다아시를 닮은 이유',

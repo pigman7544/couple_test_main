@@ -1,0 +1,5253 @@
+{
+  "commit": "056810e9ee24943749fa175b71c97c5cf2460f69",
+  "sources": {
+    "engine.py": "e09fe02a1ffc53d800f141b30cb54ddfac09afbec9c67a2412237b8134daca57",
+    "relationship_v08.py": "9b9cb1b28a7971b342343774ae2dcd09b0eccffb5f07698ad57b2f60e43f7cc5",
+    "matcher.py": "21a963ff9bf49691a906559b6cf6eafe3d206ddae3afd61516cd39c5a47d205f",
+    "couples.json": "e724abeda67558f57ffdbac66bc043f494adde91eaecab80505da952f71e72af"
+  },
+  "cases": [
+    {
+      "payload": {
+        "a": {
+          "date": "1983-06-03",
+          "calendar": "solar",
+          "time": "01:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1984-07-11",
+          "calendar": "solar",
+          "time": "15:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 63.08,
+        "conflict": 60.0,
+        "autonomy": 56.75,
+        "expression": 59.8,
+        "growth": 70.05
+      },
+      "rank": [
+        "c01",
+        "c11",
+        "c02",
+        "c06",
+        "c03",
+        "c13",
+        "f02",
+        "f03",
+        "f01",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1980-04-22",
+          "calendar": "solar",
+          "time": "00:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "2004-01-12",
+          "calendar": "solar",
+          "time": "00:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 59.55,
+        "conflict": 66.0,
+        "autonomy": 62.5,
+        "expression": 56.45,
+        "growth": 59.45
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c18",
+        "c01",
+        "c11",
+        "c13",
+        "f02",
+        "c10",
+        "f04",
+        "f03",
+        "f01",
+        "c03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1987-06-24",
+          "calendar": "solar",
+          "time": "03:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1994-03-07",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 57.85,
+        "security": 70.6,
+        "conflict": 50.0,
+        "autonomy": 59.0,
+        "expression": 61.0,
+        "growth": 70.55
+      },
+      "rank": [
+        "c01",
+        "c03",
+        "f03",
+        "c13",
+        "f01",
+        "c11",
+        "c02",
+        "f02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1976-08-14",
+          "calendar": "solar",
+          "time": "06:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1999-03-27",
+          "calendar": "solar",
+          "time": "17:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 66.25,
+        "conflict": 58.0,
+        "autonomy": 62.5,
+        "expression": 64.5,
+        "growth": 53.0
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c01",
+        "c13",
+        "f02",
+        "f03",
+        "c11",
+        "f01",
+        "c18",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1979-07-28",
+          "calendar": "solar",
+          "time": "12:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1973-02-24",
+          "calendar": "solar",
+          "time": "09:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 53.5,
+        "conflict": 74.8,
+        "autonomy": 72.4,
+        "expression": 53.0,
+        "growth": 60.0
+      },
+      "rank": [
+        "c06",
+        "c18",
+        "c02",
+        "c11",
+        "f02",
+        "c01",
+        "c13",
+        "c10",
+        "f04",
+        "f01",
+        "f03",
+        "c03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1994-11-22",
+          "calendar": "solar",
+          "time": "04:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1987-11-23",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 58.85,
+        "security": 66.9,
+        "conflict": 60.0,
+        "autonomy": 59.0,
+        "expression": 62.95,
+        "growth": 60.0
+      },
+      "rank": [
+        "c02",
+        "c01",
+        "c06",
+        "c13",
+        "c11",
+        "f02",
+        "c03",
+        "f03",
+        "f01",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1982-10-09",
+          "calendar": "solar",
+          "time": "13:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1979-09-05",
+          "calendar": "solar",
+          "time": "02:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 70.83,
+        "conflict": 52.0,
+        "autonomy": 56.25,
+        "expression": 66.3,
+        "growth": 56.05
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "f03",
+        "c02",
+        "c03",
+        "f01",
+        "c06",
+        "f02",
+        "c11",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1994-08-14",
+          "calendar": "solar",
+          "time": "17:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1987-07-03",
+          "calendar": "solar",
+          "time": "16:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 58.85,
+        "security": 69.53,
+        "conflict": 49.9,
+        "autonomy": 63.35,
+        "expression": 58.75,
+        "growth": 61.5
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "c02",
+        "f03",
+        "f01",
+        "c03",
+        "c11",
+        "c06",
+        "f02",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1973-06-02",
+          "calendar": "solar",
+          "time": "03:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1986-11-18",
+          "calendar": "solar",
+          "time": "12:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 63.25,
+        "conflict": 61.2,
+        "autonomy": 65.1,
+        "expression": 54.5,
+        "growth": 70.0
+      },
+      "rank": [
+        "c11",
+        "c02",
+        "c01",
+        "c06",
+        "c13",
+        "f02",
+        "c18",
+        "f03",
+        "f01",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1982-02-26",
+          "calendar": "solar",
+          "time": "14:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1971-09-02",
+          "calendar": "solar",
+          "time": "15:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 63.62,
+        "conflict": 63.2,
+        "autonomy": 71.85,
+        "expression": 62.25,
+        "growth": 57.5
+      },
+      "rank": [
+        "c06",
+        "c11",
+        "c02",
+        "f02",
+        "c01",
+        "c13",
+        "c18",
+        "f01",
+        "f03",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1980-03-06",
+          "calendar": "solar",
+          "time": "14:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1991-12-13",
+          "calendar": "solar",
+          "time": "09:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 64.5,
+        "conflict": 50.0,
+        "autonomy": 63.0,
+        "expression": 53.0,
+        "growth": 80.0
+      },
+      "rank": [
+        "c11",
+        "c01",
+        "c13",
+        "f03",
+        "c03",
+        "f01",
+        "c02",
+        "f02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1981-06-23",
+          "calendar": "solar",
+          "time": "13:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1991-10-22",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 64.5,
+        "conflict": 50.0,
+        "autonomy": 63.0,
+        "expression": 53.0,
+        "growth": 80.0
+      },
+      "rank": [
+        "c11",
+        "c01",
+        "c13",
+        "f03",
+        "c03",
+        "f01",
+        "c02",
+        "f02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1982-12-12",
+          "calendar": "solar",
+          "time": "04:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1978-03-14",
+          "calendar": "solar",
+          "time": "08:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 59.38,
+        "conflict": 74.0,
+        "autonomy": 64.75,
+        "expression": 58.75,
+        "growth": 65.5
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c11",
+        "c18",
+        "f02",
+        "c01",
+        "c13",
+        "f04",
+        "c10",
+        "c03",
+        "f01",
+        "f03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "2000-01-27",
+          "calendar": "solar",
+          "time": "04:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1980-07-09",
+          "calendar": "solar",
+          "time": "08:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 61.5,
+        "conflict": 61.2,
+        "autonomy": 69.6,
+        "expression": 53.0,
+        "growth": 73.0
+      },
+      "rank": [
+        "c11",
+        "c06",
+        "c01",
+        "c02",
+        "c13",
+        "f02",
+        "c18",
+        "f03",
+        "f01",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1994-05-25",
+          "calendar": "solar",
+          "time": "17:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1971-02-25",
+          "calendar": "solar",
+          "time": "15:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 68.2,
+        "conflict": 62.1,
+        "autonomy": 63.9,
+        "expression": 64.5,
+        "growth": 57.55
+      },
+      "rank": [
+        "c06",
+        "c01",
+        "c02",
+        "c13",
+        "c11",
+        "f02",
+        "f03",
+        "f01",
+        "c03",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1980-08-07",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "2003-04-04",
+          "calendar": "solar",
+          "time": "23:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 55.42,
+        "conflict": 69.9,
+        "autonomy": 67.35,
+        "expression": 53.75,
+        "growth": 60.95
+      },
+      "rank": [
+        "c06",
+        "c18",
+        "c02",
+        "c11",
+        "c01",
+        "f02",
+        "c13",
+        "c10",
+        "f04",
+        "f01",
+        "f03",
+        "c03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "2002-07-14",
+          "calendar": "solar",
+          "time": "17:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "2001-08-10",
+          "calendar": "solar",
+          "time": "16:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 67.2,
+        "conflict": 50.0,
+        "autonomy": 59.0,
+        "expression": 59.05,
+        "growth": 77.55
+      },
+      "rank": [
+        "c03",
+        "c01",
+        "f03",
+        "c11",
+        "c13",
+        "f01",
+        "f02",
+        "c02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c03"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1980-05-06",
+          "calendar": "solar",
+          "time": "12:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1990-02-11",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 63.33,
+        "conflict": 58.1,
+        "autonomy": 62.15,
+        "expression": 58.75,
+        "growth": 69.05
+      },
+      "rank": [
+        "c01",
+        "c11",
+        "c02",
+        "c13",
+        "c06",
+        "f02",
+        "c03",
+        "f03",
+        "f01",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1994-02-22",
+          "calendar": "solar",
+          "time": "12:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1977-12-18",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 68.38,
+        "conflict": 60.0,
+        "autonomy": 64.75,
+        "expression": 63.75,
+        "growth": 61.5
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "c11",
+        "c06",
+        "c02",
+        "f02",
+        "f03",
+        "f01",
+        "c03",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1974-03-08",
+          "calendar": "solar",
+          "time": "02:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "2001-12-13",
+          "calendar": "solar",
+          "time": "07:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 67.38,
+        "conflict": 50.0,
+        "autonomy": 56.75,
+        "expression": 58.75,
+        "growth": 78.5
+      },
+      "rank": [
+        "c03",
+        "c01",
+        "f03",
+        "c11",
+        "c13",
+        "f01",
+        "f02",
+        "c02",
+        "f04",
+        "c06",
+        "c18",
+        "c10"
+      ],
+      "couple": "c03"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1970-01-23",
+          "calendar": "solar",
+          "time": "17:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1973-02-18",
+          "calendar": "solar",
+          "time": "11:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 62.42,
+        "conflict": 67.9,
+        "autonomy": 67.35,
+        "expression": 58.75,
+        "growth": 66.95
+      },
+      "rank": [
+        "c06",
+        "c11",
+        "c02",
+        "f02",
+        "c01",
+        "c13",
+        "c18",
+        "f01",
+        "f03",
+        "f04",
+        "c03",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1972-03-14",
+          "calendar": "solar",
+          "time": "19:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1970-03-25",
+          "calendar": "solar",
+          "time": "23:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 74.5,
+        "conflict": 48.1,
+        "autonomy": 55.9,
+        "expression": 69.45,
+        "growth": 53.0
+      },
+      "rank": [
+        "c01",
+        "f03",
+        "c13",
+        "c03",
+        "f01",
+        "c02",
+        "f02",
+        "c06",
+        "c11",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1988-02-19",
+          "calendar": "solar",
+          "time": "22:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1979-09-07",
+          "calendar": "solar",
+          "time": "04:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 66.12,
+        "conflict": 59.1,
+        "autonomy": 65.95,
+        "expression": 57.8,
+        "growth": 64.5
+      },
+      "rank": [
+        "c01",
+        "c02",
+        "c06",
+        "c13",
+        "c11",
+        "f02",
+        "f03",
+        "f01",
+        "c18",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "2002-12-24",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1998-11-21",
+          "calendar": "solar",
+          "time": "02:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 60.67,
+        "conflict": 74.0,
+        "autonomy": 64.75,
+        "expression": 60.7,
+        "growth": 60.95
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c11",
+        "c18",
+        "f02",
+        "c01",
+        "c13",
+        "c10",
+        "f04",
+        "f01",
+        "c03",
+        "f03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1974-10-21",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1978-01-15",
+          "calendar": "solar",
+          "time": "09:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 64.8,
+        "conflict": 64.0,
+        "autonomy": 67.0,
+        "expression": 59.95,
+        "growth": 68.45
+      },
+      "rank": [
+        "c11",
+        "c06",
+        "c01",
+        "f02",
+        "c02",
+        "c13",
+        "f01",
+        "f03",
+        "c03",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1971-04-26",
+          "calendar": "solar",
+          "time": "08:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1974-08-17",
+          "calendar": "solar",
+          "time": "05:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 58.85,
+        "security": 70.6,
+        "conflict": 46.0,
+        "autonomy": 63.0,
+        "expression": 58.0,
+        "growth": 67.55
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "f03",
+        "f01",
+        "c03",
+        "c02",
+        "c11",
+        "f02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1972-02-06",
+          "calendar": "solar",
+          "time": "14:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1996-09-05",
+          "calendar": "solar",
+          "time": "13:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 67.0,
+        "conflict": 59.1,
+        "autonomy": 59.7,
+        "expression": 60.55,
+        "growth": 70.0
+      },
+      "rank": [
+        "c01",
+        "c11",
+        "c13",
+        "c03",
+        "c02",
+        "c06",
+        "f03",
+        "f02",
+        "f01",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1998-02-01",
+          "calendar": "solar",
+          "time": "06:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1980-01-08",
+          "calendar": "solar",
+          "time": "16:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 62.62,
+        "conflict": 60.9,
+        "autonomy": 67.55,
+        "expression": 55.7,
+        "growth": 64.5
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c01",
+        "c11",
+        "c13",
+        "c18",
+        "f02",
+        "f03",
+        "f01",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1988-09-19",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1974-07-10",
+          "calendar": "solar",
+          "time": "17:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 71.0,
+        "security": 65.33,
+        "conflict": 62.1,
+        "autonomy": 62.15,
+        "expression": 53.75,
+        "growth": 63.05
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c01",
+        "c18",
+        "c13",
+        "c11",
+        "f02",
+        "f04",
+        "f03",
+        "f01",
+        "c03",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1970-05-17",
+          "calendar": "solar",
+          "time": "22:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1985-07-09",
+          "calendar": "solar",
+          "time": "20:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 68.33,
+        "conflict": 50.0,
+        "autonomy": 61.25,
+        "expression": 61.3,
+        "growth": 72.05
+      },
+      "rank": [
+        "c01",
+        "c03",
+        "f03",
+        "c13",
+        "c11",
+        "f01",
+        "f02",
+        "c02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1977-04-16",
+          "calendar": "solar",
+          "time": "04:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "2000-03-01",
+          "calendar": "solar",
+          "time": "23:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 57.55,
+        "conflict": 63.9,
+        "autonomy": 65.6,
+        "expression": 53.0,
+        "growth": 69.45
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c11",
+        "c18",
+        "c01",
+        "c13",
+        "f02",
+        "f03",
+        "f01",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1977-10-17",
+          "calendar": "solar",
+          "time": "05:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1979-04-16",
+          "calendar": "solar",
+          "time": "23:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 55.67,
+        "conflict": 83.1,
+        "autonomy": 74.45,
+        "expression": 57.25,
+        "growth": 63.95
+      },
+      "rank": [
+        "c06",
+        "c18",
+        "c11",
+        "c02",
+        "f02",
+        "c01",
+        "c13",
+        "c10",
+        "f04",
+        "f01",
+        "f03",
+        "c03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1987-05-15",
+          "calendar": "solar",
+          "time": "14:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1981-05-10",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 64.62,
+        "conflict": 64.9,
+        "autonomy": 59.55,
+        "expression": 63.7,
+        "growth": 58.5
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c01",
+        "c11",
+        "c13",
+        "f02",
+        "c18",
+        "c03",
+        "f04",
+        "f03",
+        "c10",
+        "f01"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1978-10-12",
+          "calendar": "solar",
+          "time": "08:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1978-08-21",
+          "calendar": "solar",
+          "time": "07:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 64.2,
+        "conflict": 56.0,
+        "autonomy": 63.0,
+        "expression": 59.05,
+        "growth": 70.55
+      },
+      "rank": [
+        "c01",
+        "c11",
+        "c13",
+        "c02",
+        "f02",
+        "f03",
+        "c03",
+        "c06",
+        "f01",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1982-07-10",
+          "calendar": "solar",
+          "time": "00:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1975-07-12",
+          "calendar": "solar",
+          "time": "21:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 74.85,
+        "security": 70.65,
+        "conflict": 60.0,
+        "autonomy": 58.5,
+        "expression": 56.45,
+        "growth": 57.0
+      },
+      "rank": [
+        "c02",
+        "c01",
+        "c06",
+        "c13",
+        "c18",
+        "f04",
+        "f03",
+        "c11",
+        "f01",
+        "c03",
+        "c10",
+        "f02"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1987-08-17",
+          "calendar": "solar",
+          "time": "23:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1970-05-11",
+          "calendar": "solar",
+          "time": "11:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 81.0,
+        "security": 76.5,
+        "conflict": 50.0,
+        "autonomy": 63.0,
+        "expression": 53.0,
+        "growth": 66.0
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "c02",
+        "f03",
+        "f01",
+        "c03",
+        "c11",
+        "c06",
+        "f04",
+        "c18",
+        "f02",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1977-05-03",
+          "calendar": "solar",
+          "time": "02:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1996-01-09",
+          "calendar": "solar",
+          "time": "01:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 71.0,
+        "security": 66.62,
+        "conflict": 64.9,
+        "autonomy": 63.55,
+        "expression": 55.7,
+        "growth": 58.5
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c18",
+        "c01",
+        "c13",
+        "c11",
+        "f02",
+        "f04",
+        "c10",
+        "f03",
+        "f01",
+        "c03"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1971-10-15",
+          "calendar": "solar",
+          "time": "00:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1977-04-05",
+          "calendar": "solar",
+          "time": "21:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 66.0,
+        "security": 72.38,
+        "conflict": 60.0,
+        "autonomy": 68.75,
+        "expression": 58.75,
+        "growth": 54.5
+      },
+      "rank": [
+        "c02",
+        "c01",
+        "c13",
+        "c06",
+        "c18",
+        "c11",
+        "f01",
+        "f03",
+        "f02",
+        "f04",
+        "c03",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "2004-01-22",
+          "calendar": "solar",
+          "time": "11:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1993-03-22",
+          "calendar": "solar",
+          "time": "02:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 65.42,
+        "conflict": 53.9,
+        "autonomy": 59.35,
+        "expression": 58.75,
+        "growth": 73.95
+      },
+      "rank": [
+        "c01",
+        "c11",
+        "c03",
+        "c13",
+        "f03",
+        "c02",
+        "f02",
+        "f01",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1975-07-09",
+          "calendar": "solar",
+          "time": "22:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1976-06-08",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 67.15,
+        "security": 59.35,
+        "conflict": 68.1,
+        "autonomy": 68.4,
+        "expression": 53.0,
+        "growth": 60.0
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c18",
+        "c01",
+        "c11",
+        "c13",
+        "f02",
+        "c10",
+        "f04",
+        "f01",
+        "f03",
+        "c03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1991-06-14",
+          "calendar": "solar",
+          "time": "13:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1980-03-17",
+          "calendar": "solar",
+          "time": "08:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 58.5,
+        "conflict": 66.0,
+        "autonomy": 63.0,
+        "expression": 58.0,
+        "growth": 67.0
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c11",
+        "c01",
+        "f02",
+        "c18",
+        "c13",
+        "c03",
+        "f04",
+        "f03",
+        "f01",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1997-09-14",
+          "calendar": "solar",
+          "time": "00:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1981-05-23",
+          "calendar": "solar",
+          "time": "11:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 62.42,
+        "conflict": 67.9,
+        "autonomy": 67.35,
+        "expression": 58.75,
+        "growth": 66.95
+      },
+      "rank": [
+        "c06",
+        "c11",
+        "c02",
+        "f02",
+        "c01",
+        "c13",
+        "c18",
+        "f01",
+        "f03",
+        "f04",
+        "c03",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1987-12-07",
+          "calendar": "solar",
+          "time": "23:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1979-09-23",
+          "calendar": "solar",
+          "time": "15:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 64.33,
+        "conflict": 52.1,
+        "autonomy": 62.15,
+        "expression": 53.75,
+        "growth": 76.05
+      },
+      "rank": [
+        "c01",
+        "c11",
+        "c13",
+        "f03",
+        "c03",
+        "c02",
+        "f01",
+        "f02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1987-03-20",
+          "calendar": "solar",
+          "time": "04:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1989-07-27",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 65.55,
+        "conflict": 55.9,
+        "autonomy": 65.6,
+        "expression": 63.0,
+        "growth": 58.45
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "c02",
+        "c06",
+        "c11",
+        "f02",
+        "f03",
+        "f01",
+        "c03",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1997-12-27",
+          "calendar": "solar",
+          "time": "05:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1999-11-11",
+          "calendar": "solar",
+          "time": "06:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 66.38,
+        "conflict": 62.1,
+        "autonomy": 53.65,
+        "expression": 65.2,
+        "growth": 55.5
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c01",
+        "c13",
+        "c03",
+        "c11",
+        "f02",
+        "c10",
+        "f03",
+        "f04",
+        "c18",
+        "f01"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1971-05-17",
+          "calendar": "solar",
+          "time": "16:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "2002-03-26",
+          "calendar": "solar",
+          "time": "19:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 69.2,
+        "conflict": 48.1,
+        "autonomy": 59.9,
+        "expression": 59.5,
+        "growth": 64.55
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "f03",
+        "c03",
+        "c02",
+        "f01",
+        "c11",
+        "f02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "2001-09-12",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1976-05-01",
+          "calendar": "solar",
+          "time": "15:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 67.15,
+        "security": 60.4,
+        "conflict": 66.0,
+        "autonomy": 67.0,
+        "expression": 53.0,
+        "growth": 62.45
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c18",
+        "c01",
+        "c11",
+        "c13",
+        "f02",
+        "f04",
+        "f01",
+        "f03",
+        "c10",
+        "c03"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1996-10-08",
+          "calendar": "solar",
+          "time": "03:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1975-04-28",
+          "calendar": "solar",
+          "time": "08:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 62.15,
+        "security": 63.27,
+        "conflict": 66.0,
+        "autonomy": 60.75,
+        "expression": 58.75,
+        "growth": 60.95
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c01",
+        "c18",
+        "c11",
+        "c13",
+        "f02",
+        "f04",
+        "c10",
+        "c03",
+        "f03",
+        "f01"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1995-08-24",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1987-03-01",
+          "calendar": "solar",
+          "time": "01:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 66.3,
+        "conflict": 59.1,
+        "autonomy": 59.7,
+        "expression": 59.5,
+        "growth": 72.45
+      },
+      "rank": [
+        "c01",
+        "c11",
+        "c13",
+        "c03",
+        "c02",
+        "f03",
+        "f02",
+        "c06",
+        "f01",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1999-10-08",
+          "calendar": "solar",
+          "time": "02:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1992-01-18",
+          "calendar": "solar",
+          "time": "00:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 74.08,
+        "conflict": 48.1,
+        "autonomy": 53.65,
+        "expression": 68.25,
+        "growth": 56.05
+      },
+      "rank": [
+        "c01",
+        "f03",
+        "c13",
+        "c03",
+        "f01",
+        "c02",
+        "f02",
+        "c11",
+        "c06",
+        "f04",
+        "c10",
+        "c18"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1983-09-19",
+          "calendar": "solar",
+          "time": "08:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "2000-06-26",
+          "calendar": "solar",
+          "time": "09:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 71.0,
+        "security": 62.5,
+        "conflict": 66.0,
+        "autonomy": 67.0,
+        "expression": 53.0,
+        "growth": 60.0
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c18",
+        "c01",
+        "c13",
+        "c11",
+        "f02",
+        "f04",
+        "c10",
+        "f01",
+        "f03",
+        "c03"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1979-06-09",
+          "calendar": "solar",
+          "time": "06:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "2001-06-01",
+          "calendar": "solar",
+          "time": "07:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 72.42,
+        "conflict": 50.0,
+        "autonomy": 52.25,
+        "expression": 65.2,
+        "growth": 63.95
+      },
+      "rank": [
+        "c03",
+        "c01",
+        "f03",
+        "c13",
+        "c02",
+        "f01",
+        "c11",
+        "f02",
+        "c06",
+        "f04",
+        "c10",
+        "c18"
+      ],
+      "couple": "c03"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "2003-07-13",
+          "calendar": "solar",
+          "time": "21:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "2001-04-27",
+          "calendar": "solar",
+          "time": "09:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 60.8,
+        "conflict": 60.0,
+        "autonomy": 63.0,
+        "expression": 54.95,
+        "growth": 69.45
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c11",
+        "c01",
+        "c13",
+        "c18",
+        "f02",
+        "f03",
+        "c03",
+        "f01",
+        "f04",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1997-08-27",
+          "calendar": "solar",
+          "time": "09:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1996-08-13",
+          "calendar": "solar",
+          "time": "22:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 62.85,
+        "security": 68.78,
+        "conflict": 50.0,
+        "autonomy": 60.75,
+        "expression": 55.7,
+        "growth": 71.5
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "f03",
+        "c03",
+        "c02",
+        "c11",
+        "f01",
+        "f02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1971-11-11",
+          "calendar": "solar",
+          "time": "07:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1975-09-20",
+          "calendar": "solar",
+          "time": "13:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 61.5,
+        "conflict": 56.0,
+        "autonomy": 67.0,
+        "expression": 53.0,
+        "growth": 73.0
+      },
+      "rank": [
+        "c11",
+        "c01",
+        "c13",
+        "c02",
+        "c06",
+        "f02",
+        "f03",
+        "f01",
+        "c18",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1996-05-02",
+          "calendar": "solar",
+          "time": "04:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "2002-01-19",
+          "calendar": "solar",
+          "time": "09:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 69.62,
+        "conflict": 52.1,
+        "autonomy": 58.15,
+        "expression": 63.7,
+        "growth": 64.5
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "c03",
+        "f03",
+        "c02",
+        "f01",
+        "c11",
+        "f02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1981-11-01",
+          "calendar": "solar",
+          "time": "20:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1988-11-25",
+          "calendar": "solar",
+          "time": "11:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 62.85,
+        "security": 66.4,
+        "conflict": 53.9,
+        "autonomy": 61.1,
+        "expression": 54.5,
+        "growth": 70.0
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "c02",
+        "c11",
+        "f03",
+        "c03",
+        "c06",
+        "f01",
+        "f02",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1976-02-16",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "2004-06-18",
+          "calendar": "solar",
+          "time": "01:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 69.25,
+        "conflict": 60.0,
+        "autonomy": 62.5,
+        "expression": 64.5,
+        "growth": 60.0
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "c02",
+        "c06",
+        "c11",
+        "f02",
+        "f03",
+        "f01",
+        "c03",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1980-11-26",
+          "calendar": "solar",
+          "time": "23:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1990-11-17",
+          "calendar": "solar",
+          "time": "13:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 71.0,
+        "security": 65.75,
+        "conflict": 62.1,
+        "autonomy": 64.4,
+        "expression": 54.95,
+        "growth": 60.0
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c01",
+        "c18",
+        "c13",
+        "c11",
+        "f02",
+        "f03",
+        "f04",
+        "f01",
+        "c10",
+        "c03"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1997-03-02",
+          "calendar": "solar",
+          "time": "11:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1982-02-26",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 65.25,
+        "conflict": 56.0,
+        "autonomy": 62.5,
+        "expression": 57.5,
+        "growth": 63.0
+      },
+      "rank": [
+        "c02",
+        "c01",
+        "c13",
+        "c06",
+        "c11",
+        "f03",
+        "f02",
+        "f01",
+        "c03",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1970-01-24",
+          "calendar": "solar",
+          "time": "22:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1991-09-21",
+          "calendar": "solar",
+          "time": "05:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 71.38,
+        "conflict": 46.0,
+        "autonomy": 56.75,
+        "expression": 63.75,
+        "growth": 68.5
+      },
+      "rank": [
+        "c03",
+        "f03",
+        "c01",
+        "c13",
+        "f01",
+        "c11",
+        "f02",
+        "c02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c03"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1993-10-24",
+          "calendar": "solar",
+          "time": "11:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1992-01-04",
+          "calendar": "solar",
+          "time": "11:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 70.3,
+        "conflict": 49.9,
+        "autonomy": 61.1,
+        "expression": 62.5,
+        "growth": 55.45
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "c02",
+        "f03",
+        "f01",
+        "c03",
+        "c06",
+        "c11",
+        "f02",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1978-07-25",
+          "calendar": "solar",
+          "time": "05:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "2000-02-05",
+          "calendar": "solar",
+          "time": "03:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 56.3,
+        "conflict": 69.9,
+        "autonomy": 65.1,
+        "expression": 54.5,
+        "growth": 59.45
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c18",
+        "c11",
+        "c01",
+        "c13",
+        "f02",
+        "c10",
+        "f04",
+        "f03",
+        "f01",
+        "c03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1976-08-02",
+          "calendar": "solar",
+          "time": "22:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1986-08-14",
+          "calendar": "solar",
+          "time": "03:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 57.45,
+        "conflict": 68.1,
+        "autonomy": 64.4,
+        "expression": 58.0,
+        "growth": 64.55
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c11",
+        "c18",
+        "c01",
+        "f02",
+        "c13",
+        "f04",
+        "c10",
+        "c03",
+        "f03",
+        "f01"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1996-06-13",
+          "calendar": "solar",
+          "time": "00:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1996-12-15",
+          "calendar": "solar",
+          "time": "00:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 60.0,
+        "conflict": 69.1,
+        "autonomy": 63.7,
+        "expression": 55.55,
+        "growth": 64.0
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c18",
+        "c11",
+        "c01",
+        "c13",
+        "f02",
+        "f04",
+        "c10",
+        "f03",
+        "c03",
+        "f01"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1995-03-12",
+          "calendar": "solar",
+          "time": "21:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1973-11-21",
+          "calendar": "solar",
+          "time": "08:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 61.33,
+        "conflict": 58.1,
+        "autonomy": 66.15,
+        "expression": 53.75,
+        "growth": 69.05
+      },
+      "rank": [
+        "c11",
+        "c02",
+        "c01",
+        "c06",
+        "c13",
+        "c18",
+        "f02",
+        "f03",
+        "f01",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1984-11-25",
+          "calendar": "solar",
+          "time": "01:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1992-09-23",
+          "calendar": "solar",
+          "time": "04:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 66.0,
+        "security": 76.25,
+        "conflict": 46.0,
+        "autonomy": 58.5,
+        "expression": 59.5,
+        "growth": 60.0
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "f03",
+        "c02",
+        "f01",
+        "c03",
+        "c11",
+        "c06",
+        "f02",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1999-03-06",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1970-05-18",
+          "calendar": "solar",
+          "time": "08:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 62.85,
+        "security": 67.47,
+        "conflict": 50.0,
+        "autonomy": 60.75,
+        "expression": 53.75,
+        "growth": 76.05
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "f03",
+        "c03",
+        "c11",
+        "c02",
+        "f01",
+        "f02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1986-02-26",
+          "calendar": "solar",
+          "time": "08:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1987-04-21",
+          "calendar": "solar",
+          "time": "13:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 66.0,
+        "security": 75.88,
+        "conflict": 49.9,
+        "autonomy": 58.85,
+        "expression": 61.3,
+        "growth": 51.5
+      },
+      "rank": [
+        "c02",
+        "c01",
+        "c13",
+        "f03",
+        "f01",
+        "c06",
+        "c03",
+        "c18",
+        "f02",
+        "c11",
+        "f04",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1981-09-13",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1992-04-24",
+          "calendar": "solar",
+          "time": "23:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 62.15,
+        "security": 69.85,
+        "conflict": 60.0,
+        "autonomy": 54.5,
+        "expression": 63.55,
+        "growth": 57.0
+      },
+      "rank": [
+        "c02",
+        "c01",
+        "c06",
+        "c13",
+        "c03",
+        "f03",
+        "f04",
+        "c11",
+        "f02",
+        "f01",
+        "c18",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1994-06-21",
+          "calendar": "solar",
+          "time": "19:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1976-09-14",
+          "calendar": "solar",
+          "time": "12:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 65.5,
+        "conflict": 54.8,
+        "autonomy": 68.4,
+        "expression": 58.0,
+        "growth": 63.0
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "c02",
+        "c11",
+        "c06",
+        "f03",
+        "f02",
+        "f01",
+        "c18",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1984-03-27",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1971-06-23",
+          "calendar": "solar",
+          "time": "15:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 63.95,
+        "conflict": 56.0,
+        "autonomy": 62.5,
+        "expression": 55.55,
+        "growth": 67.55
+      },
+      "rank": [
+        "c01",
+        "c02",
+        "c13",
+        "c11",
+        "c06",
+        "f03",
+        "c03",
+        "f02",
+        "f01",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1989-07-15",
+          "calendar": "solar",
+          "time": "13:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1984-10-07",
+          "calendar": "solar",
+          "time": "17:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 62.45,
+        "conflict": 58.1,
+        "autonomy": 64.4,
+        "expression": 58.0,
+        "growth": 70.55
+      },
+      "rank": [
+        "c11",
+        "c01",
+        "c06",
+        "c13",
+        "c02",
+        "f02",
+        "f03",
+        "c03",
+        "f01",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1975-12-02",
+          "calendar": "solar",
+          "time": "15:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "2002-09-05",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 60.25,
+        "conflict": 74.0,
+        "autonomy": 62.5,
+        "expression": 59.5,
+        "growth": 64.0
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c11",
+        "c18",
+        "c01",
+        "f02",
+        "c13",
+        "f04",
+        "c10",
+        "c03",
+        "f03",
+        "f01"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1985-10-16",
+          "calendar": "solar",
+          "time": "03:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1999-06-12",
+          "calendar": "solar",
+          "time": "21:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 57.2,
+        "conflict": 68.1,
+        "autonomy": 63.9,
+        "expression": 54.5,
+        "growth": 61.55
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c18",
+        "c11",
+        "c01",
+        "c13",
+        "f02",
+        "c10",
+        "f04",
+        "f03",
+        "f01",
+        "c03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1987-05-24",
+          "calendar": "solar",
+          "time": "15:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1976-04-09",
+          "calendar": "solar",
+          "time": "19:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 62.45,
+        "conflict": 66.1,
+        "autonomy": 68.4,
+        "expression": 58.0,
+        "growth": 70.55
+      },
+      "rank": [
+        "c11",
+        "c06",
+        "f02",
+        "c01",
+        "c02",
+        "c13",
+        "c18",
+        "f01",
+        "f03",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1988-03-05",
+          "calendar": "solar",
+          "time": "00:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1971-05-24",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 68.58,
+        "conflict": 48.1,
+        "autonomy": 62.65,
+        "expression": 62.25,
+        "growth": 69.05
+      },
+      "rank": [
+        "f03",
+        "c01",
+        "c13",
+        "c03",
+        "f01",
+        "c11",
+        "f02",
+        "c02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "f03"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "2003-09-21",
+          "calendar": "solar",
+          "time": "19:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1974-12-23",
+          "calendar": "solar",
+          "time": "14:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 63.45,
+        "conflict": 52.1,
+        "autonomy": 64.4,
+        "expression": 53.0,
+        "growth": 77.55
+      },
+      "rank": [
+        "c11",
+        "c01",
+        "c13",
+        "f03",
+        "c03",
+        "c02",
+        "f01",
+        "f02",
+        "c06",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1970-08-18",
+          "calendar": "solar",
+          "time": "19:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1981-03-11",
+          "calendar": "solar",
+          "time": "14:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 63.3,
+        "conflict": 67.9,
+        "autonomy": 65.1,
+        "expression": 59.5,
+        "growth": 65.45
+      },
+      "rank": [
+        "c06",
+        "c11",
+        "c02",
+        "c01",
+        "f02",
+        "c13",
+        "c18",
+        "f04",
+        "f03",
+        "f01",
+        "c03",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1970-05-27",
+          "calendar": "solar",
+          "time": "15:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "2001-04-19",
+          "calendar": "solar",
+          "time": "00:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 56.5,
+        "conflict": 66.0,
+        "autonomy": 67.0,
+        "expression": 53.0,
+        "growth": 67.0
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c18",
+        "c11",
+        "c01",
+        "f02",
+        "c13",
+        "f03",
+        "f01",
+        "f04",
+        "c03",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1984-07-27",
+          "calendar": "solar",
+          "time": "01:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1978-06-02",
+          "calendar": "solar",
+          "time": "23:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 65.45,
+        "conflict": 54.9,
+        "autonomy": 65.8,
+        "expression": 56.0,
+        "growth": 70.55
+      },
+      "rank": [
+        "c01",
+        "c11",
+        "c13",
+        "c02",
+        "f03",
+        "c06",
+        "f02",
+        "f01",
+        "c03",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1975-10-15",
+          "calendar": "solar",
+          "time": "19:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1988-09-05",
+          "calendar": "solar",
+          "time": "03:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 60.45,
+        "conflict": 58.1,
+        "autonomy": 68.4,
+        "expression": 53.0,
+        "growth": 70.55
+      },
+      "rank": [
+        "c11",
+        "c01",
+        "c06",
+        "c02",
+        "c13",
+        "f02",
+        "c18",
+        "f03",
+        "f01",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1997-09-22",
+          "calendar": "solar",
+          "time": "16:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "2000-02-22",
+          "calendar": "solar",
+          "time": "13:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 71.0,
+        "security": 66.0,
+        "conflict": 63.9,
+        "autonomy": 61.1,
+        "expression": 55.55,
+        "growth": 57.0
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c18",
+        "c01",
+        "c13",
+        "c11",
+        "c10",
+        "f04",
+        "f02",
+        "f03",
+        "f01",
+        "c03"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1971-02-22",
+          "calendar": "solar",
+          "time": "07:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1993-01-20",
+          "calendar": "solar",
+          "time": "08:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 60.42,
+        "conflict": 59.9,
+        "autonomy": 67.35,
+        "expression": 53.75,
+        "growth": 66.95
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c11",
+        "c01",
+        "c13",
+        "c18",
+        "f02",
+        "f03",
+        "f01",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1979-09-22",
+          "calendar": "solar",
+          "time": "20:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1979-02-20",
+          "calendar": "solar",
+          "time": "19:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 61.12,
+        "conflict": 63.9,
+        "autonomy": 59.35,
+        "expression": 59.8,
+        "growth": 65.5
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c11",
+        "c01",
+        "c13",
+        "f02",
+        "c18",
+        "c03",
+        "f03",
+        "f04",
+        "f01",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1990-07-22",
+          "calendar": "solar",
+          "time": "13:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "2004-06-02",
+          "calendar": "solar",
+          "time": "22:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 63.33,
+        "conflict": 62.1,
+        "autonomy": 58.15,
+        "expression": 61.75,
+        "growth": 63.05
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c01",
+        "c11",
+        "c13",
+        "f02",
+        "c03",
+        "f03",
+        "c18",
+        "f04",
+        "f01",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "2002-06-06",
+          "calendar": "solar",
+          "time": "19:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1994-04-16",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 70.0,
+        "security": 70.5,
+        "conflict": 50.0,
+        "autonomy": 63.0,
+        "expression": 53.0,
+        "growth": 73.0
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "f03",
+        "c02",
+        "c11",
+        "f01",
+        "c03",
+        "c06",
+        "f02",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1985-02-18",
+          "calendar": "solar",
+          "time": "12:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1983-11-25",
+          "calendar": "solar",
+          "time": "00:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 66.15,
+        "security": 62.6,
+        "conflict": 58.1,
+        "autonomy": 72.9,
+        "expression": 51.5,
+        "growth": 69.0
+      },
+      "rank": [
+        "c02",
+        "c11",
+        "c01",
+        "c06",
+        "c18",
+        "c13",
+        "f02",
+        "f01",
+        "f03",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1986-06-27",
+          "calendar": "solar",
+          "time": "23:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1985-05-26",
+          "calendar": "solar",
+          "time": "14:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 62.62,
+        "conflict": 58.1,
+        "autonomy": 66.15,
+        "expression": 55.7,
+        "growth": 64.5
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c01",
+        "c13",
+        "c11",
+        "c18",
+        "f02",
+        "f03",
+        "f01",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1986-12-05",
+          "calendar": "solar",
+          "time": "02:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1993-01-22",
+          "calendar": "solar",
+          "time": "11:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 67.12,
+        "conflict": 60.8,
+        "autonomy": 61.65,
+        "expression": 65.25,
+        "growth": 51.5
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c01",
+        "c13",
+        "f02",
+        "c11",
+        "f03",
+        "c18",
+        "f01",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1999-01-04",
+          "calendar": "solar",
+          "time": "08:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1998-03-14",
+          "calendar": "solar",
+          "time": "02:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 63.08,
+        "conflict": 60.0,
+        "autonomy": 56.75,
+        "expression": 59.8,
+        "growth": 70.05
+      },
+      "rank": [
+        "c01",
+        "c11",
+        "c02",
+        "c06",
+        "c03",
+        "c13",
+        "f02",
+        "f03",
+        "f01",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "2003-03-12",
+          "calendar": "solar",
+          "time": "07:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1994-01-28",
+          "calendar": "solar",
+          "time": "14:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 68.17,
+        "conflict": 63.9,
+        "autonomy": 62.85,
+        "expression": 65.25,
+        "growth": 53.95
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c01",
+        "c13",
+        "f02",
+        "c11",
+        "f03",
+        "c18",
+        "f01",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1978-06-19",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1991-03-27",
+          "calendar": "solar",
+          "time": "13:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 58.85,
+        "security": 63.6,
+        "conflict": 60.0,
+        "autonomy": 59.0,
+        "expression": 58.0,
+        "growth": 71.55
+      },
+      "rank": [
+        "c01",
+        "c11",
+        "c02",
+        "c06",
+        "c13",
+        "c03",
+        "f02",
+        "f03",
+        "f01",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "2000-01-07",
+          "calendar": "solar",
+          "time": "23:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1996-01-21",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 63.67,
+        "conflict": 56.0,
+        "autonomy": 64.75,
+        "expression": 55.7,
+        "growth": 66.95
+      },
+      "rank": [
+        "c01",
+        "c02",
+        "c13",
+        "c11",
+        "c06",
+        "f03",
+        "f02",
+        "f01",
+        "c18",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1976-10-10",
+          "calendar": "solar",
+          "time": "07:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1978-10-05",
+          "calendar": "solar",
+          "time": "12:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 55.62,
+        "conflict": 66.0,
+        "autonomy": 69.25,
+        "expression": 52.25,
+        "growth": 68.5
+      },
+      "rank": [
+        "c06",
+        "c18",
+        "c02",
+        "c11",
+        "c01",
+        "f02",
+        "c13",
+        "f01",
+        "f03",
+        "f04",
+        "c03",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1992-04-28",
+          "calendar": "solar",
+          "time": "06:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1997-10-14",
+          "calendar": "solar",
+          "time": "23:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 61.3,
+        "conflict": 69.1,
+        "autonomy": 63.7,
+        "expression": 57.5,
+        "growth": 59.45
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c18",
+        "c01",
+        "c11",
+        "c13",
+        "f02",
+        "c10",
+        "f04",
+        "f03",
+        "f01",
+        "c03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1989-05-07",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1991-06-25",
+          "calendar": "solar",
+          "time": "22:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 73.55,
+        "conflict": 46.0,
+        "autonomy": 58.5,
+        "expression": 64.45,
+        "growth": 55.45
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "f03",
+        "c02",
+        "c03",
+        "f01",
+        "f02",
+        "c06",
+        "c11",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1989-04-05",
+          "calendar": "solar",
+          "time": "14:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1996-09-19",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 62.15,
+        "security": 67.22,
+        "conflict": 62.1,
+        "autonomy": 58.15,
+        "expression": 61.75,
+        "growth": 58.5
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c01",
+        "c13",
+        "c11",
+        "c18",
+        "f02",
+        "c03",
+        "f04",
+        "f03",
+        "f01",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1990-07-13",
+          "calendar": "solar",
+          "time": "22:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1983-07-12",
+          "calendar": "solar",
+          "time": "08:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 64.62,
+        "conflict": 58.1,
+        "autonomy": 62.15,
+        "expression": 60.7,
+        "growth": 64.5
+      },
+      "rank": [
+        "c01",
+        "c02",
+        "c06",
+        "c11",
+        "c13",
+        "f02",
+        "f03",
+        "c03",
+        "f01",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1994-05-21",
+          "calendar": "solar",
+          "time": "15:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1973-12-06",
+          "calendar": "solar",
+          "time": "12:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 64.25,
+        "conflict": 61.1,
+        "autonomy": 72.2,
+        "expression": 59.05,
+        "growth": 56.0
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c01",
+        "c18",
+        "c13",
+        "c11",
+        "f02",
+        "f01",
+        "f03",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1984-05-21",
+          "calendar": "solar",
+          "time": "01:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1983-03-20",
+          "calendar": "solar",
+          "time": "20:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 65.95,
+        "conflict": 56.0,
+        "autonomy": 58.5,
+        "expression": 60.55,
+        "growth": 67.55
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "c02",
+        "c11",
+        "c03",
+        "f03",
+        "c06",
+        "f02",
+        "f01",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1976-11-03",
+          "calendar": "solar",
+          "time": "20:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1992-02-26",
+          "calendar": "solar",
+          "time": "00:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 54.92,
+        "conflict": 63.9,
+        "autonomy": 72.35,
+        "expression": 50.75,
+        "growth": 73.95
+      },
+      "rank": [
+        "c11",
+        "c06",
+        "c18",
+        "c02",
+        "f02",
+        "c01",
+        "c13",
+        "f01",
+        "f03",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1972-04-08",
+          "calendar": "solar",
+          "time": "17:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1992-02-16",
+          "calendar": "solar",
+          "time": "17:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 60.17,
+        "conflict": 63.9,
+        "autonomy": 58.85,
+        "expression": 55.25,
+        "growth": 64.95
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c01",
+        "c18",
+        "c11",
+        "c13",
+        "f02",
+        "c03",
+        "f03",
+        "f04",
+        "c10",
+        "f01"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1981-01-22",
+          "calendar": "solar",
+          "time": "01:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1989-04-13",
+          "calendar": "solar",
+          "time": "02:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 62.85,
+        "security": 68.78,
+        "conflict": 50.0,
+        "autonomy": 60.75,
+        "expression": 55.7,
+        "growth": 71.5
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "f03",
+        "c03",
+        "c02",
+        "c11",
+        "f01",
+        "f02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1989-02-14",
+          "calendar": "solar",
+          "time": "09:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1990-05-19",
+          "calendar": "solar",
+          "time": "06:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 66.0,
+        "security": 76.95,
+        "conflict": 46.0,
+        "autonomy": 58.5,
+        "expression": 60.55,
+        "growth": 57.55
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "f03",
+        "c02",
+        "f01",
+        "c03",
+        "c06",
+        "c11",
+        "f02",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1991-11-03",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1978-03-19",
+          "calendar": "solar",
+          "time": "09:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 71.0,
+        "security": 68.38,
+        "conflict": 60.0,
+        "autonomy": 60.75,
+        "expression": 56.75,
+        "growth": 58.5
+      },
+      "rank": [
+        "c02",
+        "c01",
+        "c06",
+        "c13",
+        "c18",
+        "c11",
+        "f03",
+        "f04",
+        "f02",
+        "f01",
+        "c03",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1987-05-21",
+          "calendar": "solar",
+          "time": "11:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "2004-11-05",
+          "calendar": "solar",
+          "time": "04:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 62.45,
+        "conflict": 66.1,
+        "autonomy": 68.4,
+        "expression": 58.0,
+        "growth": 70.55
+      },
+      "rank": [
+        "c11",
+        "c06",
+        "f02",
+        "c01",
+        "c02",
+        "c13",
+        "c18",
+        "f01",
+        "f03",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1972-04-09",
+          "calendar": "solar",
+          "time": "17:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1986-09-23",
+          "calendar": "solar",
+          "time": "04:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 57.15,
+        "security": 78.15,
+        "conflict": 46.0,
+        "autonomy": 54.5,
+        "expression": 67.5,
+        "growth": 55.45
+      },
+      "rank": [
+        "c01",
+        "f03",
+        "c13",
+        "c03",
+        "f01",
+        "c02",
+        "f02",
+        "c11",
+        "c06",
+        "f04",
+        "c10",
+        "c18"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1983-07-20",
+          "calendar": "solar",
+          "time": "09:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1970-01-10",
+          "calendar": "solar",
+          "time": "12:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 60.42,
+        "conflict": 65.1,
+        "autonomy": 69.95,
+        "expression": 53.75,
+        "growth": 66.95
+      },
+      "rank": [
+        "c06",
+        "c11",
+        "c02",
+        "c18",
+        "c01",
+        "c13",
+        "f02",
+        "f01",
+        "f03",
+        "f04",
+        "c03",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1974-07-11",
+          "calendar": "solar",
+          "time": "10:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1995-10-12",
+          "calendar": "solar",
+          "time": "01:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 74.85,
+        "security": 70.65,
+        "conflict": 60.0,
+        "autonomy": 58.5,
+        "expression": 56.45,
+        "growth": 57.0
+      },
+      "rank": [
+        "c02",
+        "c01",
+        "c06",
+        "c13",
+        "c18",
+        "f04",
+        "f03",
+        "c11",
+        "f01",
+        "c03",
+        "c10",
+        "f02"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1971-01-17",
+          "calendar": "solar",
+          "time": "06:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1995-05-11",
+          "calendar": "solar",
+          "time": "22:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 72.33,
+        "conflict": 48.1,
+        "autonomy": 58.15,
+        "expression": 66.75,
+        "growth": 59.05
+      },
+      "rank": [
+        "c01",
+        "f03",
+        "c13",
+        "c03",
+        "f01",
+        "c02",
+        "f02",
+        "c11",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1974-10-24",
+          "calendar": "solar",
+          "time": "12:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1992-02-06",
+          "calendar": "solar",
+          "time": "15:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 53.75,
+        "conflict": 74.8,
+        "autonomy": 72.9,
+        "expression": 56.5,
+        "growth": 63.0
+      },
+      "rank": [
+        "c06",
+        "c18",
+        "c11",
+        "c02",
+        "f02",
+        "c01",
+        "c13",
+        "c10",
+        "f04",
+        "f01",
+        "f03",
+        "c03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1994-09-12",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "2002-12-10",
+          "calendar": "solar",
+          "time": "06:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 70.0,
+        "security": 69.62,
+        "conflict": 50.0,
+        "autonomy": 65.25,
+        "expression": 52.25,
+        "growth": 74.5
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "f03",
+        "c11",
+        "c02",
+        "f01",
+        "c03",
+        "f02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1984-08-18",
+          "calendar": "solar",
+          "time": "03:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1984-04-07",
+          "calendar": "solar",
+          "time": "12:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 61.08,
+        "conflict": 60.0,
+        "autonomy": 60.75,
+        "expression": 54.8,
+        "growth": 70.05
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c01",
+        "c11",
+        "c13",
+        "c18",
+        "f02",
+        "c03",
+        "f03",
+        "f01",
+        "f04",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1976-02-16",
+          "calendar": "solar",
+          "time": "07:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1994-11-26",
+          "calendar": "solar",
+          "time": "19:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 61.15,
+        "security": 68.1,
+        "conflict": 68.9,
+        "autonomy": 65.3,
+        "expression": 59.5,
+        "growth": 63.0
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c01",
+        "c11",
+        "c13",
+        "f02",
+        "c18",
+        "f04",
+        "f01",
+        "f03",
+        "c03",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "2002-05-23",
+          "calendar": "solar",
+          "time": "23:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "2001-05-28",
+          "calendar": "solar",
+          "time": "22:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 77.12,
+        "conflict": 46.0,
+        "autonomy": 52.25,
+        "expression": 71.25,
+        "growth": 51.5
+      },
+      "rank": [
+        "f03",
+        "c01",
+        "c03",
+        "c13",
+        "f01",
+        "c02",
+        "f02",
+        "c06",
+        "c11",
+        "f04",
+        "c10",
+        "c18"
+      ],
+      "couple": "f03"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1984-07-01",
+          "calendar": "solar",
+          "time": "08:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1973-07-17",
+          "calendar": "solar",
+          "time": "03:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 65.0,
+        "security": 69.5,
+        "conflict": 64.0,
+        "autonomy": 67.0,
+        "expression": 58.0,
+        "growth": 66.0
+      },
+      "rank": [
+        "c02",
+        "c01",
+        "c06",
+        "c11",
+        "c13",
+        "f02",
+        "c18",
+        "f01",
+        "f03",
+        "f04",
+        "c03",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1971-01-17",
+          "calendar": "solar",
+          "time": "11:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1971-04-20",
+          "calendar": "solar",
+          "time": "19:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 70.0,
+        "security": 72.5,
+        "conflict": 52.1,
+        "autonomy": 59.9,
+        "expression": 56.45,
+        "growth": 63.0
+      },
+      "rank": [
+        "c01",
+        "c02",
+        "c13",
+        "f03",
+        "f01",
+        "c03",
+        "c06",
+        "c11",
+        "f02",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1989-02-02",
+          "calendar": "solar",
+          "time": "22:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1983-04-21",
+          "calendar": "solar",
+          "time": "01:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 64.38,
+        "conflict": 62.1,
+        "autonomy": 53.65,
+        "expression": 62.2,
+        "growth": 62.5
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c01",
+        "c13",
+        "c03",
+        "c11",
+        "f02",
+        "f03",
+        "f04",
+        "c18",
+        "f01",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "2001-11-07",
+          "calendar": "solar",
+          "time": "20:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1996-05-24",
+          "calendar": "solar",
+          "time": "21:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 56.5,
+        "conflict": 71.2,
+        "autonomy": 69.6,
+        "expression": 53.0,
+        "growth": 67.0
+      },
+      "rank": [
+        "c06",
+        "c18",
+        "c02",
+        "c11",
+        "c01",
+        "f02",
+        "c13",
+        "f04",
+        "f01",
+        "c10",
+        "f03",
+        "c03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1979-08-27",
+          "calendar": "solar",
+          "time": "13:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1993-06-20",
+          "calendar": "solar",
+          "time": "19:00",
+          "gender": "female"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 57.42,
+        "conflict": 77.9,
+        "autonomy": 67.35,
+        "expression": 58.75,
+        "growth": 60.95
+      },
+      "rank": [
+        "c06",
+        "c18",
+        "c02",
+        "c11",
+        "f02",
+        "c01",
+        "c10",
+        "c13",
+        "f04",
+        "f01",
+        "f03",
+        "c03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "2000-01-25",
+          "calendar": "solar",
+          "time": "03:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1995-09-17",
+          "calendar": "solar",
+          "time": "17:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 62.38,
+        "conflict": 56.0,
+        "autonomy": 64.75,
+        "expression": 53.75,
+        "growth": 71.5
+      },
+      "rank": [
+        "c01",
+        "c11",
+        "c02",
+        "c13",
+        "c06",
+        "f03",
+        "f02",
+        "c03",
+        "f01",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1981-05-03",
+          "calendar": "solar",
+          "time": "03:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1979-02-04",
+          "calendar": "solar",
+          "time": "12:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 64.75,
+        "conflict": 52.1,
+        "autonomy": 64.4,
+        "expression": 54.95,
+        "growth": 73.0
+      },
+      "rank": [
+        "c01",
+        "c11",
+        "c13",
+        "f03",
+        "c02",
+        "c03",
+        "f01",
+        "f02",
+        "c06",
+        "c18",
+        "f04",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1973-08-23",
+          "calendar": "solar",
+          "time": "14:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "2001-03-06",
+          "calendar": "solar",
+          "time": "00:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 59.0,
+        "security": 61.3,
+        "conflict": 59.9,
+        "autonomy": 65.1,
+        "expression": 54.5,
+        "growth": 65.45
+      },
+      "rank": [
+        "c02",
+        "c06",
+        "c01",
+        "c11",
+        "c13",
+        "c18",
+        "f02",
+        "f03",
+        "f01",
+        "c03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1996-06-06",
+          "calendar": "solar",
+          "time": "05:00",
+          "gender": "male"
+        },
+        "b": {
+          "date": "1999-04-18",
+          "calendar": "solar",
+          "time": "02:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 58.5,
+        "conflict": 66.0,
+        "autonomy": 63.0,
+        "expression": 58.0,
+        "growth": 67.0
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c11",
+        "c01",
+        "f02",
+        "c18",
+        "c13",
+        "c03",
+        "f04",
+        "f03",
+        "f01",
+        "c10"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1990-06-07",
+          "calendar": "solar",
+          "time": "12:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "2001-11-01",
+          "calendar": "solar",
+          "time": "00:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 60.0,
+        "security": 58.08,
+        "conflict": 66.0,
+        "autonomy": 64.75,
+        "expression": 54.8,
+        "growth": 63.05
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c18",
+        "c11",
+        "c01",
+        "c13",
+        "f02",
+        "f03",
+        "f04",
+        "c10",
+        "f01",
+        "c03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1994-06-03",
+          "calendar": "solar",
+          "time": "18:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "2000-08-24",
+          "calendar": "solar",
+          "time": "19:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 62.15,
+        "security": 63.1,
+        "conflict": 78.9,
+        "autonomy": 65.3,
+        "expression": 59.5,
+        "growth": 57.0
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c18",
+        "c11",
+        "c01",
+        "c10",
+        "f02",
+        "c13",
+        "f04",
+        "f01",
+        "f03",
+        "c03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1973-11-18",
+          "calendar": "solar",
+          "time": "21:00",
+          "gender": "female"
+        },
+        "b": {
+          "date": "1975-03-07",
+          "calendar": "solar",
+          "time": "19:00",
+          "gender": "male"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 57.45,
+        "conflict": 76.1,
+        "autonomy": 68.4,
+        "expression": 58.0,
+        "growth": 64.55
+      },
+      "rank": [
+        "c06",
+        "c11",
+        "c02",
+        "c18",
+        "f02",
+        "c01",
+        "c13",
+        "f04",
+        "c10",
+        "f01",
+        "f03",
+        "c03"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1985-01-11",
+          "time": "16:00",
+          "calendar": "solar"
+        },
+        "b": {
+          "date": "1992-04-30",
+          "time": "01:00",
+          "calendar": "solar"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 61.55,
+        "conflict": 66.0,
+        "autonomy": 58.5,
+        "expression": 61.45,
+        "growth": 59.45
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c01",
+        "c11",
+        "c18",
+        "c13",
+        "f02",
+        "c10",
+        "c03",
+        "f04",
+        "f03",
+        "f01"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1985-06-10",
+          "time": "16:00",
+          "calendar": "solar"
+        },
+        "b": {
+          "date": "1992-04-30",
+          "time": "01:00",
+          "calendar": "solar"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 60.25,
+        "conflict": 66.0,
+        "autonomy": 58.5,
+        "expression": 59.5,
+        "growth": 64.0
+      },
+      "rank": [
+        "c06",
+        "c02",
+        "c11",
+        "c01",
+        "c13",
+        "c18",
+        "f02",
+        "c03",
+        "f04",
+        "f03",
+        "c10",
+        "f01"
+      ],
+      "couple": "c06"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1999-01-22",
+          "time": "01:00",
+          "calendar": "solar"
+        },
+        "b": {
+          "date": "1998-11-09",
+          "time": "21:00",
+          "calendar": "solar"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 58.5,
+        "conflict": 63.9,
+        "autonomy": 66.1,
+        "expression": 57.55,
+        "growth": 70.0
+      },
+      "rank": [
+        "c11",
+        "c06",
+        "c02",
+        "c01",
+        "f02",
+        "c18",
+        "c13",
+        "f01",
+        "c03",
+        "f03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1996-12-13",
+          "time": "21:00",
+          "calendar": "solar"
+        },
+        "b": {
+          "date": "1986-10-21",
+          "time": "09:00",
+          "calendar": "solar"
+        }
+      },
+      "vector": {
+        "attraction": 55.0,
+        "security": 57.8,
+        "conflict": 63.9,
+        "autonomy": 66.1,
+        "expression": 56.5,
+        "growth": 72.45
+      },
+      "rank": [
+        "c11",
+        "c06",
+        "c02",
+        "f02",
+        "c01",
+        "c13",
+        "c18",
+        "c03",
+        "f01",
+        "f03",
+        "f04",
+        "c10"
+      ],
+      "couple": "c11"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1992-03-21"
+        },
+        "b": {
+          "date": "1992-03-18"
+        }
+      },
+      "vector": {
+        "attraction": 71.0,
+        "security": 69.83,
+        "conflict": 60.0,
+        "autonomy": 57.0,
+        "expression": 58.0,
+        "growth": 56.0
+      },
+      "rank": [
+        "c02",
+        "c01",
+        "c06",
+        "c13",
+        "c18",
+        "f03",
+        "f04",
+        "c11",
+        "c03",
+        "c10",
+        "f01",
+        "f02"
+      ],
+      "couple": "c02"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "1992-03-21"
+        },
+        "b": {
+          "date": "1992-03-31"
+        }
+      },
+      "vector": {
+        "attraction": 50.0,
+        "security": 71.83,
+        "conflict": 52.0,
+        "autonomy": 57.0,
+        "expression": 68.0,
+        "growth": 52.0
+      },
+      "rank": [
+        "c01",
+        "c13",
+        "c02",
+        "f03",
+        "c03",
+        "f01",
+        "c06",
+        "f02",
+        "c11",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    },
+    {
+      "payload": {
+        "a": {
+          "date": "2023-02-01",
+          "calendar": "lunar",
+          "leap": true
+        },
+        "b": {
+          "date": "2000-02-29",
+          "time": "23:00"
+        }
+      },
+      "vector": {
+        "attraction": 54.0,
+        "security": 66.17,
+        "conflict": 52.1,
+        "autonomy": 61.9,
+        "expression": 59.45,
+        "growth": 74.0
+      },
+      "rank": [
+        "c01",
+        "c11",
+        "c03",
+        "f03",
+        "c13",
+        "f01",
+        "f02",
+        "c02",
+        "c06",
+        "f04",
+        "c18",
+        "c10"
+      ],
+      "couple": "c01"
+    }
+  ]
+}

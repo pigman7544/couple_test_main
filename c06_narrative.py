@@ -59,7 +59,7 @@ def basis(label,x):
     stem=x['pillars']['day_pillar'][0]; desc=STEM_DESC[stem]
     month=GROUP[x['anchors']['month']]; day=GROUP[x['anchors']['day']]
     s=(f"{label}의 일간은 **{STEM_NAME[stem]}({stem})**이에요. 사주에서 자신을 상징하는 글자로, {desc[0]}에 비유할 수 있어요."
-       f"\n\n가까운 사이에서는 {desc[2]}을 중요하게 여길 수 있어요. {desc[3]}{particle(desc[3],'이','가')} 있으면 마음이 놓이는 거예요. ")
+       f"\n\n가까운 사이에서는 {desc[2]}{particle(desc[2],'을','를')} 중요하게 여길 수 있어요. {desc[3]}{particle(desc[3],'이','가')} 있으면 마음이 놓일 수 있어요. ")
     seasonal={'reflect':'마음을 서둘러 꺼내기보다 충분히 이해한 뒤 말하고 싶은 신중한 면도 볼 수 있어요. 대답이 늦어지는 날에도 속에서는 할 말을 오래 고르고 있을 수 있죠.',
               'care':'마음이 쓰이면 필요한 것을 챙기는 손길이 먼저 나갈 수 있어요. 바쁜 날 먹을 것을 챙기거나 만날 시간을 비워 두는 식으로요.',
               'voice':'좋았던 일도 속상했던 일도 함께 나누고 싶은 마음도 생길 수 있어요. 하루 끝에 주고받는 짧은 이야기가 유난히 반가울 수 있죠.',
@@ -93,8 +93,9 @@ def basis(label,x):
 def daily_core(x):
     from story_report import STEM_DESC
     heart=STEM_DESC[x['pillars']['day_pillar'][0]][2]
-    return {'reflect':f'{heart}을 바라기에, 쉽게 답하기보다 충분히 이해한 뒤 마음을 전하고 싶을 수 있어요.',
-            'care':f'{heart}을 바라는 마음은 함께할 일을 미리 준비하고 챙기는 모습으로 이어질 수 있어요.'}.get(x['theme'],ARCS[x['theme']][0])
+    object_form = heart + particle(heart, '을', '를')
+    return {'reflect':f'{object_form} 중요하게 여겨, 상대의 뜻을 더 들은 뒤 답하고 싶을 수 있어요.',
+            'care':f'{object_form} 중요하게 여겨, 같이 할 일을 미리 준비하거나 상대에게 필요한 것을 챙길 수 있어요.'}.get(x['theme'],ARCS[x['theme']][0])
 
 
 def character_bridge(label, x, role):
@@ -123,15 +124,23 @@ def character_bridge(label, x, role):
             'promise':'가까운 사이일수록 무엇을 믿고 함께할지 분명히 알고 싶은 바람',
             'self':'상대를 아끼면서도 자신의 마음으로 관계를 받아들이고 선택하려는 바람',
         }[x['theme']]
-    return (event + f'{label}의 일간을 바탕으로 {heart}을 중요하게 여기는 성향을 살펴봤어요. '
-            f'{echo}도 떠올릴 수 있죠. ' +
-            ('좋아하는 사람을 위해 직접 행동한다는 점에서 백소정을 닮았어요.'
-             if role == '백소정' else
-             '작은 배려로 가까워지고, 상대에 대해 몰랐던 사실을 알게 되면 받아들일 시간이 필요하다는 점에서 허선을 닮았어요.'))
+    example = {
+        'reflect': '낯선 이야기를 들은 날에는 무슨 일이 있었는지 먼저 묻고, 생각할 시간을 부탁할 수 있어요.',
+        'care': '상대가 늦게 퇴근한다는 말을 들으면, 먼저 먹을 것을 챙겨 둘지 물어볼 수 있어요.',
+        'voice': '즐거웠던 일을 이야기할 때 내가 좋았던 부분을 말하고 상대가 느낀 점도 물을 수 있어요.',
+        'promise': '만날 시간이 불확실해지면 언제까지 확인해서 알려 줄 수 있는지 말할 수 있어요.',
+        'self': '상대의 계획이 반가워도 내가 직접 고르고 싶은 부분은 따로 말할 수 있어요.',
+    }[x['theme']]
+    comparable = {'백소정': ('care', 'promise', 'self'), '허선': ('care', 'reflect')}
+    link = (f'{label}에게서도 {echo}{particle(echo, "이", "가")} 보일 수 있어요. '
+            if x['theme'] in comparable[role] else '')
+    return (event + f'{label}의 일간에서는 {heart}{particle(heart,"을","를")} 중요하게 여기는 성향을 읽어요. '
+            + link + example)
 
 
 def compose(result,a,b,aa,bb,links):
     from story_report import role_assignment
+    from edited_reports import day_opening
     lead,_,_,_=role_assignment(a,b)
     lead='당신' if lead=='첫 번째 사람' else '상대방'
     follow='상대방' if lead=='당신' else '당신'
@@ -142,10 +151,10 @@ def compose(result,a,b,aa,bb,links):
     role_a = '백소정' if lead == '당신' else '허선'
     role_b = '허선' if lead == '당신' else '백소정'
     result['roles']=(
-      block(f'{role_a}을 닮은 당신', f'당신은 {role_a}을 닮았어요. '+basis('당신',aa))+'\n\n'
-      +character_bridge('당신',aa,role_a)+'\n\n'
-      +block(f'{role_b}을 닮은 상대방', f'상대방은 {role_b}을 닮았어요. '+basis('상대방',bb))+'\n\n'
-      +character_bridge('상대방',bb,role_b)+'\n\n'
+      block(f'{role_a}{particle(role_a, "을", "를")} 닮은 당신', character_bridge('당신',aa,role_a))+'\n\n'
+      +basis('당신',aa)+'\n\n'
+      +block(f'{role_b}{particle(role_b, "을", "를")} 닮은 상대방', character_bridge('상대방',bb,role_b))+'\n\n'
+      +basis('상대방',bb)+'\n\n'
       +f'당신에게 중요한 것은 **{ta[0]}**, 상대방에게 중요한 것은 **{tb[0]}**예요. '
       +('당신은 마음을 정리할 시간이 필요하고, 상대방은 함께하고 싶다는 대답을 기다릴 수 있어요. ' if aa['theme']=='reflect' else
         '당신은 미리 챙기는 행동으로 마음을 전하고, 상대방은 오늘 하고 싶은 일을 함께 고르며 애정을 나누고 싶을 수 있어요. ' if aa['theme']=='care' else arc[0]+' ')
@@ -155,10 +164,13 @@ def compose(result,a,b,aa,bb,links):
     bridge={'reflect':'허선의 망설임을 오래 바라보면, 사랑하는 마음과 낯선 것을 받아들이는 속도가 같지는 않다는 생각이 들어요. 가까운 사람의 침묵 앞에서도 우리는 기다리고 싶다가, 문득 멀어진 것은 아닐까 두려워지곤 하죠.',
             'care':'백소정이 함께할 삶을 위해 기울인 정성에는 다정함과 절박함이 함께 느껴져요. 일상의 작은 배려에도 비슷한 질문이 남아요. 내가 해 주고 싶은 일이 지금 상대에게도 반가운 일일까요?'}.get(aa['theme'],f'서로를 아끼는 마음만큼 그 마음을 받아들일 시간도 필요해요. ‘{ta[0]}’와 ‘{tb[0]}’ 사이에는 두 사람이 함께 고를 수 있는 하루가 남아 있어요.')
     result['story']=TALE+'\n\n'+block('허선이 망설인 이유',bridge)
-    result['saju_a']=(block('처음에 반가웠던 차이',daily_core(aa)+' '+arc[1])+'\n\n'
-      +block('상대방에게 마음이 닿는 순간',tb[1]+' '+('당신이 생각을 꺼낼 준비가 되었을 때 상대방이 자기 하루를 들려준다면, 기다림 끝의 대화는 더 반가울 수 있어요.' if aa['theme']=='reflect' else '당신이 준비한 시간을 함께 즐기면서도 상대방이 원하는 것을 편하게 말할 수 있다면, 배려는 둘이 만들어 가는 일이 돼요.' if aa['theme']=='care' else '서로 원하는 방식을 함께 의논하면, 서로의 차이도 알아 가는 즐거움이 될 수 있어요.'))+'\n\n'
-      +block('편안함이 쌓이는 방식','백소정과 허선이 함께 꾸린 약방을 떠올리면, 만남 뒤에 이어지는 평범한 하루가 보여요. 두 사람에게도 특별한 사건보다 짧은 연락이나 다음 만남을 정하는 순간이 서로를 알아 가는 기회가 될 수 있어요. '+THEMES[GROUP[bb['anchors']['day']]][1])+'\n\n'
-      '처음에 좋았던 방식도 내 마음을 말할 틈이 사라지면 다르게 느껴질 수 있어요. 기다릴 때는 언제 다시 이야기할지 알고 싶고, 배려를 받을 때도 직접 고를 시간이 필요하니까요.')
+    result['saju_a'] = '\n\n'.join((
+        day_opening(a, b),
+        daily_core(aa) + ' ' + arc[1],
+        tb[1] + ' 배려를 받는 쪽도 지금 필요한 것이 무엇인지 말할 수 있어야 해요. 그래야 도와주는 쪽도 다음번에 무엇을 하면 좋을지 알아요.',
+        '백소정과 허선이 함께 약방을 꾸리듯, 함께 지내다 보면 작지만 자주 상의해야 할 일이 생겨요. 바쁜 날 먼저 식사를 준비해 준 행동이 고마워도, 피곤한 날에는 먹기보다 혼자 쉬고 싶을 수 있어요.',
+        '“챙겨 줘서 고마워. 지금은 조금 쉬고 싶어. 저녁 여덟 시에 같이 먹을까?”라고 말해 보세요. 왜 계획을 바꾸고 싶은지와 언제 함께할 수 있는지 알려 주면 준비한 사람도 다음 일정을 정하기 쉬워요.',
+    ))
     result['crisis']=(block('같은 저녁, 서로 다른 마음 · 가상 장면',arc[2])+'\n\n'
       +block('다정함이 어긋나 보이는 순간',arc[3])+'\n\n'
       +block('상대방의 입장에서 다시 보면', ('상대방은 함께할 일을 이야기하며 당신의 마음을 알고 싶었을 수 있어요. 대답을 기다리는 동안 새 제안보다 도움이 되는 것은, 당신도 이 대화를 이어 가고 싶다는 짧은 말일지 몰라요.' if aa['theme']=='reflect' else '상대방이 오늘 쉬고 싶다는 말은 당신과 보내는 시간이 싫다는 뜻과는 달라요. 고마움과 지금 필요한 것을 함께 말할 수 있어야, 당신도 준비한 마음을 부정당했다고 느끼지 않을 수 있어요.' if aa['theme']=='care' else tb[2])))
