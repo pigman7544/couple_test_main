@@ -45,7 +45,7 @@ def compute(payload, unlock=False):
         art = None
     if unlock:
         return {'full_report':full,'couple':{'id':couple['id'],'name':couple['name'],'work':couple['work']},'has_art':art is not None,'art':art,'test_mode':True}
-    excerpt = full.get('plot', {}).get('body') or full.get('crisis') or full.get('story', '')
+    excerpt = full['saju_a']
     excerpt = re.sub(r'^◆ .*\n', '', excerpt.strip(), count=1).split('\n\n')[0].replace('**', '')
     if len(excerpt) > 95:
         excerpt = excerpt[:95].rsplit(' ', 1)[0] + '…'

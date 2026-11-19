@@ -1,6 +1,6 @@
 """Reader-facing chapters for Ondal and Pyeonggang."""
 
-from report_evidence import ordered_people, profiles
+from report_evidence import apply_profiles, ordered_people
 
 
 def enrich(result, a, b, rel, couple):
@@ -21,7 +21,6 @@ def enrich(result, a, b, rel, couple):
 
 
 def revise(result, left, right, sl, sr, vector):
-    result['roles'] = profiles('c03', ('온달', '평강공주'), ((left, sl['stem']), (right, sr['stem'])))
     result['story'] = (
         '◆ **평강은 왜 궁을 떠났을까요?**\n'
         '평강이 어릴 때 울면 왕은 온달에게 시집보내겠다고 말했어요. 훗날 왕이 다른 집안과 혼인시키려 하자 평강은 그 말을 꺼내며 거절해요. '
@@ -75,3 +74,4 @@ def revise(result, left, right, sl, sr, vector):
         '다른 사람은 다음 달 쉬는 날을 확인할 수 있어요. 일요일에 다시 이야기할 때는 등록 여부와 필요한 도움을 각각 정해요. '
         '이번 달에는 어렵다면 다음에 다시 물어볼 때를 정하거나 계획을 접어도 괜찮아요.'
     )
+    apply_profiles(result, 'c03', ('온달', '평강공주'), ((left, sl['stem']), (right, sr['stem'])))

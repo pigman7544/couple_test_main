@@ -1,7 +1,7 @@
 """Compose five chapters for the reports that share the same role assignment."""
 
 from c06_report import band
-from report_evidence import CHARACTERS, ordered_people, profiles
+from report_evidence import CHARACTERS, apply_profiles, ordered_people
 from relationship_scenes import (
     FOLLOW_THROUGH, SCENES, SCENE_BANDS, SCENE_TURNS, SECOND_LOOK,
 )
@@ -55,7 +55,7 @@ TITLES = {
     'c02': ('견우와 직녀는 어떻게 다시 만났을까요?', '칠석에만 만날 수 있었던 두 사람', '만나지 못하는 날에도 관심을 전하는 법', '원하는 연락 횟수가 다를 때', '가능한 연락 시간을 먼저 말해요'),
     'c10': ('고백을 한 로미오와 다음 날을 물은 줄리엣', '마음이 같아도 소식을 전할 길은 필요했어요', '마음을 말하는 일과 계획을 세우는 일', '빨리 정할수록 놓치기 쉬운 조건', '함께하고 싶은 마음과 가능한 일을 말해요'),
     'c13': ('서로를 알아본 오디세우스와 페넬로페', '페넬로페가 침대를 옮기라고 한 이유', '오랜만에 만나도 달라진 일은 물어봐요', '같은 추억을 다른 뜻으로 떠올릴 때', '지금 가능한 약속을 정해요'),
-    'c18': ('재회를 준비한 개츠비와 다른 시간을 살아온 데이지', '개츠비가 되돌리고 싶었던 시간', '좋았던 기억과 달라진 취향', '상대에게 예전 모습만 기대할 때', '추억은 함께 나누고 다음 계획은 다시 정해요'),
+    'c18': ('재회를 준비한 개츠비와 다른 시간을 살아온 데이지', '개츠비가 되돌리고 싶었던 시간', '같은 추억을 떠올려도 바라는 건 다를 때', '상대에게 예전 모습만 기대할 때', '추억은 함께 나누고 다음 계획은 다시 정해요'),
     'f01': ('홈즈와 왓슨이 각각 잘한 일', '같은 사건에서 서로 다른 일을 맡은 두 사람', '함께 맡은 일이 막히면', '한 사람의 수고만 기억될 때', '누가 무엇을 했는지 구체적으로 말해요'),
     'f02': ('돈키호테와 산초는 왜 같은 풍차를 다르게 봤을까요?', '같은 길에서 서로 다른 판단을 한 두 사람', '가 보고 싶은 곳과 실제 갈 수 있는 곳', '걱정을 반대로 받아들일 때', '기대되는 점과 지킬 조건을 함께 정해요'),
     'f03': ('포숙아가 관중에게 해 준 일', '관중이 포숙아를 기억한 이유', '친구의 실수를 함께 수습할 때', '도움이 한쪽의 부담이 될 때', '할 수 있는 도움과 맡을 일을 말해요'),
@@ -101,26 +101,45 @@ def enrich(result, a, b, rel, couple):
 
     cid = couple['id']
     first, second = couple['name'].split('·', 1)
-    moment, conflict, repair = SCENES[cid]
-    detail, consequence, follow_up = FOLLOW_THROUGH[cid]
-    read_again, try_again = SECOND_LOOK[cid]
-    result['roles'] = profiles(cid, (first, second), ordered_people(a, b))
     result['story'] = TALE if cid == 'c01' else '\n\n'.join(STORIES[cid])
-    v = rel['vector']
-    # Sentence-level readings keep the existing score bands without imposing a
-    # fixed chapter outline. The example remains grounded in this work.
-    focus = {'c01':'security', 'c02':'security', 'c10':'attraction', 'c13':'security',
-             'c18':'attraction', 'f01':'growth', 'f02':'growth', 'f03':'security', 'f04':'growth'}[cid]
-    result['saju_a'] = '\n\n'.join((
-        PAIR_OPENING[cid], moment, detail, SCENE_BANDS[cid][band(v[focus])], SCENE_TURNS[cid],
-    ))
-    result['crisis'] = '\n\n'.join((conflict, consequence, read_again))
-    result['tip'] = '\n\n'.join((repair, follow_up, try_again))
     if cid == 'c01':
+        result['saju_a'] = (
+            PAIR_OPENING[cid] + '\n\n'
+            '미루자는 말을 들으면 누구나 같은 뜻으로 받아들이지는 않아요. 한 사람에게는 날짜를 잠시 보류하자는 말이었는데, '
+            '다른 사람에게는 이번 만남은 취소하고 나중에 새로 약속하자는 말로 들릴 수 있어요. '
+            '이미 일정을 바꾼 적이 있다면 그날 각자가 어떤 뜻으로 알아들었는지부터 이야기해 보세요.'
+        )
+        result['crisis'] = (
+            '춘향에게 기다리는 일은 이몽룡이 돌아올지 알 수 없는 동안 자기 선택을 계속 지키는 일이었어요. '
+            '두 분의 약속이 미뤄졌다면, 기다리는 동안 실제로 무엇이 달라졌는지 말해 보세요. '
+            '일정을 비워 둬야 해서 불편했는지, 같은 일이 반복돼 내 시간이 가볍게 여겨진다고 느꼈는지에 따라 듣고 싶은 대답이 달라요.\n\n'
+            '일정이 바뀐 쪽도 약속을 지킬 뜻을 설명하면서, 상대가 이미 들인 시간이나 수고를 물어봐요. '
+            '“날짜를 정해서 말하고 싶었는데, 그동안 네가 시간을 비워 두고 있는 줄 몰랐어”처럼 놓친 부분을 직접 말하면 '
+            '일정이 바뀐 사정과 그 변화로 상대가 겪은 일을 한 자리에서 이야기할 수 있어요.'
+        )
+        result['tip'] = (
+            '다음 만남을 바로 확정할 수 없다면 언제 다시 소식을 전할지 먼저 정해요. '
+            '“일정이 나오는 날 먼저 연락할게. 그날 만날 수 없더라도 일단 알려 줄게”라고 말하고, '
+            '기다리는 쪽은 그때까지 시간을 비워 둘 수 있는지 답해요. 먼저 다른 계획을 잡기로 해도 좋아요.\n\n'
+            '약속을 위해 미리 한 일이 있다면 다음 날짜를 잡기 전에 함께 정리해요. '
+            '이동이나 예약을 바꿔야 한다면 어느 쪽이 연락을 맡고 남은 비용은 어떻게 나눌지 물어보세요. '
+            '다음에 만났을 때 무엇이 이전보다 편했는지 확인해요. 날짜가 맞았던 점과 기다릴 범위를 미리 알았던 점은 서로 다른 도움이에요.'
+        )
         result['tagline'] = '떨어져 있어도 이어 가는 약속'
-        result['teaser'] = '춘향은 자신이 한 선택을 지켰고, 이몽룡은 남원으로 돌아왔어요. 두 분은 약속을 바꿔야 할 때 어떻게 다시 정하나요?'
+        result['teaser'] = '춘향은 돌아올 날을 모르는 동안 자기 선택을 지켰고, 이몽룡은 남원으로 돌아왔어요. 두 분은 약속을 미룰 때 상대가 얼마나 기다려야 하는지 함께 정하나요?'
         question = '바쁜 날에도 서로 지킬 수 있는 약속은 무엇인가요?'
     else:
+        moment, conflict, repair = SCENES[cid]
+        detail, consequence, follow_up = FOLLOW_THROUGH[cid]
+        read_again, try_again = SECOND_LOOK[cid]
+        focus = {'c02':'security', 'c10':'attraction', 'c13':'security', 'c18':'attraction',
+                 'f01':'growth', 'f02':'growth', 'f03':'security', 'f04':'growth'}[cid]
+        result['saju_a'] = '\n\n'.join((
+            PAIR_OPENING[cid], moment, detail,
+            SCENE_BANDS[cid][band(rel['vector'][focus])], SCENE_TURNS[cid],
+        ))
+        result['crisis'] = '\n\n'.join((conflict, consequence, read_again))
+        result['tip'] = '\n\n'.join((repair, follow_up, try_again))
         result['tagline'] = LENSES[cid][0]
         result['teaser'] = ' '.join(actions[0].event for actions in CHARACTERS[cid])
         question = EDITION[cid][-1]
@@ -129,4 +148,5 @@ def enrich(result, a, b, rel, couple):
     fields = ['roles', 'story', 'saju_a', 'crisis', 'tip']
     result['sections'] = fields
     result['chapters'] = [dict(key=key, title=title) for key, title in zip(fields, TITLES[cid])]
+    apply_profiles(result, cid, (first, second), ordered_people(a, b))
     return result

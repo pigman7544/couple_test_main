@@ -5,7 +5,7 @@ The c11 synthesis uses c06 facts without changing shared editorial weights.
 """
 from c06_chart import cross
 from c11_integrated import extract
-from report_evidence import ordered_people, profiles
+from report_evidence import apply_profiles, ordered_people
 
 TALE = (
  '◆ **첫인상에서 편지까지**\n영국의 한 시골 마을에 사는 엘리자베스 베넷은 자기 생각을 솔직하게 말하는 사람이에요. 부유한 청년 다아시와의 첫 만남은 무도회에서 시작되지만, 설렘보다는 불쾌함이 남아요. 다아시가 자신과 춤추기를 거절하며 외모를 낮춰 말하는 것을 듣고 거만한 사람이라고 생각하죠. 다아시는 차츰 엘리자베스의 생기와 재치에 끌리지만, 두 집안의 재산과 지위 차이를 의식해요.\n\n'
@@ -21,7 +21,6 @@ def enrich(result, a, b, rel, couple):
     result['chart_evidence'] = dict(version='c11-integrated-v2', a=aa, b=bb, cross=cross(a, b),
         policy='기존 명식 근거와 배역 유지. 본문에서는 작품과 대응하는 일간 해석을 사용해요.')
 
-    result['roles'] = profiles('c11', ('엘리자베스', '다아시'), ordered_people(a, b))
     result['tagline'] = '서로의 판단이 바뀌고 다시 만나는 사랑'
     result['teaser'] = '엘리자베스는 다아시의 편지와 이후 행동을 보고 판단을 고쳐요. 다아시도 처음과 다른 태도로 두 번째 대화를 시작해요.'
     result['plot'] = dict(title='《오만과 편견》 줄거리', body=TALE)
@@ -51,4 +50,5 @@ def enrich(result, a, b, rel, couple):
         '서로를 다시 이해하게 된 이유',
         '다음 만남에서 해 볼 일',
     ))]
+    apply_profiles(result, 'c11', ('엘리자베스', '다아시'), ordered_people(a, b))
     return result

@@ -37,11 +37,9 @@ CHARACTERS = {
     ),
     'c02': (
         (Action('견우직녀 설화 · 칠석 재회', '견우는 은하수 건너편의 직녀를 칠석에 다시 만나요.',
-                '만날 수 있는 날이 제한된 전승에서, 두 사람은 허락된 때에 다시 만남을 이어 가요.',
-                (Reading('戊', '정해진 약속을 꾸준히 이어 가는 면', '만날 기회가 드문 관계에서는 함께 정한 시간을 기억하고 지키는 행동으로 마음을 전할 수 있어요.'),)),),
+                '다시 만날 수 있었던 때는 하늘이 정한 날에 한정돼요.', ()),),
         (Action('견우직녀 설화 · 오작교', '직녀도 까치와 까마귀가 다리를 놓는 칠석에 오작교로 나와요.',
-                '다시 만날 마음을 실제 만남으로 옮기려면 가능한 때와 주변의 도움이 필요했어요.',
-                (Reading('戊', '가능한 때에 약속을 지키는 면', '만나기 어려운 동안에는 서로 실제로 지킬 수 있는 약속을 먼저 정해 둘 수 있어요.'),)),),
+                '다시 만날 마음을 실제 만남으로 옮기려면 가능한 때와 주변의 도움이 필요했어요.', ()),),
     ),
     'c03': (
         (Action('삼국사기 온달전 · 말 돌보기', '온달은 나라에서 내놓은 말을 구해 직접 돌봐요.',
@@ -168,13 +166,27 @@ def ordered_people(a, b):
 def profiles(cid, names, people):
     from story_report import STEM_NAME
 
-    paragraphs = []
+    portraits, reflections = [], {}
     for name, (label, stem), actions in zip(names, people, CHARACTERS[cid], strict=True):
         action, reading = select(actions, stem)
-        paragraphs.append(f'◆ **{label}에게 비춰 보는 {name}**\n{action.event} {action.meaning}')
+        portraits.append(f'◆ **{label}에게 건네는 {name}의 이야기**\n{action.event} {action.meaning}')
         if reading:
-            paragraphs.append(
-                f'명리에서는 {label}의 일간 **{STEM_NAME[stem]}({stem})**에서 '
-                f'이와 닮은 모습인 **{reading.trait}**을 읽어요. {reading.reflection}'
+            portraits.append(
+                f'명리에서 {label}의 일간인 **{STEM_NAME[stem]}({stem})**에 비춰 볼 수 있는 점은 '
+                f'**{reading.trait}**이에요.'
             )
-    return '\n\n'.join(paragraphs)
+            reflections[label] = reading.reflection
+    return '\n\n'.join(portraits), reflections
+
+
+def apply_profiles(result, cid, names, people):
+    from relationship_reflection import REFLECTIONS
+
+    roles, reflections = profiles(cid, names, people)
+    result['roles'] = roles
+    *prompts, next_step = REFLECTIONS[cid]
+    observed = []
+    for (label, _), prompt in zip(people, prompts, strict=True):
+        reflection = reflections.get(label)
+        observed.append(f'{reflection} {prompt}' if reflection else prompt)
+    result['saju_a'] = '\n\n'.join((result['saju_a'], *observed, next_step))
