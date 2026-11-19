@@ -15,9 +15,10 @@
     육충: '서로 마주하는 지지 여섯 쌍을 말해요.',
     지지: '연·월·일·시를 적는 두 글자 가운데 각각 뒤에 오는 글자예요.',
   };
-  const pattern = new RegExp(Object.keys(meanings).map(term =>
+  const alternatives = Object.keys(meanings).map(term =>
     term === '일주' ? '일주(?!일)' : term === '시주' ? '시주(?!하)' : term
-  ).join('|'), 'g');
+  ).join('|');
+  const pattern = new RegExp('(?<![가-힣0-9])(?:' + alternatives + ')', 'g');
   let nextId = 0;
   window.annotateSaju = (sections, seen = new Set()) => {
     for (const section of sections) {
