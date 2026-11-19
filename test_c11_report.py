@@ -24,19 +24,32 @@ class C11ReportTests(unittest.TestCase):
             self.assertTrue(unlocked['test_mode'])
             self.assertNotIn('full_report', preview)
 
-    def test_plain_language_and_contextual_questions(self):
-        from relationship_reflection import REFLECTIONS
-
-        prompts = REFLECTIONS['c11'][:2]
+    def test_plain_language_and_personalized_keyword_placement(self):
+        keyword_sets=[]
         for case in json.loads(Path('tests/fixtures/c11_comparison.json').read_text(encoding='utf8')):
-            r = compute(case['payload'], True)['full_report']
-            body = '\n'.join(r[k] for k in r['sections']).replace('**', '')
-            self.assertNotIn('태어난 달의 글자', body)
-            self.assertNotIn('◆', r['tip'])
-            self.assertEqual(r['roles'].count('◆ '), 2)
-            for prompt in prompts:
-                self.assertEqual(body.count(prompt), 1)
-            self.assertNotRegex(r['saju_a'], r'(?m)^◆')
+            r=compute(case['payload'],True)['full_report']
+            body='\n'.join(r[k] for k in r['sections'])
+            self.assertNotRegex(body,r'겹쳐|닿아|맞닿|교차해|의 결(?:[ ,.!]|$)|비춰 보|비춰 볼|해석 방법')
+            parts=re.split(r'^◆ \*\*.+?를 닮은 (?:당신|상대방)\*\*\n',r['roles'],flags=re.M)[1:]
+            keys=[]
+            for part in parts:
+                line=part.split('\n')[0]
+                words=re.findall(r'\*\*(.+?)\*\*',line)
+                self.assertEqual(len(words),2)
+                self.assertTrue(all(len(w)<=18 for w in words))
+                self.assertRegex(part,'닮|비슷')
+                self.assertIn('일간',part)
+                self.assertIn('월주',part)
+                explanation=part.split('\n\n',1)[1]
+                paragraphs=explanation.split('\n\n')
+                for index,word in enumerate(words):
+                    self.assertEqual(explanation.count(word),1)
+                    self.assertEqual(explanation.count('**'+word+'**'),1)
+                    self.assertIn('**'+word+'**',paragraphs[1 if index==0 else 3])
+                keys.append(words)
+            keyword_sets.append(keys)
+        self.assertNotEqual(keyword_sets[0][0],keyword_sets[1][0])
+        self.assertNotEqual(keyword_sets[0][1],keyword_sets[1][1])
 
     def test_plot_and_chart_evidence_are_preserved(self):
         from c06_chart import cross

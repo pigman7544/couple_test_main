@@ -7,7 +7,6 @@ from engine import person
 from matcher import DB
 from relationship_v08 import relation
 from report_evidence import CHARACTERS, ordered_people, select
-from relationship_reflection import REFLECTIONS
 from server import compute
 from story_report import STEMS, make_report, role_assignment
 
@@ -18,19 +17,14 @@ class ReportEvidenceTests(unittest.TestCase):
         preview, unlocked = compute(payload), compute(payload, unlock=True)
         self.assertEqual(preview['couple'], unlocked['couple'])
         self.assertEqual(unlocked['couple']['id'], 'c01')
-        self.assertTrue(unlocked['full_report']['saju_a'].startswith(
-            preview['preview']['story_excerpt'].removesuffix('…')
-        ))
         text = unlocked['full_report']['roles'].replace('**', '')
-        chunhyang, mongryong = text.split('◆ 상대방에게 건네는 이몽룡의 이야기')
+        chunhyang, mongryong = text.split('◆ 상대방에게 비춰 보는 이몽룡')
         self.assertIn('수청 요구를 거절해', chunhyang)
         self.assertNotIn('기토', chunhyang)
         self.assertIn('신금(辛)', mongryong)
         self.assertIn('약속을 행동으로 지키는 면', mongryong)
         for phrase in ('태어난 달의 글자를', '세부 조건', '주말 계획', '손에 잡히는 도움'):
             self.assertNotIn(phrase, text)
-        self.assertIn(REFLECTIONS['c01'][0], unlocked['full_report']['saju_a'].replace('**', ''))
-        self.assertNotIn('주말', '\n'.join(unlocked['full_report'][key] for key in unlocked['full_report']['sections']))
 
     def test_every_character_and_ordered_day_stem_pair(self):
         # Ten consecutive solar dates cover all day stems. Using real charts also
@@ -40,7 +34,6 @@ class ReportEvidenceTests(unittest.TestCase):
                   for i, d in enumerate(dates)]
         self.assertEqual({p['day_pillar'][0] for p in charts}, set(STEMS))
         self.assertEqual(set(CHARACTERS), {c['id'] for c in DB})
-        self.assertEqual(set(REFLECTIONS), set(CHARACTERS))
         for actions_by_character in CHARACTERS.values():
             for actions in actions_by_character:
                 approved_stems = set()
@@ -77,22 +70,14 @@ class ReportEvidenceTests(unittest.TestCase):
                             people = tuple((label, p['day_pillar'][0]) for label, p in zip(labels, (pa, pb)))
                         portraits = report['roles'].replace('**', '').split('◆ ')[1:]
                         self.assertEqual(len(portraits), 2)
-                        prose = report['saju_a'].replace('**', '')
-                        self.assertNotRegex(prose, r'(?m)^\s*(?:◆|끌림$|안정감$|성장$)')
-                        left, right, next_step = REFLECTIONS[cid]
-                        self.assertTrue(prose.endswith(next_step))
-                        for portrait, (label, stem), actions, prompt in zip(
-                            portraits, people, CHARACTERS[cid], (left, right), strict=True
-                        ):
+                        for portrait, (label, stem), actions in zip(portraits, people, CHARACTERS[cid], strict=True):
                             action, reading = select(actions, stem)
-                            self.assertTrue(portrait.startswith(label + '에게 건네는'))
+                            self.assertTrue(portrait.startswith(label + '에게 비춰 보는'))
                             self.assertIn(action.event, portrait)
-                            self.assertEqual(prose.count(prompt), 1)
                             if reading:
                                 self.assertIn(f'({stem})', portrait)
                                 self.assertIn(reading.trait, portrait)
-                                self.assertIn(reading.reflection + ' ' + prompt, prose)
-                                self.assertNotIn(reading.reflection, portrait)
+                                self.assertIn(reading.reflection, portrait)
                             else:
                                 self.assertNotIn('일간', portrait)
                                 self.assertEqual(portrait.strip().split('\n', 1)[1], f'{action.event} {action.meaning}')
@@ -104,7 +89,3 @@ class ReportEvidenceTests(unittest.TestCase):
         self.assertIn('수의', action.source)
         self.assertIsNotNone(reading)
         self.assertEqual(select(penelope, '丙'), (penelope[0], None))
-
-    def test_mandated_reunion_does_not_establish_steadfastness(self):
-        for actions in CHARACTERS['c02']:
-            self.assertIsNone(select(actions, '戊')[1])

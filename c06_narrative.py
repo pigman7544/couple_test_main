@@ -53,12 +53,13 @@ def basis(label,x):
 
 def compose(result, a, b):
     from c06_report import TALE, TITLES
-    from report_evidence import apply_profiles
+    from report_evidence import profiles
     from story_report import role_assignment
 
     lead, _, pa, pb = role_assignment(a, b)
     labels = ('당신', '상대방') if lead == '첫 번째 사람' else ('상대방', '당신')
     people = tuple((label, person['day_pillar'][0]) for label, person in zip(labels, (pa, pb)))
+    result['roles'] = profiles('c06', ('백소정', '허선'), people)
     result['tagline'] = '서로를 이해하며 함께 살아가는 사랑'
     result['teaser'] = '허선은 백소정에게 우산을 빌려주고, 두 사람은 함께 약방을 꾸려요. 서로를 돕던 사이에 뒤늦게 알게 된 사실이 두 사람을 흔들어요.'
     result['story'] = TALE
@@ -98,5 +99,4 @@ def compose(result, a, b):
     result['sections'] = ['roles', 'story', 'saju_a', 'crisis', 'tip']
     result['chapters'] = [dict(key=key, title=title) for key, title in zip(result['sections'], TITLES)]
     result.update(scene='', saju_b='', chemistry='')
-    apply_profiles(result, 'c06', ('백소정', '허선'), people)
     return result
