@@ -35,11 +35,11 @@ class C06Report(unittest.TestCase):
         self.assertEqual([c['title'] for c in r['chapters']], TITLES)
         for word in ('서호', '우산', '부부', '약방', '웅황주', '법해', '뇌봉탑', '판본'):
             self.assertIn(word, r['story'])
-        self.assertIn('당신의 일간은',r['roles'])
-        self.assertIn('상대방의 일간은',r['roles'])
+        self.assertIn('당신에게 비춰 보는 허선', r['roles'])
+        self.assertIn('상대방에게 비춰 보는 백소정', r['roles'])
         self.assertNotIn('지장간',r['roles'])
         self.assertIn('hidden',r['chart_evidence']['a'])
-        self.assertIn('가상 장면',r['crisis'])
+        self.assertIn('허선은 백소정에 관해', r['crisis'])
 
     def test_internal_scores_preserved_but_never_displayed(self):
         for key in AXES:
@@ -53,14 +53,15 @@ class C06Report(unittest.TestCase):
 
     def test_real_personalization_and_missing_time(self):
         base = self.report()
-        a, b = person(1988, 6, 12), person(1995, 12, 1)
+        a, b = person(1982, 9, 13), person(1981, 6, 2)
         r = self.report(a, b, relation(a, b))
-        for key in ('roles', 'saju_a', 'crisis', 'tip'):
-            self.assertNotEqual(base[key], r[key], key)
+        self.assertNotEqual(base['roles'], r['roles'])
+        for key in ('saju_a', 'crisis', 'tip'):
+            self.assertEqual(base[key], r[key], key)
         for who in ('a','b'):
             self.assertTrue(r['chart_evidence'][who]['missing_hour'])
             self.assertNotIn('hour_pillar',r['chart_evidence'][who]['pillars'])
-        # The source tale stays fixed; the explicitly separated reading question varies.
+        # The source tale stays fixed while supported day-stem readings can vary.
         from c06_report import TALE
         self.assertTrue(base['story'].replace('**','').startswith(TALE.replace('**','')))
         self.assertTrue(r['story'].replace('**','').startswith(TALE.replace('**','')))
@@ -71,8 +72,8 @@ class C06Report(unittest.TestCase):
         b = dict(self.b, day_pillar='庚子', month_pillar='庚子')
         self.assertIs(role_assignment(a, b)[2], a)
         self.assertIs(role_assignment(b, a)[2], a)
-        self.assertIn('당신은 백소정을 닮았어요', self.report(a, b)['roles'])
-        self.assertIn('상대방은 백소정을 닮았어요', self.report(b, a)['roles'])
+        self.assertIn('당신에게 비춰 보는 백소정', self.report(a, b)['roles'])
+        self.assertIn('상대방에게 비춰 보는 백소정', self.report(b, a)['roles'])
         self.assertEqual(self.report(a, b)['roles'], self.report(dict(a, gender='male'), dict(b, gender='female'))['roles'])
         self.assertIs(role_assignment(a, a.copy())[2], a)
         self.assertIs(role_assignment(a, a.copy())[2],a)

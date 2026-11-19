@@ -58,7 +58,10 @@ class IntegratedChartTests(unittest.TestCase):
         self.assertNotEqual(character_keywords(aa),character_keywords(cc))
         c=next(c for c in DB if c['id']=='c11');rel=relation(a,b)
         r,t=make_report(a,b,rel,c,{}),make_report(changed,b,rel,c,{})
-        for key in ('roles','saju_a','tip'): self.assertNotEqual(r[key],t[key])
+        self.assertNotEqual(r['chart_evidence']['a'], t['chart_evidence']['a'])
+        for key in ('saju_a', 'tip'):
+            self.assertEqual(r[key], t[key])
+        self.assertNotIn('월주', r['roles'] + t['roles'])
         self.assertEqual(a,original)
 
     def test_all_other_types_exactly_preserved_for_both_real_samples(self):

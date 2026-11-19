@@ -324,30 +324,27 @@ def make_report(a,b,rel,couple,story):
     return result
 
 
-# Keep all other types and free-preview fields on the existing report path.
 _v66_make_report = make_report
 
-def make_report(a,b,rel,couple,story):
-    result = _v66_make_report(a,b,rel,couple,story)
-    from edited_reports import SCENES, enrich as edit_report
-    if couple['id'] in SCENES:
-        result = edit_report(result, a, b, rel, couple)
-    if couple['id'] == 'c06':
-        from c06_report import enrich
-        result = enrich(result, a, b, rel)
-    if couple['id'] == 'c06':
-        from c06_chart import enrich as personalize_chart
-        result = personalize_chart(result, a, b)
-    elif couple['id'] not in SCENES:
-        from other_reports import enrich as enrich_other
-        from personalized_reading import enrich as personalize
-        result = enrich_other(result, a, b, rel, couple)
-        result = personalize(result, a, b, rel, couple)
-        from literary_edition import enrich as enrich_literary
-        result = enrich_literary(result, a, b, rel, couple)
-        if couple['id'] == 'c11':
-            from c11_report import enrich as enrich_c11
-            result = enrich_c11(result, a, b, rel, couple)
+
+def make_report(a, b, rel, couple, story):
+    """Compose each live report once, then apply reader formatting."""
+    result = dict(pillars_a=pillar_text(a), pillars_b=pillar_text(b),
+                  scene='', saju_b='', chemistry='')
+    cid = couple['id']
+    if cid == 'c06':
+        from c06_chart import enrich
+        result = enrich(result, a, b)
+    else:
+        if cid == 'c03':
+            from ondal_reading import enrich
+        elif cid == 'c11':
+            from c11_report import enrich
+        else:
+            from edited_reports import enrich
+        result = enrich(result, a, b, rel, couple)
+    if cid != 'c11':
+        result['scene'] = result['crisis'].split('\n\n', 1)[0]
     from report_emphasis import emphasize, add_body_emphasis
     for key in ('roles', 'story', 'saju_a', 'crisis', 'scene', 'tip', 'ending'):
         if isinstance(result.get(key), str):

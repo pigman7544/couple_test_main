@@ -1,9 +1,9 @@
 """Compose five chapters for the reports that share the same role assignment."""
 
 from c06_report import band
-from reading_voice import GOD_SCENES
+from report_evidence import CHARACTERS, ordered_people, profiles
 from relationship_scenes import (
-    FOLLOW_THROUGH, ROLE_DETAILS, SCENES, SCENE_BANDS, SCENE_TURNS, SECOND_LOOK, STEM_RELATION,
+    FOLLOW_THROUGH, SCENES, SCENE_BANDS, SCENE_TURNS, SECOND_LOOK,
 )
 
 
@@ -63,73 +63,48 @@ TITLES = {
 }
 
 
-def day_opening(a, b):
-    from story_report import STEM_NAME, relationship_style, elem
-    from relationship_v08 import GEN
-    left, right = (relationship_style(p)['stem'] for p in (a, b))
-    ea, eb = elem(a), elem(b)
-    if left == right:
-        same = STEM_NAME[left]
-        return (f'두 사람 모두 {same} 일간을 가졌어요. '
-                f'공통으로 읽을 수 있는 점은 **{STEM_RELATION[left][0]}**이에요. '
-                '비슷한 점이 있어도 어느 때 그 모습을 보이는지는 두 사람의 사정에 따라 달라져요.')
-    opening = (f'당신의 일간은 {STEM_NAME[left]}, 상대방의 일간은 {STEM_NAME[right]}이에요. '
-               f'당신에게서 {STEM_RELATION[left][0]}을, 상대방에게서 {STEM_RELATION[right][0]}을 읽을 수 있어요. ')
-    if ea == eb:
-        return opening + '같은 오행 안에서도 두 사람이 중요하게 여기는 조건에는 차이가 있을 수 있어요.'
-    if GEN[ea] == eb or GEN[eb] == ea:
-        giver = '당신이' if GEN[ea] == eb else '상대방이'
-        return (opening + '오행에서 한 성질이 다른 성질을 돕는 관계를 상생이라고 해요. '
-                f'{giver} 먼저 제안하고 다른 쪽이 자기 형편에 맞게 바꿔 실행하면, 제안도 실행도 둘 사이에 어떤 도움이 됐는지 알 수 있어요.')
-    return opening + '오행에서 한 성질이 다른 성질을 조절하는 관계를 상극이라고 해요. 서로 다른 의견을 들으면 한 사람이 혼자 정할 때 빠뜨린 조건을 확인할 수 있어요.'
-
-
-def profile(label, name, chart_style, scene, detail):
-    from story_report import STEM_NAME
-    event, trait, supported, example = scene
-    stem = chart_style['stem']
-    reading, independent_example = STEM_RELATION[stem]
-    opening = f'{event} {trait}'
-    chart = f'{label}의 일간은 **{STEM_NAME[stem]}**({stem})이에요. 여기서 {reading}을 읽어요.'
-    if stem in supported:
-        comparison = f'이 모습이 {name}의 선택과 닮았어요. {example}'
-    else:
-        comparison = f'이 성향을 일상에 비춰 보면, {independent_example[0].lower() + independent_example[1:]}'
-    month = '태어난 달의 글자를 함께 보면 가까운 사이에서 보일 수 있는 또 다른 행동이 있어요. '
-    month += GOD_SCENES[chart_style['god']] + '.'
-    title = f'{label}에게 비춰 보는 {name}'
-    return f'◆ **{title}**\n{opening}\n\n{chart} {comparison}\n\n{month}\n\n{detail}'
+PAIR_OPENING = {
+    'c01': ('춘향은 기다리는 동안 자기 선택을 지켰고, 이몽룡은 떨어져 있던 시간이 지난 뒤 돌아왔어요. '
+            '남원에서 무슨 일이 벌어지는지 곁에서 볼 수 없었던 이몽룡과, 언제 다시 올지 알기 어려웠던 춘향은 약속이 이어지는 동안 서로 다른 일을 겪어요. '
+            '두 분이 약속을 지키려는 마음을 같이 가지고 있어도, 지금 각자가 알고 있는 일정과 기다려야 하는 시간은 다를 수 있어요.'),
+    'c02': ('견우와 직녀는 오작교가 놓이는 날에야 만날 수 있어요. 오작교가 없다면 두 사람의 마음이 같아도 그날을 앞당길 수 없었어요. '
+            '오늘의 관계에서도 만날 날을 함께 기다리는 일과 떨어져 있는 동안 서로의 생활을 알아 가는 일은 따로 생각할 수 있어요. '
+            '다음 약속은 두 사람이 언제 함께할지 알려 주고, 평소에 건네는 소식은 만나지 못한 날을 조금씩 알게 해 줘요.'),
+    'c10': ('정원에서 로미오는 마음을 먼저 전하고 줄리엣은 그 마음을 이어 갈 다음 일을 물어요. '
+            '줄리엣이 다음 날 소식을 기다리겠다고 하자 고백을 이어 갈 방법이 생겨요. 이후 로미오가 추방됐을 때는 편지로 계획을 알리려 했지만 그 편지가 도착하지 않아요. '
+            '중요한 일을 정할 때는 상대의 뜻을 직접 듣는 일과, 두 사람이 다음 단계에 관해 같은 내용을 알고 있는지 확인하는 일이 모두 필요해요.'),
+    'c13': ('오디세우스가 설명한 침대는 페넬로페가 눈앞에 있는 사람을 알아보는 근거가 돼요. '
+            '그 답은 두 사람에게 같은 기억이 남았다는 걸 보여 줘요. 오디세우스가 돌아오지 못하는 동안 자기 살림을 이어 온 페넬로페에게는 새로 쌓인 시간도 있어요. '
+            '오랜만에 만나는 두 분도 먼저 함께 기억하는 일부터 이야기하고, 그 뒤에 달라진 일은 상대의 설명을 들으며 하나씩 알아갈 수 있어요.'),
+    'c18': ('개츠비는 재회를 준비해 두고도 데이지가 어디까지 예전처럼 지낼 수 있을지는 그녀의 답을 기다려야 했어요. '
+            '닉이 자리를 마련한 날의 반가움과, 나중에 호텔에서 데이지가 자기 과거를 두고 내놓은 답은 함께 읽을 수 있어요. '
+            '두 분도 오래 기억한 일을 함께 떠올리면서, 그 기억이 상대에게는 어떤 뜻인지 다시 들을 수 있어요.'),
+    'f01': ('홈즈가 문제를 풀고 왓슨이 그 일을 기록하면, 독자는 결론에 이르기 전에 어떤 단서가 나왔는지 따라갈 수 있어요. '
+            '왓슨은 기록만 남기는 사람도 아니에요. 통역관을 데려가자고 제안했을 때처럼 그 자리에서 아직 부족한 준비를 보여 주기도 해요. '
+            '친구와 한 일을 돌아볼 때 각자가 언제 무엇을 보고 움직였는지 말하면, 왜 그 제안이 필요했는지도 알 수 있어요.'),
+    'f02': ('돈키호테가 풍차 쪽으로 달려가자, 산초는 먼저 멈춰야 할 이유를 말해요. '
+            '돈키호테는 거인과 싸우겠다는 뜻이 분명했고 산초는 바람에 움직이는 날개를 봤어요. '
+            '함께 일을 시작할 때도 한 사람의 눈에는 하고 싶은 일이 먼저 보이고, 다른 사람의 눈에는 그 일이 가능한 조건이 먼저 보일 수 있어요. 출발하기 전에 서로 확인할 시간을 남겨 두면 두 의견을 계획에 쓸 수 있어요.'),
+    'f03': ('포숙아는 장사에서 더 많은 이익을 가져간 관중을 보며 어떤 형편에서 그랬는지 생각했고, 훗날에는 관중에게 제나라 일을 맡길 만하다고 판단해요. '
+            '관중도 자기가 어떤 사정에서 이해받았는지 구체적으로 기억해요. 두 분이 도움을 주고받을 때에도 사정을 듣는 일과 공동으로 맡은 일을 처리하는 일은 함께 이어질 수 있어요. '
+            '어느 말이 힘이 됐고 무슨 행동이 일을 풀었는지를 나누어 알려 주세요.'),
+    'f04': ('엔키두는 우루크에서 길가메시의 앞을 막고, 뒤에는 그와 같은 원정을 떠나요. '
+            '함께 움직이는 동안에도 두 사람은 의견을 주고받아요. 한 번 편을 같이했다고 상대가 모든 선택에 동의할 이유는 없어요. '
+            '친구가 계획을 바꾸자고 할 때 무엇을 걱정하는지 먼저 들으면, 처음에 정한 목표를 유지하면서도 그 목표에 이르는 방법을 고칠 수 있어요.'),
+}
 
 
 def enrich(result, a, b, rel, couple):
-    from story_report import relationship_style, count_elements
     from c01_report import TALE
     from literary_edition import EDITION
-    from other_reports import LENSES, ADVICE
-    from personalized_reading import CONFLICT, EXPRESSION, AUTONOMY, PACE
-    from story_report import elem
+    from other_reports import LENSES
 
     cid = couple['id']
     first, second = couple['name'].split('·', 1)
-    sa, sb = relationship_style(a), relationship_style(b)
-
-    def strength(person, style):
-        counts = count_elements(person)
-        return counts['earth'] + counts['metal'] + (style['god'] in ('정관', '정재', '비견'))
-
-    if strength(a, sa) >= strength(b, sb):
-        labels, styles = ('당신', '상대방'), (sa, sb)
-    else:
-        labels, styles = ('상대방', '당신'), (sb, sa)
-
-    left, right, moment, conflict, repair = SCENES[cid]
+    moment, conflict, repair = SCENES[cid]
     detail, consequence, follow_up = FOLLOW_THROUGH[cid]
     read_again, try_again = SECOND_LOOK[cid]
-    result['roles'] = '\n\n'.join(
-        profile(label, name, style, scene, example)
-        for label, name, style, scene, example in
-        zip(labels, (first, second), styles, (left, right), ROLE_DETAILS[cid])
-    )
+    result['roles'] = profiles(cid, (first, second), ordered_people(a, b))
     result['story'] = TALE if cid == 'c01' else '\n\n'.join(STORIES[cid])
     v = rel['vector']
     # Sentence-level readings keep the existing score bands without imposing a
@@ -137,24 +112,17 @@ def enrich(result, a, b, rel, couple):
     focus = {'c01':'security', 'c02':'security', 'c10':'attraction', 'c13':'security',
              'c18':'attraction', 'f01':'growth', 'f02':'growth', 'f03':'security', 'f04':'growth'}[cid]
     result['saju_a'] = '\n\n'.join((
-        day_opening(a, b), moment, detail, SCENE_BANDS[cid][band(v[focus])], SCENE_TURNS[cid],
+        PAIR_OPENING[cid], moment, detail, SCENE_BANDS[cid][band(v[focus])], SCENE_TURNS[cid],
     ))
-    result['crisis'] = '\n\n'.join((conflict, consequence, read_again, CONFLICT[band(v['conflict'])], EXPRESSION[band(v['expression'])]))
-    topics = [PACE[elem(p)][1] for p in (a, b)]
-    prompts = (f'두 분 모두 ‘{topics[0]}’에 관해 한 가지씩 말해 보세요. '
-               if topics[0] == topics[1] else
-               f'당신은 ‘{topics[0]}’에 관해, 상대방은 ‘{topics[1]}’에 관해 한 가지씩 말해 보세요. ')
-    prompts += '서로의 답을 듣고 앞에서 정한 약속을 바꿔야 할 게 있는지도 함께 확인해 보세요.'
-    result['tip'] = '\n\n'.join((repair, follow_up, try_again, prompts,
-        ' '.join(ADVICE[key][band(v[key])] for key in ('attraction', 'security', 'growth') if key != focus),
-        AUTONOMY[band(v['autonomy'])]))
+    result['crisis'] = '\n\n'.join((conflict, consequence, read_again))
+    result['tip'] = '\n\n'.join((repair, follow_up, try_again))
     if cid == 'c01':
         result['tagline'] = '떨어져 있어도 이어 가는 약속'
         result['teaser'] = '춘향은 자신이 한 선택을 지켰고, 이몽룡은 남원으로 돌아왔어요. 두 분은 약속을 바꿔야 할 때 어떻게 다시 정하나요?'
         question = '바쁜 날에도 서로 지킬 수 있는 약속은 무엇인가요?'
     else:
         result['tagline'] = LENSES[cid][0]
-        result['teaser'] = left[0] + ' ' + right[0]
+        result['teaser'] = ' '.join(actions[0].event for actions in CHARACTERS[cid])
         question = EDITION[cid][-1]
     result['questions'] = [question]
     result['ending'] = question

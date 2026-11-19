@@ -107,4 +107,4 @@ def enrich(result,a,b):
     aa,bb=extract(a),extract(b)
     result['chart_evidence'] = dict(version='c06-chart-v2',a=aa,b=bb,cross=cross(a,b),
         policy='기존 전체 명식 편집 규칙 유지. 합화·신강약·용신·대운 판단 없음. 배역·내부 점수·매칭 보존.')
-    return compose(result,a,b,aa,bb,result['chart_evidence']['cross'])
+    return compose(result,a,b)
