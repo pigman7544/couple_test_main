@@ -1,0 +1,798 @@
+{
+  "before": {
+    "sentences": 468,
+    "repeated_occurrences_after_first": 273,
+    "normalized_repeated": 273,
+    "near_repeated_from_earlier_pair": 128,
+    "top_exact": [
+      [
+        "상대를 각자의 관점에서 읽을 때는 다른 주제가 보입니다.",
+        14
+      ],
+      [
+        "둘이 같은 일을 하더라도 각자 방법을 고를 여지가 있을 때 더 편하게 느끼는지 돌아보세요.",
+        13
+      ],
+      [
+        "반대로 역할이 열려 있어서 모든 걸 혼자 결정해야 했던 날에는 어떤 도움이 필요했나요?",
+        13
+      ],
+      [
+        "둘째의 명식은 태어난 달의 중심 글자에서 실마리를 줍니다.",
+        13
+      ],
+      [
+        "둘이 시작한 일에 다른 사람을 초대한다는 제안을 떠올려 보세요.",
+        11
+      ]
+    ],
+    "markers": {
+      "abstraction": 68,
+      "linkage_proxy": 7,
+      "generic": 16,
+      "clarity": 15,
+      "grammar": 3
+    }
+  },
+  "after": {
+    "sentences": 522,
+    "repeated_occurrences_after_first": 257,
+    "normalized_repeated": 257,
+    "near_repeated_from_earlier_pair": 234,
+    "top_exact": [
+      [
+        "한 번 해 본 뒤에는 양쪽에 무엇이 달라졌는지 확인합니다.",
+        15
+      ],
+      [
+        "처음 함께하려던 마음은 그대로인데 결정할 항목 하나에서만 대화가 길어질 수 있습니다.",
+        11
+      ],
+      [
+        "한 사람이 꺼낸 말을 다른 사람이 자기 말로 이어받을 여지가 보입니다.",
+        9
+      ],
+      [
+        "시주 정보가 확정되면 이 해석의 근거도 달라질 수 있습니다.",
+        9
+      ],
+      [
+        "이 글자는 일간을 기준으로 겁재에 해당합니다.",
+        7
+      ]
+    ],
+    "markers": {}
+  },
+  "round2": {
+    "sentences": 384,
+    "repeated_occurrences_after_first": 41,
+    "normalized_repeated": 41,
+    "near_repeated_from_earlier_pair": 118,
+    "top_exact": [
+      [
+        "시주 정보가 미확정이라 확인된 위치까지만 읽었습니다.",
+        9
+      ],
+      [
+        "같은 글자는 시주 지지에서도 확인됩니다.",
+        5
+      ],
+      [
+        "접점과 마찰의 자리는 서로 떨어져 있습니다.",
+        4
+      ],
+      [
+        "같은 글자는 연주 지지에서도 확인됩니다.",
+        4
+      ],
+      [
+        "같은 글자는 일주 지지에서도 확인됩니다.",
+        4
+      ]
+    ],
+    "markers": {}
+  },
+  "near_threshold": 0.6,
+  "pairs": [
+    {
+      "pair": 1,
+      "characters": [
+        846,
+        912,
+        677
+      ],
+      "versions": {
+        "before": {
+          "sentences": 20,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "linkage_proxy": 1,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 21,
+          "repeated_occurrences_after_first": 1,
+          "normalized_repeated": 1,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 16,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 2,
+      "characters": [
+        952,
+        1176,
+        791
+      ],
+      "versions": {
+        "before": {
+          "sentences": 22,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "linkage_proxy": 2,
+            "clarity": 1
+          }
+        },
+        "after": {
+          "sentences": 27,
+          "repeated_occurrences_after_first": 1,
+          "normalized_repeated": 1,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 20,
+          "repeated_occurrences_after_first": 1,
+          "normalized_repeated": 1,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 3,
+      "characters": [
+        1179,
+        1102,
+        801
+      ],
+      "versions": {
+        "before": {
+          "sentences": 25,
+          "repeated_occurrences_after_first": 2,
+          "normalized_repeated": 2,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 4,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 26,
+          "repeated_occurrences_after_first": 2,
+          "normalized_repeated": 2,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 20,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 4,
+      "characters": [
+        1126,
+        1217,
+        829
+      ],
+      "versions": {
+        "before": {
+          "sentences": 24,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "grammar": 1,
+            "clarity": 1
+          }
+        },
+        "after": {
+          "sentences": 27,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 22,
+          "repeated_occurrences_after_first": 1,
+          "normalized_repeated": 1,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 5,
+      "characters": [
+        1017,
+        1147,
+        804
+      ],
+      "versions": {
+        "before": {
+          "sentences": 24,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "clarity": 1,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 26,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 18,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 6,
+      "characters": [
+        990,
+        1147,
+        741
+      ],
+      "versions": {
+        "before": {
+          "sentences": 23,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "clarity": 1,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 25,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 17,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 7,
+      "characters": [
+        967,
+        1130,
+        803
+      ],
+      "versions": {
+        "before": {
+          "sentences": 23,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "clarity": 1,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 26,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 21,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 8,
+      "characters": [
+        944,
+        1144,
+        766
+      ],
+      "versions": {
+        "before": {
+          "sentences": 22,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 5,
+            "grammar": 1,
+            "clarity": 1
+          }
+        },
+        "after": {
+          "sentences": 26,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 19,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 9,
+      "characters": [
+        1147,
+        1193,
+        787
+      ],
+      "versions": {
+        "before": {
+          "sentences": 26,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "clarity": 1,
+            "linkage_proxy": 1,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 28,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 21,
+          "repeated_occurrences_after_first": 1,
+          "normalized_repeated": 1,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 10,
+      "characters": [
+        946,
+        1115,
+        715
+      ],
+      "versions": {
+        "before": {
+          "sentences": 23,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "clarity": 1,
+            "linkage_proxy": 1,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 26,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 19,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 11,
+      "characters": [
+        1069,
+        1125,
+        739
+      ],
+      "versions": {
+        "before": {
+          "sentences": 26,
+          "repeated_occurrences_after_first": 2,
+          "normalized_repeated": 2,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 5,
+            "clarity": 1,
+            "linkage_proxy": 1,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 27,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 19,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 12,
+      "characters": [
+        1043,
+        1221,
+        798
+      ],
+      "versions": {
+        "before": {
+          "sentences": 24,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "clarity": 1,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 27,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 21,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 13,
+      "characters": [
+        978,
+        1216,
+        751
+      ],
+      "versions": {
+        "before": {
+          "sentences": 22,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "grammar": 1,
+            "clarity": 1
+          }
+        },
+        "after": {
+          "sentences": 27,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 19,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 14,
+      "characters": [
+        998,
+        1081,
+        712
+      ],
+      "versions": {
+        "before": {
+          "sentences": 22,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 4,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 25,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 17,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 15,
+      "characters": [
+        1004,
+        1109,
+        762
+      ],
+      "versions": {
+        "before": {
+          "sentences": 22,
+          "repeated_occurrences_after_first": 2,
+          "normalized_repeated": 2,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 27,
+          "repeated_occurrences_after_first": 1,
+          "normalized_repeated": 1,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 20,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 16,
+      "characters": [
+        1002,
+        1149,
+        741
+      ],
+      "versions": {
+        "before": {
+          "sentences": 24,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "clarity": 1,
+            "linkage_proxy": 1,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 26,
+          "repeated_occurrences_after_first": 1,
+          "normalized_repeated": 1,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 18,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 17,
+      "characters": [
+        1031,
+        1158,
+        764
+      ],
+      "versions": {
+        "before": {
+          "sentences": 24,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "clarity": 1,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 26,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 19,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 18,
+      "characters": [
+        980,
+        1194,
+        781
+      ],
+      "versions": {
+        "before": {
+          "sentences": 23,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "clarity": 1,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 27,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 19,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 19,
+      "characters": [
+        1024,
+        1083,
+        749
+      ],
+      "versions": {
+        "before": {
+          "sentences": 22,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 3,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 25,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 19,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    },
+    {
+      "pair": 20,
+      "characters": [
+        1108,
+        1160,
+        801
+      ],
+      "versions": {
+        "before": {
+          "sentences": 27,
+          "repeated_occurrences_after_first": 2,
+          "normalized_repeated": 2,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {
+            "abstraction": 5,
+            "clarity": 1,
+            "generic": 1
+          }
+        },
+        "after": {
+          "sentences": 27,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        },
+        "round2": {
+          "sentences": 20,
+          "repeated_occurrences_after_first": 0,
+          "normalized_repeated": 0,
+          "near_repeated_from_earlier_pair": 0,
+          "markers": {}
+        }
+      }
+    }
+  ]
+}
