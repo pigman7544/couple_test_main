@@ -1,0 +1,2574 @@
+[
+  {
+    "pair": 1,
+    "characters": 1547,
+    "scene": "손을 보탤 곳을 고를 때",
+    "scene_scores": [
+      5,
+      7,
+      9,
+      8,
+      6,
+      0,
+      9,
+      6
+    ],
+    "mechanism": "상형",
+    "roles": [
+      "겁재",
+      "식신"
+    ],
+    "scope": "partial",
+    "support": "pair.삼합.a.year.b.year.b.day",
+    "tension": "pair.상형.a.month.b.day",
+    "time_unknown": 2,
+    "unresolved_pillars": [
+      [
+        "hour"
+      ],
+      [
+        "hour"
+      ]
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "01.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.month.hidden.己",
+          "a.coverage",
+          "a.day.hidden.戊"
+        ]
+      },
+      {
+        "paragraph": "01.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.甲",
+          "b.coverage",
+          "b.month.stem",
+          "b.day.hidden.丁"
+        ]
+      },
+      {
+        "paragraph": "01.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.삼합.a.year.b.year.b.day",
+          "a.year.hidden.壬",
+          "b.year.hidden.乙",
+          "b.day.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "01.2.2",
+        "ids": [
+          "pair.상형.a.month.b.day",
+          "a.month.hidden.己",
+          "b.day.hidden.己",
+          "pair.삼합.a.year.b.year.b.day",
+          "a.year.hidden.壬",
+          "b.year.hidden.乙"
+        ]
+      },
+      {
+        "paragraph": "01.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.삼합.a.year.b.year.b.day",
+          "a.year.hidden.壬",
+          "b.year.hidden.乙",
+          "b.day.hidden.己",
+          "pair.상형.a.month.b.day",
+          "a.month.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "01.3.1",
+        "ids": [
+          "pair.상형.a.month.b.day",
+          "a.month.hidden.己",
+          "b.day.hidden.己",
+          "pair.삼합.a.year.b.year.b.day",
+          "a.year.hidden.壬",
+          "b.year.hidden.乙"
+        ]
+      },
+      {
+        "paragraph": "01.3.2",
+        "ids": [
+          "pair.상형.a.month.b.day",
+          "a.month.hidden.己",
+          "b.day.hidden.己",
+          "pair.삼합.a.year.b.year.b.day",
+          "a.year.hidden.壬",
+          "b.year.hidden.乙"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 2,
+    "characters": 1526,
+    "scene": "일정을 옮기기로 한 날",
+    "scene_scores": [
+      10,
+      3,
+      7,
+      4,
+      9,
+      6,
+      6,
+      3
+    ],
+    "mechanism": "상형",
+    "roles": [
+      "상관",
+      "정인"
+    ],
+    "scope": "partial",
+    "support": "pair.삼합.a.month.b.year.b.hour",
+    "tension": "pair.상형.a.month.b.month",
+    "time_unknown": 1,
+    "unresolved_pillars": [
+      [
+        "hour"
+      ],
+      []
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "02.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.month.hidden.庚",
+          "a.coverage",
+          "a.month.hidden.壬"
+        ]
+      },
+      {
+        "paragraph": "02.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.甲",
+          "b.coverage",
+          "b.day.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "02.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.삼합.a.month.b.year.b.hour",
+          "a.month.hidden.庚",
+          "b.year.hidden.戊",
+          "b.hour.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "02.2.2",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.庚",
+          "b.month.hidden.甲",
+          "pair.삼합.a.month.b.year.b.hour",
+          "b.year.hidden.戊",
+          "b.hour.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "02.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.삼합.a.month.b.year.b.hour",
+          "a.month.hidden.庚",
+          "b.year.hidden.戊",
+          "b.hour.hidden.癸",
+          "pair.상형.a.month.b.month",
+          "b.month.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "02.3.1",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.庚",
+          "b.month.hidden.甲",
+          "pair.삼합.a.month.b.year.b.hour",
+          "b.year.hidden.戊",
+          "b.hour.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "02.3.2",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.庚",
+          "b.month.hidden.甲",
+          "pair.삼합.a.month.b.year.b.hour",
+          "b.year.hidden.戊",
+          "b.hour.hidden.癸"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 3,
+    "characters": 1525,
+    "scene": "예약을 마치기 직전",
+    "scene_scores": [
+      3,
+      8,
+      5,
+      8,
+      3,
+      11,
+      5,
+      8
+    ],
+    "mechanism": "삼형",
+    "roles": [
+      "겁재",
+      "편관"
+    ],
+    "scope": "partial",
+    "support": "pair.천간합.a.day.b.day",
+    "tension": "pair.삼형.a.hour.b.month.b.day",
+    "time_unknown": 0,
+    "unresolved_pillars": [
+      [],
+      []
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "03.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.month.hidden.乙",
+          "a.coverage",
+          "a.month.stem",
+          "a.day.hidden.壬"
+        ]
+      },
+      {
+        "paragraph": "03.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.己",
+          "b.coverage",
+          "b.hour.hidden.壬"
+        ]
+      },
+      {
+        "paragraph": "03.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.day.b.day",
+          "a.day.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "03.2.2",
+        "ids": [
+          "pair.삼형.a.hour.b.month.b.day",
+          "a.hour.hidden.戊",
+          "b.month.hidden.己",
+          "b.day.hidden.己",
+          "pair.천간합.a.day.b.day",
+          "a.day.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "03.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.day.b.day",
+          "a.day.stem",
+          "b.day.stem",
+          "pair.삼형.a.hour.b.month.b.day",
+          "a.hour.hidden.戊",
+          "b.month.hidden.己",
+          "b.day.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "03.3.1",
+        "ids": [
+          "pair.삼형.a.hour.b.month.b.day",
+          "a.hour.hidden.戊",
+          "b.month.hidden.己",
+          "b.day.hidden.己",
+          "pair.천간합.a.day.b.day",
+          "a.day.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "03.3.2",
+        "ids": [
+          "pair.삼형.a.hour.b.month.b.day",
+          "a.hour.hidden.戊",
+          "b.month.hidden.己",
+          "b.day.hidden.己",
+          "pair.천간합.a.day.b.day",
+          "a.day.stem",
+          "b.day.stem"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 4,
+    "characters": 1538,
+    "scene": "한 번 해 본 일을 이어갈 때",
+    "scene_scores": [
+      5,
+      6,
+      6,
+      4,
+      11,
+      1,
+      10,
+      6
+    ],
+    "mechanism": "자형",
+    "roles": [
+      "식신",
+      "상관"
+    ],
+    "scope": "partial",
+    "support": "pair.삼합.a.day.b.year.b.month",
+    "tension": "pair.자형.a.hour.b.month",
+    "time_unknown": 1,
+    "unresolved_pillars": [
+      [],
+      [
+        "hour"
+      ]
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "04.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.day.hidden.庚",
+          "a.coverage",
+          "a.month.stem",
+          "a.month.hidden.甲",
+          "a.month.hidden.丙"
+        ]
+      },
+      {
+        "paragraph": "04.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.戊",
+          "b.coverage",
+          "b.day.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "04.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.삼합.a.day.b.year.b.month",
+          "a.day.hidden.庚",
+          "b.year.hidden.癸",
+          "b.month.hidden.戊"
+        ]
+      },
+      {
+        "paragraph": "04.2.2",
+        "ids": [
+          "pair.자형.a.hour.b.month",
+          "a.hour.hidden.戊",
+          "b.month.hidden.戊",
+          "pair.삼합.a.day.b.year.b.month",
+          "a.day.hidden.庚",
+          "b.year.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "04.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.삼합.a.day.b.year.b.month",
+          "a.day.hidden.庚",
+          "b.year.hidden.癸",
+          "b.month.hidden.戊",
+          "pair.자형.a.hour.b.month",
+          "a.hour.hidden.戊"
+        ]
+      },
+      {
+        "paragraph": "04.3.1",
+        "ids": [
+          "pair.자형.a.hour.b.month",
+          "a.hour.hidden.戊",
+          "b.month.hidden.戊",
+          "pair.삼합.a.day.b.year.b.month",
+          "a.day.hidden.庚",
+          "b.year.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "04.3.2",
+        "ids": [
+          "pair.자형.a.hour.b.month",
+          "a.hour.hidden.戊",
+          "b.month.hidden.戊",
+          "pair.삼합.a.day.b.year.b.month",
+          "a.day.hidden.庚",
+          "b.year.hidden.癸"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 5,
+    "characters": 1441,
+    "scene": "장바구니를 함께 채울 때",
+    "scene_scores": [
+      2,
+      11,
+      4,
+      6,
+      7,
+      10,
+      5,
+      3
+    ],
+    "mechanism": "상형",
+    "roles": [
+      "정재",
+      "겁재"
+    ],
+    "scope": "unpaired",
+    "support": null,
+    "tension": "pair.상형.a.month.b.month",
+    "time_unknown": 2,
+    "unresolved_pillars": [
+      [
+        "hour"
+      ],
+      [
+        "hour"
+      ]
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "05.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.day.hidden.己",
+          "a.coverage",
+          "a.year.stem",
+          "a.month.stem",
+          "a.month.hidden.丙"
+        ]
+      },
+      {
+        "paragraph": "05.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.甲",
+          "b.coverage",
+          "b.day.hidden.乙"
+        ]
+      },
+      {
+        "paragraph": "05.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a"
+        ]
+      },
+      {
+        "paragraph": "05.2.2",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.丙",
+          "b.month.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "05.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.丙",
+          "b.month.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "05.3.1",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.丙",
+          "b.month.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "05.3.2",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.丙",
+          "b.month.hidden.甲"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 6,
+    "characters": 1507,
+    "scene": "예약을 마치기 직전",
+    "scene_scores": [
+      7,
+      7,
+      8,
+      6,
+      8,
+      9,
+      1,
+      2
+    ],
+    "mechanism": "상형",
+    "roles": [
+      "정재",
+      "정인"
+    ],
+    "scope": "same_sources",
+    "support": "pair.육합.a.month.b.month",
+    "tension": "pair.상형.a.month.b.month",
+    "time_unknown": 1,
+    "unresolved_pillars": [
+      [
+        "hour"
+      ],
+      []
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "06.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.month.hidden.丙",
+          "a.coverage",
+          "a.day.hidden.庚"
+        ]
+      },
+      {
+        "paragraph": "06.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.庚",
+          "b.coverage",
+          "b.month.stem",
+          "b.day.hidden.丙"
+        ]
+      },
+      {
+        "paragraph": "06.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.육합.a.month.b.month",
+          "a.month.hidden.丙",
+          "b.month.hidden.庚"
+        ]
+      },
+      {
+        "paragraph": "06.2.2",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.丙",
+          "b.month.hidden.庚",
+          "pair.육합.a.month.b.month"
+        ]
+      },
+      {
+        "paragraph": "06.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.육합.a.month.b.month",
+          "a.month.hidden.丙",
+          "b.month.hidden.庚",
+          "pair.상형.a.month.b.month"
+        ]
+      },
+      {
+        "paragraph": "06.3.1",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.丙",
+          "b.month.hidden.庚",
+          "pair.육합.a.month.b.month"
+        ]
+      },
+      {
+        "paragraph": "06.3.2",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.丙",
+          "b.month.hidden.庚",
+          "pair.육합.a.month.b.month"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 7,
+    "characters": 1558,
+    "scene": "글을 함께 다듬는 저녁",
+    "scene_scores": [
+      8,
+      6,
+      4,
+      9,
+      7,
+      1,
+      11,
+      2
+    ],
+    "mechanism": "육충",
+    "roles": [
+      "겁재",
+      "상관"
+    ],
+    "scope": "partial",
+    "support": "pair.천간합.a.day.b.month",
+    "tension": "pair.육충.a.day.b.day",
+    "time_unknown": 0,
+    "unresolved_pillars": [
+      [],
+      []
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "07.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.day.hidden.庚",
+          "a.coverage",
+          "a.year.stem",
+          "a.month.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "07.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.day.hidden.壬",
+          "b.coverage",
+          "b.year.stem",
+          "b.month.stem",
+          "b.month.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "07.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.day.b.month",
+          "a.day.stem",
+          "b.month.stem"
+        ]
+      },
+      {
+        "paragraph": "07.2.2",
+        "ids": [
+          "pair.육충.a.day.b.day",
+          "a.day.hidden.丙",
+          "b.day.hidden.壬",
+          "pair.천간합.a.day.b.month",
+          "a.day.stem",
+          "b.month.stem"
+        ]
+      },
+      {
+        "paragraph": "07.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.day.b.month",
+          "a.day.stem",
+          "b.month.stem",
+          "pair.육충.a.day.b.day",
+          "a.day.hidden.丙",
+          "b.day.hidden.壬"
+        ]
+      },
+      {
+        "paragraph": "07.3.1",
+        "ids": [
+          "pair.육충.a.day.b.day",
+          "a.day.hidden.丙",
+          "b.day.hidden.壬",
+          "pair.천간합.a.day.b.month",
+          "a.day.stem",
+          "b.month.stem"
+        ]
+      },
+      {
+        "paragraph": "07.3.2",
+        "ids": [
+          "pair.육충.a.day.b.day",
+          "a.day.hidden.丙",
+          "b.day.hidden.壬",
+          "pair.천간합.a.day.b.month",
+          "a.day.stem",
+          "b.month.stem"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 8,
+    "characters": 1535,
+    "scene": "글을 함께 다듬는 저녁",
+    "scene_scores": [
+      7,
+      7,
+      8,
+      7,
+      3,
+      2,
+      12,
+      9
+    ],
+    "mechanism": "육해",
+    "roles": [
+      "편인",
+      "비견"
+    ],
+    "scope": "separate",
+    "support": "pair.육합.a.day.b.year",
+    "tension": "pair.육해.a.year.b.day",
+    "time_unknown": 1,
+    "unresolved_pillars": [
+      [],
+      [
+        "hour"
+      ]
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "08.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.day.hidden.辛",
+          "a.coverage",
+          "a.month.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "08.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.甲",
+          "b.coverage",
+          "b.year.stem",
+          "b.day.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "08.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.육합.a.day.b.year",
+          "a.day.hidden.辛",
+          "b.year.hidden.戊"
+        ]
+      },
+      {
+        "paragraph": "08.2.2",
+        "ids": [
+          "pair.육해.a.year.b.day",
+          "a.year.hidden.丁",
+          "b.day.hidden.己",
+          "pair.육합.a.day.b.year",
+          "a.day.hidden.辛",
+          "b.year.hidden.戊"
+        ]
+      },
+      {
+        "paragraph": "08.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.육합.a.day.b.year",
+          "a.day.hidden.辛",
+          "b.year.hidden.戊",
+          "pair.육해.a.year.b.day",
+          "a.year.hidden.丁",
+          "b.day.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "08.3.1",
+        "ids": [
+          "pair.육해.a.year.b.day",
+          "a.year.hidden.丁",
+          "b.day.hidden.己",
+          "pair.육합.a.day.b.year",
+          "a.day.hidden.辛",
+          "b.year.hidden.戊"
+        ]
+      },
+      {
+        "paragraph": "08.3.2",
+        "ids": [
+          "pair.육해.a.year.b.day",
+          "a.year.hidden.丁",
+          "b.day.hidden.己",
+          "pair.육합.a.day.b.year",
+          "a.day.hidden.辛",
+          "b.year.hidden.戊"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 9,
+    "characters": 1362,
+    "scene": "손을 보탤 곳을 고를 때",
+    "scene_scores": [
+      2,
+      7,
+      11,
+      3,
+      9,
+      2,
+      7,
+      11
+    ],
+    "mechanism": "none",
+    "roles": [
+      "비견",
+      "식신"
+    ],
+    "scope": "unpaired",
+    "support": "pair.천간합.a.day.b.month",
+    "tension": null,
+    "time_unknown": 2,
+    "unresolved_pillars": [
+      [
+        "hour"
+      ],
+      [
+        "hour"
+      ]
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "09.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.day.hidden.壬",
+          "a.coverage",
+          "a.month.stem",
+          "a.month.hidden.庚"
+        ]
+      },
+      {
+        "paragraph": "09.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.辛",
+          "b.coverage",
+          "b.day.hidden.丁"
+        ]
+      },
+      {
+        "paragraph": "09.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.day.b.month",
+          "a.day.stem",
+          "b.month.stem"
+        ]
+      },
+      {
+        "paragraph": "09.2.2",
+        "ids": [
+          "a.day.stem"
+        ]
+      },
+      {
+        "paragraph": "09.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.day.b.month",
+          "a.day.stem",
+          "b.month.stem"
+        ]
+      },
+      {
+        "paragraph": "09.3.1",
+        "ids": [
+          "a.day.stem"
+        ]
+      },
+      {
+        "paragraph": "09.3.2",
+        "ids": [
+          "a.day.stem"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 10,
+    "characters": 1508,
+    "scene": "일정을 옮기기로 한 날",
+    "scene_scores": [
+      10,
+      5,
+      3,
+      9,
+      7,
+      10,
+      3,
+      7
+    ],
+    "mechanism": "상형",
+    "roles": [
+      "정관",
+      "편재"
+    ],
+    "scope": "separate",
+    "support": "pair.천간합.a.day.b.month",
+    "tension": "pair.상형.a.month.b.hour",
+    "time_unknown": 1,
+    "unresolved_pillars": [
+      [
+        "hour"
+      ],
+      []
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "10.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.month.hidden.庚",
+          "a.coverage",
+          "a.year.stem",
+          "a.day.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "10.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.戊",
+          "b.coverage",
+          "b.day.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "10.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.day.b.month",
+          "a.day.stem",
+          "b.month.stem"
+        ]
+      },
+      {
+        "paragraph": "10.2.2",
+        "ids": [
+          "pair.상형.a.month.b.hour",
+          "a.month.hidden.庚",
+          "b.hour.hidden.甲",
+          "pair.천간합.a.day.b.month",
+          "a.day.stem",
+          "b.month.stem"
+        ]
+      },
+      {
+        "paragraph": "10.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.day.b.month",
+          "a.day.stem",
+          "b.month.stem",
+          "pair.상형.a.month.b.hour",
+          "a.month.hidden.庚",
+          "b.hour.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "10.3.1",
+        "ids": [
+          "pair.상형.a.month.b.hour",
+          "a.month.hidden.庚",
+          "b.hour.hidden.甲",
+          "pair.천간합.a.day.b.month",
+          "a.day.stem",
+          "b.month.stem"
+        ]
+      },
+      {
+        "paragraph": "10.3.2",
+        "ids": [
+          "pair.상형.a.month.b.hour",
+          "a.month.hidden.庚",
+          "b.hour.hidden.甲",
+          "pair.천간합.a.day.b.month",
+          "a.day.stem",
+          "b.month.stem"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 11,
+    "characters": 1572,
+    "scene": "예약을 마치기 직전",
+    "scene_scores": [
+      7,
+      4,
+      5,
+      4,
+      7,
+      10,
+      6,
+      7
+    ],
+    "mechanism": "상형",
+    "roles": [
+      "편관",
+      "상관"
+    ],
+    "scope": "separate",
+    "support": "pair.천간합.a.day.b.day",
+    "tension": "pair.상형.a.month.b.month",
+    "time_unknown": 0,
+    "unresolved_pillars": [
+      [],
+      []
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "11.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.day.hidden.己",
+          "a.coverage",
+          "a.year.stem",
+          "a.month.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "11.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.day.hidden.辛",
+          "b.coverage",
+          "b.month.stem",
+          "b.month.hidden.丙"
+        ]
+      },
+      {
+        "paragraph": "11.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.day.b.day",
+          "a.day.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "11.2.2",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.甲",
+          "b.month.hidden.丙",
+          "pair.천간합.a.day.b.day",
+          "a.day.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "11.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.day.b.day",
+          "a.day.stem",
+          "b.day.stem",
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.甲",
+          "b.month.hidden.丙"
+        ]
+      },
+      {
+        "paragraph": "11.3.1",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.甲",
+          "b.month.hidden.丙",
+          "pair.천간합.a.day.b.day",
+          "a.day.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "11.3.2",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.甲",
+          "b.month.hidden.丙",
+          "pair.천간합.a.day.b.day",
+          "a.day.stem",
+          "b.day.stem"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 12,
+    "characters": 1573,
+    "scene": "둘의 이름으로 답할 때",
+    "scene_scores": [
+      7,
+      6,
+      7,
+      12,
+      3,
+      2,
+      8,
+      3
+    ],
+    "mechanism": "상형",
+    "roles": [
+      "겁재",
+      "정인"
+    ],
+    "scope": "partial",
+    "support": "pair.육합.a.month.b.month",
+    "tension": "pair.상형.a.month.b.day",
+    "time_unknown": 1,
+    "unresolved_pillars": [
+      [],
+      [
+        "hour"
+      ]
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "12.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.month.hidden.戊",
+          "a.coverage",
+          "a.month.stem",
+          "a.hour.stem",
+          "a.day.hidden.乙"
+        ]
+      },
+      {
+        "paragraph": "12.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.乙",
+          "b.coverage",
+          "b.year.stem",
+          "b.day.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "12.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.육합.a.month.b.month",
+          "a.month.hidden.戊",
+          "b.month.hidden.乙"
+        ]
+      },
+      {
+        "paragraph": "12.2.2",
+        "ids": [
+          "pair.상형.a.month.b.day",
+          "a.month.hidden.戊",
+          "b.day.hidden.己",
+          "pair.육합.a.month.b.month",
+          "b.month.hidden.乙"
+        ]
+      },
+      {
+        "paragraph": "12.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.육합.a.month.b.month",
+          "a.month.hidden.戊",
+          "b.month.hidden.乙",
+          "pair.상형.a.month.b.day",
+          "b.day.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "12.3.1",
+        "ids": [
+          "pair.상형.a.month.b.day",
+          "a.month.hidden.戊",
+          "b.day.hidden.己",
+          "pair.육합.a.month.b.month",
+          "b.month.hidden.乙"
+        ]
+      },
+      {
+        "paragraph": "12.3.2",
+        "ids": [
+          "pair.상형.a.month.b.day",
+          "a.month.hidden.戊",
+          "b.day.hidden.己",
+          "pair.육합.a.month.b.month",
+          "b.month.hidden.乙"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 13,
+    "characters": 1387,
+    "scene": "글을 함께 다듬는 저녁",
+    "scene_scores": [
+      9,
+      6,
+      6,
+      8,
+      2,
+      2,
+      14,
+      6
+    ],
+    "mechanism": "상형",
+    "roles": [
+      "편인",
+      "편인"
+    ],
+    "scope": "partial",
+    "support": "pair.육합.a.year.b.day",
+    "tension": "pair.상형.a.day.b.day",
+    "time_unknown": 2,
+    "unresolved_pillars": [
+      [
+        "month",
+        "hour"
+      ],
+      [
+        "hour"
+      ]
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "13.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.day.hidden.庚",
+          "a.coverage",
+          "a.day.hidden.壬"
+        ]
+      },
+      {
+        "paragraph": "13.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.day.hidden.丙",
+          "b.coverage",
+          "b.year.stem",
+          "b.month.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "13.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.육합.a.year.b.day",
+          "a.year.hidden.壬",
+          "b.day.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "13.2.2",
+        "ids": [
+          "pair.상형.a.day.b.day",
+          "a.day.hidden.庚",
+          "b.day.hidden.甲",
+          "pair.육합.a.year.b.day",
+          "a.year.hidden.壬"
+        ]
+      },
+      {
+        "paragraph": "13.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.육합.a.year.b.day",
+          "a.year.hidden.壬",
+          "b.day.hidden.甲",
+          "pair.상형.a.day.b.day",
+          "a.day.hidden.庚"
+        ]
+      },
+      {
+        "paragraph": "13.3.1",
+        "ids": [
+          "pair.상형.a.day.b.day",
+          "a.day.hidden.庚",
+          "b.day.hidden.甲",
+          "pair.육합.a.year.b.day",
+          "a.year.hidden.壬"
+        ]
+      },
+      {
+        "paragraph": "13.3.2",
+        "ids": [
+          "pair.상형.a.day.b.day",
+          "a.day.hidden.庚",
+          "b.day.hidden.甲",
+          "pair.육합.a.year.b.day",
+          "a.year.hidden.壬"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 14,
+    "characters": 1411,
+    "scene": "예약을 마치기 직전",
+    "scene_scores": [
+      6,
+      7,
+      8,
+      6,
+      7,
+      10,
+      1,
+      3
+    ],
+    "mechanism": "상형",
+    "roles": [
+      "정재",
+      "정인"
+    ],
+    "scope": "unpaired",
+    "support": null,
+    "tension": "pair.상형.a.year.b.year",
+    "time_unknown": 1,
+    "unresolved_pillars": [
+      [
+        "hour"
+      ],
+      []
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "14.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.month.hidden.甲",
+          "a.coverage",
+          "a.year.stem",
+          "a.day.hidden.丙"
+        ]
+      },
+      {
+        "paragraph": "14.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.癸",
+          "b.coverage",
+          "b.day.hidden.戊"
+        ]
+      },
+      {
+        "paragraph": "14.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a"
+        ]
+      },
+      {
+        "paragraph": "14.2.2",
+        "ids": [
+          "pair.상형.a.year.b.year",
+          "a.year.hidden.癸",
+          "b.year.hidden.乙"
+        ]
+      },
+      {
+        "paragraph": "14.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.상형.a.year.b.year",
+          "a.year.hidden.癸",
+          "b.year.hidden.乙"
+        ]
+      },
+      {
+        "paragraph": "14.3.1",
+        "ids": [
+          "pair.상형.a.year.b.year",
+          "a.year.hidden.癸",
+          "b.year.hidden.乙"
+        ]
+      },
+      {
+        "paragraph": "14.3.2",
+        "ids": [
+          "pair.상형.a.year.b.year",
+          "a.year.hidden.癸",
+          "b.year.hidden.乙"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 15,
+    "characters": 1468,
+    "scene": "손을 보탤 곳을 고를 때",
+    "scene_scores": [
+      10,
+      5,
+      12,
+      7,
+      5,
+      1,
+      7,
+      5
+    ],
+    "mechanism": "육충",
+    "roles": [
+      "정인",
+      "비견"
+    ],
+    "scope": "partial",
+    "support": "pair.천간합.a.month.b.day",
+    "tension": "pair.육충.a.month.b.hour",
+    "time_unknown": 0,
+    "unresolved_pillars": [
+      [],
+      []
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "15.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.month.hidden.丙",
+          "a.coverage",
+          "a.day.hidden.壬"
+        ]
+      },
+      {
+        "paragraph": "15.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.戊",
+          "b.coverage",
+          "b.month.stem",
+          "b.day.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "15.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "15.2.2",
+        "ids": [
+          "pair.육충.a.month.b.hour",
+          "a.month.hidden.丙",
+          "b.hour.hidden.壬",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "15.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem",
+          "pair.육충.a.month.b.hour",
+          "a.month.hidden.丙",
+          "b.hour.hidden.壬"
+        ]
+      },
+      {
+        "paragraph": "15.3.1",
+        "ids": [
+          "pair.육충.a.month.b.hour",
+          "a.month.hidden.丙",
+          "b.hour.hidden.壬",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "15.3.2",
+        "ids": [
+          "pair.육충.a.month.b.hour",
+          "a.month.hidden.丙",
+          "b.hour.hidden.壬",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 16,
+    "characters": 1451,
+    "scene": "장바구니를 함께 채울 때",
+    "scene_scores": [
+      1,
+      15,
+      6,
+      10,
+      0,
+      1,
+      15,
+      7
+    ],
+    "mechanism": "삼형",
+    "roles": [
+      "비견",
+      "겁재"
+    ],
+    "scope": "separate",
+    "support": "pair.육합.a.day.b.day",
+    "tension": "pair.삼형.a.month.a.hour.b.year",
+    "time_unknown": 1,
+    "unresolved_pillars": [
+      [],
+      [
+        "hour"
+      ]
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "16.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.month.hidden.己",
+          "a.coverage",
+          "a.day.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "16.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.己",
+          "b.coverage",
+          "b.day.hidden.戊"
+        ]
+      },
+      {
+        "paragraph": "16.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.육합.a.day.b.day",
+          "a.day.hidden.壬",
+          "b.day.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "16.2.2",
+        "ids": [
+          "pair.삼형.a.month.a.hour.b.year",
+          "a.month.hidden.己",
+          "a.hour.hidden.戊",
+          "b.year.hidden.己",
+          "pair.육합.a.day.b.day",
+          "a.day.hidden.壬",
+          "b.day.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "16.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.육합.a.day.b.day",
+          "a.day.hidden.壬",
+          "b.day.hidden.甲",
+          "pair.삼형.a.month.a.hour.b.year",
+          "a.month.hidden.己",
+          "a.hour.hidden.戊",
+          "b.year.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "16.3.1",
+        "ids": [
+          "pair.삼형.a.month.a.hour.b.year",
+          "a.month.hidden.己",
+          "a.hour.hidden.戊",
+          "b.year.hidden.己",
+          "pair.육합.a.day.b.day",
+          "a.day.hidden.壬",
+          "b.day.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "16.3.2",
+        "ids": [
+          "pair.삼형.a.month.a.hour.b.year",
+          "a.month.hidden.己",
+          "a.hour.hidden.戊",
+          "b.year.hidden.己",
+          "pair.육합.a.day.b.day",
+          "a.day.hidden.壬",
+          "b.day.hidden.甲"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 17,
+    "characters": 1570,
+    "scene": "빌린 물건을 돌려줄 때",
+    "scene_scores": [
+      7,
+      5,
+      6,
+      7,
+      7,
+      10,
+      2,
+      13
+    ],
+    "mechanism": "상형",
+    "roles": [
+      "정관",
+      "식신"
+    ],
+    "scope": "partial",
+    "support": "pair.삼합.a.month.a.day.b.year",
+    "tension": "pair.상형.a.month.b.day",
+    "time_unknown": 2,
+    "unresolved_pillars": [
+      [
+        "hour"
+      ],
+      [
+        "hour"
+      ]
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "17.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.month.hidden.丙",
+          "a.coverage",
+          "a.year.stem",
+          "a.day.hidden.辛"
+        ]
+      },
+      {
+        "paragraph": "17.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.day.hidden.甲",
+          "b.coverage",
+          "b.month.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "17.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.삼합.a.month.a.day.b.year",
+          "a.month.hidden.丙",
+          "a.day.hidden.辛",
+          "b.year.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "17.2.2",
+        "ids": [
+          "pair.상형.a.month.b.day",
+          "a.month.hidden.丙",
+          "b.day.hidden.甲",
+          "pair.삼합.a.month.a.day.b.year",
+          "a.day.hidden.辛",
+          "b.year.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "17.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.삼합.a.month.a.day.b.year",
+          "a.month.hidden.丙",
+          "a.day.hidden.辛",
+          "b.year.hidden.己",
+          "pair.상형.a.month.b.day",
+          "b.day.hidden.甲"
+        ]
+      },
+      {
+        "paragraph": "17.3.1",
+        "ids": [
+          "pair.상형.a.month.b.day",
+          "a.month.hidden.丙",
+          "b.day.hidden.甲",
+          "pair.삼합.a.month.a.day.b.year",
+          "a.day.hidden.辛",
+          "b.year.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "17.3.2",
+        "ids": [
+          "pair.상형.a.month.b.day",
+          "a.month.hidden.丙",
+          "b.day.hidden.甲",
+          "pair.삼합.a.month.a.day.b.year",
+          "a.day.hidden.辛",
+          "b.year.hidden.己"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 18,
+    "characters": 1354,
+    "scene": "손을 보탤 곳을 고를 때",
+    "scene_scores": [
+      0,
+      7,
+      13,
+      2,
+      1,
+      10,
+      6,
+      13
+    ],
+    "mechanism": "상형",
+    "roles": [
+      "편관",
+      "편관"
+    ],
+    "scope": "separate",
+    "support": "pair.삼합.a.day.b.year.b.day",
+    "tension": "pair.상형.a.month.b.hour",
+    "time_unknown": 1,
+    "unresolved_pillars": [
+      [
+        "hour"
+      ],
+      []
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "18.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.month.hidden.戊",
+          "a.coverage",
+          "a.month.stem",
+          "a.day.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "18.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.丁",
+          "b.coverage",
+          "b.day.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "18.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.삼합.a.day.b.year.b.day",
+          "a.day.hidden.戊",
+          "b.year.hidden.庚",
+          "b.day.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "18.2.2",
+        "ids": [
+          "pair.상형.a.month.b.hour",
+          "a.month.hidden.戊",
+          "b.hour.hidden.己",
+          "pair.삼합.a.day.b.year.b.day",
+          "a.day.hidden.戊",
+          "b.year.hidden.庚",
+          "b.day.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "18.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.삼합.a.day.b.year.b.day",
+          "a.day.hidden.戊",
+          "b.year.hidden.庚",
+          "b.day.hidden.癸",
+          "pair.상형.a.month.b.hour",
+          "a.month.hidden.戊",
+          "b.hour.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "18.3.1",
+        "ids": [
+          "pair.상형.a.month.b.hour",
+          "a.month.hidden.戊",
+          "b.hour.hidden.己",
+          "pair.삼합.a.day.b.year.b.day",
+          "a.day.hidden.戊",
+          "b.year.hidden.庚",
+          "b.day.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "18.3.2",
+        "ids": [
+          "pair.상형.a.month.b.hour",
+          "a.month.hidden.戊",
+          "b.hour.hidden.己",
+          "pair.삼합.a.day.b.year.b.day",
+          "a.day.hidden.戊",
+          "b.year.hidden.庚",
+          "b.day.hidden.癸"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 19,
+    "characters": 1481,
+    "scene": "한 번 해 본 일을 이어갈 때",
+    "scene_scores": [
+      5,
+      5,
+      8,
+      3,
+      13,
+      6,
+      2,
+      7
+    ],
+    "mechanism": "상형",
+    "roles": [
+      "식신",
+      "정재"
+    ],
+    "scope": "separate",
+    "support": "pair.육합.a.year.b.hour",
+    "tension": "pair.상형.a.month.b.month",
+    "time_unknown": 0,
+    "unresolved_pillars": [
+      [],
+      []
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "19.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.day.hidden.甲",
+          "a.coverage",
+          "a.month.stem",
+          "a.month.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "19.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.乙",
+          "b.coverage",
+          "b.day.hidden.庚"
+        ]
+      },
+      {
+        "paragraph": "19.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.육합.a.year.b.hour",
+          "a.year.hidden.庚",
+          "b.hour.hidden.丙"
+        ]
+      },
+      {
+        "paragraph": "19.2.2",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.癸",
+          "b.month.hidden.乙",
+          "pair.육합.a.year.b.hour",
+          "a.year.hidden.庚",
+          "b.hour.hidden.丙"
+        ]
+      },
+      {
+        "paragraph": "19.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.육합.a.year.b.hour",
+          "a.year.hidden.庚",
+          "b.hour.hidden.丙",
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.癸",
+          "b.month.hidden.乙"
+        ]
+      },
+      {
+        "paragraph": "19.3.1",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.癸",
+          "b.month.hidden.乙",
+          "pair.육합.a.year.b.hour",
+          "a.year.hidden.庚",
+          "b.hour.hidden.丙"
+        ]
+      },
+      {
+        "paragraph": "19.3.2",
+        "ids": [
+          "pair.상형.a.month.b.month",
+          "a.month.hidden.癸",
+          "b.month.hidden.乙",
+          "pair.육합.a.year.b.hour",
+          "a.year.hidden.庚",
+          "b.hour.hidden.丙"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 20,
+    "characters": 1520,
+    "scene": "일정을 옮기기로 한 날",
+    "scene_scores": [
+      14,
+      2,
+      2,
+      11,
+      5,
+      6,
+      8,
+      4
+    ],
+    "mechanism": "자형",
+    "roles": [
+      "정관",
+      "편인"
+    ],
+    "scope": "partial",
+    "support": "pair.육합.a.month.b.day",
+    "tension": "pair.자형.a.hour.b.day",
+    "time_unknown": 1,
+    "unresolved_pillars": [
+      [],
+      [
+        "hour"
+      ]
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "20.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.month.hidden.辛",
+          "a.coverage",
+          "a.day.hidden.丁"
+        ]
+      },
+      {
+        "paragraph": "20.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.甲",
+          "b.coverage",
+          "b.month.stem",
+          "b.day.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "20.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.육합.a.month.b.day",
+          "a.month.hidden.辛",
+          "b.day.hidden.戊"
+        ]
+      },
+      {
+        "paragraph": "20.2.2",
+        "ids": [
+          "pair.자형.a.hour.b.day",
+          "a.hour.hidden.戊",
+          "b.day.hidden.戊",
+          "pair.육합.a.month.b.day",
+          "a.month.hidden.辛"
+        ]
+      },
+      {
+        "paragraph": "20.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.육합.a.month.b.day",
+          "a.month.hidden.辛",
+          "b.day.hidden.戊",
+          "pair.자형.a.hour.b.day",
+          "a.hour.hidden.戊"
+        ]
+      },
+      {
+        "paragraph": "20.3.1",
+        "ids": [
+          "pair.자형.a.hour.b.day",
+          "a.hour.hidden.戊",
+          "b.day.hidden.戊",
+          "pair.육합.a.month.b.day",
+          "a.month.hidden.辛"
+        ]
+      },
+      {
+        "paragraph": "20.3.2",
+        "ids": [
+          "pair.자형.a.hour.b.day",
+          "a.hour.hidden.戊",
+          "b.day.hidden.戊",
+          "pair.육합.a.month.b.day",
+          "a.month.hidden.辛"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 21,
+    "characters": 1559,
+    "scene": "일정을 옮기기로 한 날",
+    "scene_scores": [
+      14,
+      1,
+      4,
+      12,
+      3,
+      4,
+      9,
+      6
+    ],
+    "mechanism": "육해",
+    "roles": [
+      "편인",
+      "정관"
+    ],
+    "scope": "partial",
+    "support": "pair.천간합.a.month.b.day",
+    "tension": "pair.육해.a.month.b.month",
+    "time_unknown": 2,
+    "unresolved_pillars": [
+      [
+        "hour"
+      ],
+      [
+        "hour"
+      ]
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "21.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.month.hidden.戊",
+          "a.coverage",
+          "a.month.stem",
+          "a.day.hidden.庚"
+        ]
+      },
+      {
+        "paragraph": "21.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.乙",
+          "b.coverage",
+          "b.day.hidden.辛"
+        ]
+      },
+      {
+        "paragraph": "21.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "21.2.2",
+        "ids": [
+          "pair.육해.a.month.b.month",
+          "a.month.hidden.戊",
+          "b.month.hidden.乙",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "21.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem",
+          "pair.육해.a.month.b.month",
+          "a.month.hidden.戊",
+          "b.month.hidden.乙"
+        ]
+      },
+      {
+        "paragraph": "21.3.1",
+        "ids": [
+          "pair.육해.a.month.b.month",
+          "a.month.hidden.戊",
+          "b.month.hidden.乙",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "21.3.2",
+        "ids": [
+          "pair.육해.a.month.b.month",
+          "a.month.hidden.戊",
+          "b.month.hidden.乙",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 22,
+    "characters": 1513,
+    "scene": "장바구니를 함께 채울 때",
+    "scene_scores": [
+      1,
+      15,
+      6,
+      9,
+      1,
+      1,
+      15,
+      6
+    ],
+    "mechanism": "육충",
+    "roles": [
+      "비견",
+      "겁재"
+    ],
+    "scope": "partial",
+    "support": "pair.삼합.a.month.a.day.b.hour",
+    "tension": "pair.육충.a.day.b.month",
+    "time_unknown": 1,
+    "unresolved_pillars": [
+      [
+        "hour"
+      ],
+      []
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "22.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.day.hidden.辛",
+          "a.coverage",
+          "a.year.stem",
+          "a.month.stem",
+          "a.month.hidden.己"
+        ]
+      },
+      {
+        "paragraph": "22.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.day.hidden.庚",
+          "b.coverage",
+          "b.month.hidden.乙"
+        ]
+      },
+      {
+        "paragraph": "22.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.삼합.a.month.a.day.b.hour",
+          "a.month.hidden.己",
+          "a.day.hidden.辛",
+          "b.hour.hidden.丙"
+        ]
+      },
+      {
+        "paragraph": "22.2.2",
+        "ids": [
+          "pair.육충.a.day.b.month",
+          "a.day.hidden.辛",
+          "b.month.hidden.乙",
+          "pair.삼합.a.month.a.day.b.hour",
+          "a.month.hidden.己",
+          "b.hour.hidden.丙"
+        ]
+      },
+      {
+        "paragraph": "22.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.삼합.a.month.a.day.b.hour",
+          "a.month.hidden.己",
+          "a.day.hidden.辛",
+          "b.hour.hidden.丙",
+          "pair.육충.a.day.b.month",
+          "b.month.hidden.乙"
+        ]
+      },
+      {
+        "paragraph": "22.3.1",
+        "ids": [
+          "pair.육충.a.day.b.month",
+          "a.day.hidden.辛",
+          "b.month.hidden.乙",
+          "pair.삼합.a.month.a.day.b.hour",
+          "a.month.hidden.己",
+          "b.hour.hidden.丙"
+        ]
+      },
+      {
+        "paragraph": "22.3.2",
+        "ids": [
+          "pair.육충.a.day.b.month",
+          "a.day.hidden.辛",
+          "b.month.hidden.乙",
+          "pair.삼합.a.month.a.day.b.hour",
+          "a.month.hidden.己",
+          "b.hour.hidden.丙"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 23,
+    "characters": 1436,
+    "scene": "둘의 이름으로 답할 때",
+    "scene_scores": [
+      6,
+      6,
+      4,
+      11,
+      1,
+      10,
+      6,
+      9
+    ],
+    "mechanism": "육해",
+    "roles": [
+      "정관",
+      "편관"
+    ],
+    "scope": "partial",
+    "support": "pair.천간합.a.month.b.hour",
+    "tension": "pair.육해.a.month.b.month",
+    "time_unknown": 0,
+    "unresolved_pillars": [
+      [],
+      []
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "23.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.month.hidden.己",
+          "a.coverage",
+          "a.day.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "23.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.丁",
+          "b.coverage",
+          "b.day.hidden.辛"
+        ]
+      },
+      {
+        "paragraph": "23.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.month.b.hour",
+          "a.month.stem",
+          "b.hour.stem"
+        ]
+      },
+      {
+        "paragraph": "23.2.2",
+        "ids": [
+          "pair.육해.a.month.b.month",
+          "a.month.hidden.己",
+          "b.month.hidden.丁",
+          "pair.천간합.a.month.b.hour",
+          "a.month.stem",
+          "b.hour.stem"
+        ]
+      },
+      {
+        "paragraph": "23.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.month.b.hour",
+          "a.month.stem",
+          "b.hour.stem",
+          "pair.육해.a.month.b.month",
+          "a.month.hidden.己",
+          "b.month.hidden.丁"
+        ]
+      },
+      {
+        "paragraph": "23.3.1",
+        "ids": [
+          "pair.육해.a.month.b.month",
+          "a.month.hidden.己",
+          "b.month.hidden.丁",
+          "pair.천간합.a.month.b.hour",
+          "a.month.stem",
+          "b.hour.stem"
+        ]
+      },
+      {
+        "paragraph": "23.3.2",
+        "ids": [
+          "pair.육해.a.month.b.month",
+          "a.month.hidden.己",
+          "b.month.hidden.丁",
+          "pair.천간합.a.month.b.hour",
+          "a.month.stem",
+          "b.hour.stem"
+        ]
+      }
+    ]
+  },
+  {
+    "pair": 24,
+    "characters": 1531,
+    "scene": "예약을 마치기 직전",
+    "scene_scores": [
+      3,
+      6,
+      9,
+      3,
+      7,
+      10,
+      3,
+      8
+    ],
+    "mechanism": "육해",
+    "roles": [
+      "편관",
+      "편재"
+    ],
+    "scope": "separate",
+    "support": "pair.천간합.a.month.b.day",
+    "tension": "pair.육해.a.day.b.month",
+    "time_unknown": 1,
+    "unresolved_pillars": [
+      [],
+      [
+        "hour"
+      ]
+    ],
+    "unresolved_ids": [],
+    "unlinked_paragraphs": 0,
+    "paragraph_links": [
+      {
+        "paragraph": "24.1.1",
+        "ids": [
+          "a.day.stem",
+          "a.day.hidden.乙",
+          "a.coverage",
+          "a.hour.stem",
+          "a.month.hidden.癸"
+        ]
+      },
+      {
+        "paragraph": "24.1.2",
+        "ids": [
+          "b.day.stem",
+          "b.month.hidden.戊",
+          "b.coverage",
+          "b.day.hidden.辛"
+        ]
+      },
+      {
+        "paragraph": "24.2.1",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "24.2.2",
+        "ids": [
+          "pair.육해.a.day.b.month",
+          "a.day.hidden.乙",
+          "b.month.hidden.戊",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "24.2.3",
+        "ids": [
+          "pair.a.reads.b",
+          "pair.b.reads.a",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem",
+          "pair.육해.a.day.b.month",
+          "a.day.hidden.乙",
+          "b.month.hidden.戊"
+        ]
+      },
+      {
+        "paragraph": "24.3.1",
+        "ids": [
+          "pair.육해.a.day.b.month",
+          "a.day.hidden.乙",
+          "b.month.hidden.戊",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem"
+        ]
+      },
+      {
+        "paragraph": "24.3.2",
+        "ids": [
+          "pair.육해.a.day.b.month",
+          "a.day.hidden.乙",
+          "b.month.hidden.戊",
+          "pair.천간합.a.month.b.day",
+          "a.month.stem",
+          "b.day.stem"
+        ]
+      }
+    ]
+  }
+]
