@@ -1,0 +1,137 @@
+{
+  "seed": 20261109,
+  "samples": 2400,
+  "repeat": 30,
+  "deterministic": true,
+  "matched_types": 8,
+  "unmatched_types": [
+    "c10",
+    "f01",
+    "f02",
+    "f04"
+  ],
+  "max_share": 0.3304,
+  "counts": {
+    "c01": 793,
+    "c02": 477,
+    "c03": 108,
+    "c06": 703,
+    "c11": 267,
+    "c13": 2,
+    "c18": 1,
+    "f03": 49
+  },
+  "quality": {
+    "c01": {
+      "name": "춘향·이몽룡",
+      "count": 793,
+      "median_chars": 4180,
+      "min_chars": 4138,
+      "ratio_to_c06": 0.977,
+      "forced_chars": 4224,
+      "forced_ratio_to_c06": 0.968
+    },
+    "c02": {
+      "name": "견우·직녀",
+      "count": 477,
+      "median_chars": 4150,
+      "min_chars": 4109,
+      "ratio_to_c06": 0.97,
+      "forced_chars": 4179,
+      "forced_ratio_to_c06": 0.958
+    },
+    "c03": {
+      "name": "온달·평강공주",
+      "count": 108,
+      "median_chars": 4158.5,
+      "min_chars": 4127,
+      "ratio_to_c06": 0.972,
+      "forced_chars": 4194,
+      "forced_ratio_to_c06": 0.961
+    },
+    "c06": {
+      "name": "백소정·허선",
+      "count": 703,
+      "median_chars": 4279,
+      "min_chars": 4207,
+      "ratio_to_c06": 1.0,
+      "forced_chars": 4364,
+      "forced_ratio_to_c06": 1.0
+    },
+    "c10": {
+      "name": "로미오·줄리엣",
+      "count": 0,
+      "median_chars": null,
+      "min_chars": null,
+      "ratio_to_c06": null,
+      "forced_chars": 4183,
+      "forced_ratio_to_c06": 0.959
+    },
+    "c11": {
+      "name": "엘리자베스·다아시",
+      "count": 267,
+      "median_chars": 4152,
+      "min_chars": 4106,
+      "ratio_to_c06": 0.97,
+      "forced_chars": 4182,
+      "forced_ratio_to_c06": 0.958
+    },
+    "c13": {
+      "name": "오디세우스·페넬로페",
+      "count": 2,
+      "median_chars": 4087.5,
+      "min_chars": 4068,
+      "ratio_to_c06": 0.955,
+      "forced_chars": 4112,
+      "forced_ratio_to_c06": 0.942
+    },
+    "c18": {
+      "name": "개츠비·데이지",
+      "count": 1,
+      "median_chars": 4114,
+      "min_chars": 4114,
+      "ratio_to_c06": 0.961,
+      "forced_chars": 4144,
+      "forced_ratio_to_c06": 0.95
+    },
+    "f01": {
+      "name": "셜록 홈즈·존 왓슨",
+      "count": 0,
+      "median_chars": null,
+      "min_chars": null,
+      "ratio_to_c06": null,
+      "forced_chars": 4300,
+      "forced_ratio_to_c06": 0.985
+    },
+    "f02": {
+      "name": "돈키호테·산초 판사",
+      "count": 0,
+      "median_chars": null,
+      "min_chars": null,
+      "ratio_to_c06": null,
+      "forced_chars": 4312,
+      "forced_ratio_to_c06": 0.988
+    },
+    "f03": {
+      "name": "관중·포숙아",
+      "count": 49,
+      "median_chars": 4276,
+      "min_chars": 4248,
+      "ratio_to_c06": 0.999,
+      "forced_chars": 4310,
+      "forced_ratio_to_c06": 0.988
+    },
+    "f04": {
+      "name": "길가메시·엔키두",
+      "count": 0,
+      "median_chars": null,
+      "min_chars": null,
+      "ratio_to_c06": null,
+      "forced_chars": 4328,
+      "forced_ratio_to_c06": 0.992
+    }
+  },
+  "note": "Equal frequency is not required; editorial quality must also be reviewed manually.",
+  "full_output_repeat_matches": 2400,
+  "swapped_match_matches": 2400
+}

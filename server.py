@@ -1,20 +1,30 @@
 """Small demo web server. Uses existing Python engine; serves real local image assets."""
-import json, os, mimetypes, traceback
+import json, os, re, traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
+from compatibility_v14 import analyze_pair
 from engine import person
 from relationship_v08 import relation
-from matcher import rank
+from matcher import DB, rank
 from narrative import describe
 from story_report import make_report
 
 ROOT=Path(__file__).resolve().parent
 MAX_BODY=8192
+COUPLE_ART = {
+    couple['id']: {
+        variant: f"/assets/{'baek_heo' if couple['id'] == 'c06' else couple['id']}_{variant}.png"
+        for variant in ('title', 'plain')
+    }
+    for couple in DB
+}
+ART_PATHS = {path for art in COUPLE_ART.values() for path in art.values()}
 
-def compute(payload, unlock=False):
-    if not isinstance(payload,dict):
+def birth_inputs(payload):
+    if not isinstance(payload, dict):
         raise ValueError('두 사람의 정보를 입력해 주세요.')
+
     def build(x):
         if not isinstance(x,dict) or not isinstance(x.get('date'),str):
             raise ValueError('생년월일을 입력해 주세요.')
@@ -24,25 +34,79 @@ def compute(payload, unlock=False):
         if t is not None and not isinstance(t,str):
             raise ValueError('태어난 시간을 확인해 주세요.')
         hh,mm=map(int,t.split(':')) if t else (None,0)
-        return person(*map(int,date),hour=hh,minute=mm,calendar=x.get('calendar','solar'),leap=bool(x.get('leap',False)))
-    a,b=build(payload['a']),build(payload['b'])
+        year, month, day = map(int, date)
+        calendar = x.get('calendar', 'solar')
+        return dict(year=year, month=month, day=day, hour=hh, minute=mm,
+                    calendar=calendar, leap=calendar == 'lunar' and bool(x.get('leap', False)))
+
+    return build(payload['a']), build(payload['b'])
+
+
+def compute_compatibility(payload, unlock=False):
+    analysis = analyze_pair(*birth_inputs(payload))
+    chapters = analysis['report']
+    if not unlock:
+        return {
+            'title': chapters[1]['title'],
+            'excerpt': chapters[1]['paragraphs'][0]['text'],
+            'chapters': [chapter['title'] for chapter in chapters],
+        }
+    return {'version': analysis['version'], 'chapters': chapters}
+
+
+def compute(payload, unlock=False):
+    birth_a, birth_b = birth_inputs(payload)
+    a, b = person(**birth_a), person(**birth_b)
     rel=relation(a,b)
     ranked=rank(rel['vector']);couple=ranked[0][2]
     story=describe(rel['vector'],couple['id'],ranked[1][2]['id'])
     full=make_report(a,b,rel,couple,story)
     full['gender_a']=payload['a'].get('gender','other')
     full['gender_b']=payload['b'].get('gender','other')
+    art = COUPLE_ART.get(couple['id'])
+    if art and not all((ROOT / path.lstrip('/')).is_file() for path in art.values()):
+        art = None
     if unlock:
-        return {'full_report':full,'couple':{'id':couple['id'],'name':couple['name'],'work':couple['work']},'has_art':couple['id']=='c06','test_mode':True}
-    return {'preview':{'tagline':full['tagline'],'teaser':full.get('teaser',''),'story_excerpt':''},'couple':{'id':couple['id'],'name':couple['name'],'work':couple['work']},'theme':full['tagline'],'version':'6.7-yeonyeon','has_art':couple['id']=='c06'}
+        compatibility = analyze_pair(birth_a, birth_b)
+        full['compatibility'] = {
+            'version': compatibility['version'],
+            'chapters': compatibility['report'],
+        }
+        return {'full_report':full,'couple':{'id':couple['id'],'name':couple['name'],'work':couple['work']},'has_art':art is not None,'art':art,'test_mode':True}
+    excerpt = full.get('plot', {}).get('body') or full.get('crisis') or full.get('story', '')
+    excerpt = re.sub(r'^◆ .*\n', '', excerpt.strip(), count=1).split('\n\n')[0].replace('**', '')
+    if len(excerpt) > 95:
+        excerpt = excerpt[:95].rsplit(' ', 1)[0] + '…'
+    teaser = full.get('teaser', '')
+    lines = re.split(r'(?<=[.!?])\s+', teaser)
+    teaser = '\n'.join(lines) if 2 <= len(lines) <= 3 else teaser
+    return {'preview':{'tagline':full['tagline'],'teaser':teaser,'story_excerpt':excerpt},'couple':{'id':couple['id'],'name':couple['name'],'work':couple['work']},'theme':full['tagline'],'version':'6.7-yeonyeon','has_art':art is not None,'art':art}
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path=urlparse(self.path).path
-        if path=='/health':raw=b'OK';mime='text/plain; charset=utf-8'
-        elif path in ('/','/index.html'):
+        if path in ('/api/c06-sample/A','/api/c06-sample/B','/api/c11-sample/A','/api/c11-sample/B'):
+            cid=path.split('/')[2].split('-')[0]
+            cases=json.loads((ROOT/f'tests/fixtures/{cid}_comparison.json').read_text(encoding='utf8'))
+            sample=next(x for x in cases if x['id']==path.rsplit('/',1)[1])
+            response=compute(sample['payload'],unlock=True)
+            response['sample_payload']=sample['payload']
+            raw=json.dumps(response,ensure_ascii=False).encode('utf8');mime='application/json; charset=utf-8'
+        elif path=='/manuscripts':
+            raw=(ROOT/'manuscript-shelf.html').read_bytes();mime='text/html; charset=utf-8'
+        elif path in ('/report-glossary.js', '/report-glossary.css'):
+            raw=(ROOT/path.lstrip('/')).read_bytes()
+            mime=('text/javascript' if path.endswith('.js') else 'text/css')+'; charset=utf-8'
+        elif path=='/health':raw=b'OK';mime='text/plain; charset=utf-8'
+        elif path in ('/preview','/preview.html'):
+            raw=(ROOT/'preview.html').read_bytes();mime='text/html; charset=utf-8'
+        elif path in ('/', '/index.html'):
+            raw=(ROOT/'compatibility.html').read_bytes();mime='text/html; charset=utf-8'
+        elif path == '/compatibility.js':
+            raw=(ROOT/'compatibility.js').read_bytes();mime='text/javascript; charset=utf-8'
+        elif path == '/literary-samples':
             raw=(ROOT/'index.html').read_bytes();mime='text/html; charset=utf-8'
-        elif path in ('/assets/baek_heo_plain.png','/assets/baek_heo_title.png'):
+        elif path in ART_PATHS and (ROOT/path.lstrip('/')).is_file():
             raw=(ROOT/path.lstrip('/')).read_bytes();mime='image/png'
         else:self.send_error(404);return
         self.send_response(200)
@@ -52,11 +116,17 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers();self.wfile.write(raw)
     def do_POST(self):
         endpoint=urlparse(self.path).path
-        if endpoint not in ('/api/match','/api/test-unlock'):self.send_error(404);return
+        if endpoint not in ('/api/match', '/api/test-unlock', '/api/compatibility/preview', '/api/compatibility/report'):
+            self.send_error(404);return
         try:
             size=int(self.headers.get('Content-Length','0'))
             if size<=0 or size>MAX_BODY:raise ValueError('입력 형식이 올바르지 않습니다.')
-            result=compute(json.loads(self.rfile.read(size)),unlock=(endpoint=='/api/test-unlock'));status=200
+            payload = json.loads(self.rfile.read(size))
+            if endpoint.startswith('/api/compatibility/'):
+                result = compute_compatibility(payload, unlock=endpoint.endswith('/report'))
+            else:
+                result = compute(payload, unlock=endpoint == '/api/test-unlock')
+            status = 200
         except (ValueError,TypeError,KeyError,IndexError,OverflowError):
             result={'error':'입력 정보를 확인해 주세요. 생년월일과 시간을 올바르게 입력해 주세요.'};status=400
         except Exception:
@@ -66,7 +136,17 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(status);self.send_header('Content-Type','application/json; charset=utf-8')
         self.send_header('Content-Length',str(len(raw)));self.send_header('Cache-Control','no-store');self.end_headers();self.wfile.write(raw)
 
-if __name__=='__main__':
+def serve(open_browser=False):
     port=int(os.environ.get('PORT','8765'))
-    print('Open http://localhost:'+str(port),flush=True)
-    ThreadingHTTPServer(('0.0.0.0',port),Handler).serve_forever()
+    url=f'http://127.0.0.1:{port}'
+    host = os.environ.get('BIND_HOST', '127.0.0.1')
+    with ThreadingHTTPServer((host,port),Handler) as server:
+        print(f'Open {url}',flush=True)
+        if open_browser:
+            import webbrowser
+            webbrowser.open(url)
+        server.serve_forever()
+
+
+if __name__=='__main__':
+    serve()

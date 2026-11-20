@@ -11,7 +11,7 @@ class TestYeonyeon(unittest.TestCase):
  def test_no_time(self):
   s={'a':dict(S['a'],time=''),'b':dict(S['b'],time='')};self.assertTrue(compute(s,unlock=True)['full_report']['story'])
  def test_ui(self):
-  s=Path('index.html').read_text();self.assertIn('연연(緣硏)',s);self.assertIn('analysisLoading',s);self.assertIn('test-unlock',s)
+  s=Path('index.html').read_text(encoding='utf8');self.assertIn('연연(緣硏)',s);self.assertIn('analysisLoading',s);self.assertIn('test-unlock',s)
  def test_images(self):
   for n in ('baek_heo_title.png','baek_heo_plain.png'):
    with Image.open(Path('assets')/n) as im:im.verify()

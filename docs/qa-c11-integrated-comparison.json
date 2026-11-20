@@ -1,0 +1,92 @@
+[
+  {
+    "id": "A",
+    "people": [
+      {
+        "pillars": {
+          "year_pillar": "戊寅",
+          "month_pillar": "乙丑",
+          "day_pillar": "甲戌",
+          "hour_pillar": "乙丑"
+        },
+        "beforeKeywords": [
+          "분명한 자기 기준",
+          "행동으로 전하는 애정"
+        ],
+        "afterKeywords": [
+          "함께 꾸리는 배려",
+          "선택을 묻는 준비"
+        ],
+        "synthesis": "shared_care"
+      },
+      {
+        "pillars": {
+          "year_pillar": "戊寅",
+          "month_pillar": "癸亥",
+          "day_pillar": "庚申",
+          "hour_pillar": "丁亥"
+        },
+        "beforeKeywords": [
+          "분명한 판단",
+          "마음을 전하는 대화"
+        ],
+        "afterKeywords": [
+          "조심스러운 솔직함",
+          "다시 묻는 대화"
+        ],
+        "synthesis": "measured_voice"
+      }
+    ],
+    "previewPreserved": true,
+    "changedChapters": [
+      "roles",
+      "saju_a",
+      "tip"
+    ]
+  },
+  {
+    "id": "B",
+    "people": [
+      {
+        "pillars": {
+          "year_pillar": "丙子",
+          "month_pillar": "庚子",
+          "day_pillar": "甲申",
+          "hour_pillar": "乙亥"
+        },
+        "beforeKeywords": [
+          "분명한 자기 기준",
+          "판단을 돌아보는 신중함"
+        ],
+        "afterKeywords": [
+          "확인하며 여는 마음",
+          "대답을 남기는 신중함"
+        ],
+        "synthesis": "considered_response"
+      },
+      {
+        "pillars": {
+          "year_pillar": "丙寅",
+          "month_pillar": "戊戌",
+          "day_pillar": "戊戌",
+          "hour_pillar": "丁巳"
+        },
+        "beforeKeywords": [
+          "쉽게 흔들리지 않는 믿음",
+          "스스로 고르는 관계"
+        ],
+        "afterKeywords": [
+          "스스로 고르는 믿음",
+          "다시 살피는 확신"
+        ],
+        "synthesis": "supported_choice"
+      }
+    ],
+    "previewPreserved": true,
+    "changedChapters": [
+      "roles",
+      "saju_a",
+      "tip"
+    ]
+  }
+]

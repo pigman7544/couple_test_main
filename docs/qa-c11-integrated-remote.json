@@ -1,0 +1,155 @@
+{
+  "base": "https://yeonyeon-preview-pr17.onrender.com",
+  "checks": [
+    {
+      "sample": "A",
+      "width": 360,
+      "chapter": 1,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "A",
+      "width": 360,
+      "chapter": 2,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "A",
+      "width": 360,
+      "chapter": 3,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "B",
+      "width": 360,
+      "chapter": 1,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "B",
+      "width": 360,
+      "chapter": 2,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "B",
+      "width": 360,
+      "chapter": 3,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "A",
+      "width": 390,
+      "chapter": 1,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "A",
+      "width": 390,
+      "chapter": 2,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "A",
+      "width": 390,
+      "chapter": 3,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "B",
+      "width": 390,
+      "chapter": 1,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "B",
+      "width": 390,
+      "chapter": 2,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "B",
+      "width": 390,
+      "chapter": 3,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "A",
+      "width": 1440,
+      "chapter": 1,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "A",
+      "width": 1440,
+      "chapter": 2,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "A",
+      "width": 1440,
+      "chapter": 3,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "B",
+      "width": 1440,
+      "chapter": 1,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "B",
+      "width": 1440,
+      "chapter": 2,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    },
+    {
+      "sample": "B",
+      "width": 1440,
+      "chapter": 3,
+      "domEqualsApi": true,
+      "overflow": false,
+      "maxBodyBold": 2
+    }
+  ],
+  "actualInputPreviewUnlock": 6,
+  "pageErrors": [],
+  "health": 200,
+  "modalKeyboardCloseFocusReturn": 6,
+  "cardDownloads": 6,
+  "otherTypeCompatibility": 11
+}

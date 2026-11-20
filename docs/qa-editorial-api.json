@@ -1,0 +1,16 @@
+[
+  {
+    "sample": "A",
+    "sample_matches_fixture": true,
+    "preview_score_free": true,
+    "unlock_matches_sample": true,
+    "chapters": 5
+  },
+  {
+    "sample": "B",
+    "sample_matches_fixture": true,
+    "preview_score_free": true,
+    "unlock_matches_sample": true,
+    "chapters": 5
+  }
+]

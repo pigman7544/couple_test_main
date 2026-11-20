@@ -5,13 +5,14 @@ individual story beats; the thematic lens is specific to each work.
 """
 from c06_report import band
 from individual_scenes import SCENES
+from editorial_readings import READINGS
 from story_report import relationship_style, count_elements, STEM_NAME, GOD_TEXT, KO
 
 LENSES = {
  'c02': ('기다림과 재회의 약속', '만날 수 없는 시간에도 관계를 이어 가는 방법', '견우와 직녀', '만남이 드물다고 마음까지 멀어진 것은 아니에요. 하지만 그리움을 표현하지 않으면 서로 다른 이야기를 상상할 수도 있어요.', '재회가 특별한 만큼 평소의 안부도 중요해요.', '거리와 사정 때문에 함께하지 못하는 시간을 사랑의 부족함으로 해석하지 마세요.'),
  'c03': ('서로의 가능성을 알아보는 사랑', '평가받던 사람이 자기 길을 찾는 순간', '온달과 평강공주', '서로의 잠재력을 알아보는 관계예요. 다만 응원과 상대를 내 뜻대로 바꾸려는 일은 구분해야 해요.', '가능성을 믿되 성취를 사랑의 조건으로 삼지 마세요.', '평강의 선택을 일방적인 희생으로, 온달의 성장을 한 사람의 공으로만 설명하지 마세요.'),
  'c10': ('열정과 주변 세계의 충돌', '서로를 향한 마음과 위험한 선택의 경계', '로미오와 줄리엣', '빠른 끌림이 큰 용기를 줄 수 있어요. 하지만 절박한 감정이 안전한 판단을 대신하지는 못해요.', '서로를 지키는 선택은 둘의 세계를 좁히지 않는 선택이에요.', '원작의 비극을 운명적인 사랑의 모범이나 현실의 행동 지침으로 미화하지 마세요.'),
- 'c11': ('오해를 넘어 다시 읽는 사랑', '첫인상을 고쳐 쓸 수 있는 용기', '엘리자베스와 다아시', '서로를 빠르게 판단할수록 놓치는 모습이 생겨요. 상대를 새롭게 이해할 여지가 관계를 바꿔요.', '잘못 알았던 부분을 인정하는 일도 애정 표현이에요.', '편견과 계급 차이를 단순한 말다툼으로 축소하지 마세요.'),
+ 'c11': ('숱한 오해를 넘어 새로운 사랑으로', '첫인상을 바꾼 편지와 행동', '엘리자베스와 다아시', '서로를 빠르게 판단할수록 놓치는 모습이 생겨요. 상대를 새롭게 이해할 여지가 관계를 바꿔요.', '잘못 알았던 부분을 인정하는 일도 애정 표현이에요.', '편견과 계급 차이를 단순한 말다툼으로 축소하지 마세요.'),
  'c13': ('긴 기다림과 전략적 신뢰', '각자의 자리에서 지킨 삶과 재회', '오디세우스와 페넬로페', '믿음은 아무것도 묻지 않는 일이 아니에요. 긴 시간 뒤 다시 만났을 때 서로를 확인할 권리도 포함해요.', '함께 있지 못한 시간에도 각자의 삶을 존중해요.', '페넬로페를 수동적인 기다림의 상징으로만 읽지 마세요.'),
  'c18': ('이상화와 현실의 간극', '기억 속 사랑과 지금의 상대를 구분하기', '개츠비와 데이지', '강렬한 그리움은 때로 현재의 상대보다 과거의 이미지를 더 크게 만들어요.', '사랑했던 기억보다 지금 서로가 원하는 삶을 확인해요.', '파멸과 집착을 깊은 사랑의 증거로 포장하지 마세요.'),
  'f01': ('추론과 공감의 상호보완', '다른 재능이 만나 하나의 팀이 되는 방식', '셜록 홈즈와 존 왓슨', '한 사람의 날카로운 판단과 다른 사람의 꾸준한 동행이 서로를 빛나게 할 수 있어요.', '상대의 기여가 눈에 잘 띄지 않아도 말로 인정해요.', '왓슨을 단순한 조수로만 취급하지 마세요.'),
@@ -69,13 +70,8 @@ def enrich(result, a, b, rel, couple):
     sx,sy=(x,y) if a_first else (y,x)
     cp,cq=(counts_a,counts_b) if a_first else (counts_b,counts_a)
     def profile(label,name,style,counts):
-        prominent=max(counts,key=counts.get)
-        return (f'◆ **{label}에게 비춰 보는 {name}의 시선**\n'
-                f'{label}의 일간은 {STEM_NAME[style["stem"]]}({style["stem"]})이에요. '
-                f'이 글자는 {style["desc"][0]}에 비유되고, {style["desc"][2]}을 중요하게 여기는 모습으로 읽을 수 있어요. '
-                f'월간과의 십성은 {style["god"]}으로, {GOD_TEXT[style["god"]]}의 상징과 연결돼요. '
-                f'겉으로 드러난 오행 중에는 {KO[prominent]}이 가장 많아요. '
-                f'이는 인물의 마음을 상상하는 문학적 단서이지 성격을 판정하는 검사는 아니에요.')
+        from reading_voice import profile as reader_profile
+        return f'◆ **{label}에게 비춰 보는 {name}의 시선**\n' + reader_profile(label, style, counts, name == first)
     if cid.startswith('f'):
         hook = '이 원작은 우정의 이야기지만, 여기서는 연인 사이에 나타나는 협력·신뢰·차이의 양상을 비춰 보는 거울로 사용해요. ' + hook
         question = '연인 사이에서 ' + question
@@ -84,12 +80,12 @@ def enrich(result, a, b, rel, couple):
     result['teaser']=hook
     result['roles']=(f'**왜 우리는 {characters}의 이야기와 닮았을까요?**\n'
                      f'{bond}의 핵심을 {question}이라는 질문으로 읽어 볼게요. '
-                     f'두 사람을 성별이 아닌 일간·월간 십성과 겉으로 드러난 오행의 상징으로 배역에 비춰 봤어요. '
+                     f'두 사람을 성별이 아닌 나를 상징하는 글자와 태어난 달의 글자, 자연의 이미지로 배역에 비춰 봤어요. '
                      f'{p}은 {first}, {q}은 {second}의 시선에서 읽어요.\n\n'
                      +profile(p,first,sx,cp)+'\n\n'+profile(q,second,sy,cq)
                      +'\n\n이 역할은 상징적인 비교예요. 누가 더 많이 사랑하거나 더 훌륭한지를 가리는 기준이 아니에요. '
-                     +'오행 개수만으로 명식의 강약을 판정하지 않으며, 동점은 입력 순서로 정했어요. '
-                     +('출생시각을 모르면 시주는 계산에서 제외했어요.' if not a.get('hour_pillar') or not b.get('hour_pillar') else ''))
+                     +'자연 이미지의 개수만으로 기운의 강약을 정하지 않으며, 동점은 입력 순서로 정했어요. '
+                     +('출생시각을 모르면 시주는 계산에서 제외했어요. 시주는 태어난 시간을 나타내는 글자예요.' if not a.get('hour_pillar') or not b.get('hour_pillar') else ''))
     beats=couple.get('story_beats',[])
     headings=('이야기의 시작','서로 다른 선택','끝내 남은 장면')
     blocks=[]
@@ -100,15 +96,15 @@ def enrich(result, a, b, rel, couple):
                           '이 결말을 지금 두 사람의 미래에 그대로 대입할 필요는 없어요.')))
     original_scene, tension, action = SCENES[cid]
     result['story']='\n\n'.join(blocks)+f'\n\n◆ **작품 속에서 더 읽어 볼 장면**\n{original_scene}\n\n**{question}**\n{takeaway} {caution} 작품과 고사의 세부는 판본과 전승에 따라 다를 수 있어요.'
+    result['story'] += '\n\n' + READINGS[cid]
     v=rel['vector']
     def axis(key):
         score=v[key];i=band(score)
-        return f'◆ **{LABELS[key]} {score:g}/100**\n{AXIS_TEXT[key][i]}'
+        return f'◆ **{LABELS[key]}**\n{AXIS_TEXT[key][i]}'
     result['saju_a']=(f'두 사람의 관계를 {theme}이라는 관점에서 읽어 볼게요. '
-                      f'당신의 일간은 {STEM_NAME[x["stem"]]}, 상대방의 일간은 {STEM_NAME[y["stem"]]}이에요. '
                       f'당신에게는 {x["desc"][2]}, 상대방에게는 {y["desc"][2]}이 중요하다는 상징으로 해석할 수 있어요.\n\n'
                       +'\n\n'.join(axis(k) for k in ('attraction','security','growth'))
-                      +'\n\n이 점수는 관계를 이야기로 풀기 위한 상징적 지표이며 실제 감정이나 미래를 측정하지 않아요.')
+                      +'\n\n사주의 상징을 빌린 이야기이며, 실제 감정이나 미래를 확정하지 않아요.')
     result['crisis']=(f'**{question}**\n{hook}\n\n{tension}\n\n'
                       +'\n\n'.join(axis(k) for k in ('conflict','expression','autonomy'))
                       +f'\n\n{caution} 서사 속 갈등을 현실의 위험한 행동과 동일시하지 않아요.')
