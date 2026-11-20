@@ -20,6 +20,10 @@
 #premiumReport.reading-mode>.section[data-report-chapter]{display:none}
 #premiumReport.reading-mode>.section[data-report-chapter].chapter-visible{display:block}
 #premiumReport.reading-mode>.section[data-report-chapter] .prose{font-size:15px}
+#compatibilityReading{margin:16px 0 24px;padding:0 18px;overflow-wrap:anywhere}
+#compatibilityReading summary{cursor:pointer;padding:14px 0;line-height:1.45;font-weight:750;color:#67465d}
+#compatibilityReading h3{font-size:17px;line-height:1.45;word-break:keep-all;margin:20px 0 8px}
+#compatibilityReading .prose, #compatibilityReading .advisor{padding-bottom:12px}
 #chapterReaderNav{display:none;margin:16px 0 28px}
 #premiumReport.reading-mode #chapterReaderNav{display:block}
 .reader-progress{display:flex;gap:6px;margin:13px 0 20px}
@@ -137,7 +141,35 @@ $('plotDialog').addEventListener('click',event=>{if(event.target!==$('plotDialog
 $('plotDialog').addEventListener('keydown',event=>{if(event.key!=='Tab')return;const first=$('plotClose'),last=$('plotBody').querySelector('button.saju-term:last-of-type')||$('plotBody');if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}});
 $('plotDialog').addEventListener('close',()=>{if(!$('plotDialog').open)restorePlotFocus();});
 function setPlot(plot){if($('plotDialog').open)closePlot();plotOpen.classList.toggle('hide',!plot);$('plotBody').innerHTML=plot?renderProse(plot.body):'';$('plotTitle').textContent=plot?.title||'작품 줄거리';}
-function fill(x){setPlot(x.plot);document.querySelector('#result>.tag').textContent='우리 둘의 이야기 · 전체 리포트';window.__yeonyeonFullChart=!!x.chart_evidence;setReportChapters(x.chapters);for(const [id,key] of [['story','story'],['sajuA','saju_a'],['roles','roles'],['crisis','crisis'],['scene','scene'],['tip','tip']])$(id).innerHTML=renderProse(x[key]);const proseByKey={roles:'roles',story:'story',saju_a:'sajuA',crisis:'crisis',scene:'scene',tip:'tip'};window.annotateSaju((x.chapters||Object.keys(proseByKey).map(key=>({key}))).map(({key})=>$(proseByKey[key])).filter(Boolean));window.annotateSaju([$('plotBody')]);$('ending').innerHTML=renderProse(x.ending||'');$('questions').replaceChildren();for(const q of x.questions||[]){const p=document.createElement('p');p.textContent='♥ '+q;$('questions').append(p)}}
+function fillCompatibility(reading){
+ const root=$('premiumReport');
+ root.querySelector('#compatibilityReading')?.remove();
+ if(!reading?.chapters?.length)return;
+ const details=document.createElement('details');
+ details.id='compatibilityReading';
+ details.className='section';
+ const summary=document.createElement('summary');
+ summary.textContent='두 사람의 명식으로 읽는 궁합';
+ details.append(summary);
+ for(const chapter of reading.chapters){
+  const heading=document.createElement('h3');
+  heading.textContent=chapter.title;
+  const prose=document.createElement('div');
+  prose.className='prose';
+  for(const entry of chapter.paragraphs){
+   const paragraph=document.createElement('p');
+   paragraph.textContent=entry.text;
+   prose.append(paragraph);
+  }
+  details.append(heading,prose);
+ }
+ const note=document.createElement('p');
+ note.className='advisor';
+ note.textContent='연연 '+reading.version+' · 전통 명리의 해석을 바탕으로 두 사람의 경험을 함께 살펴봅니다.';
+ details.append(note);
+ root.prepend(details);
+}
+function fill(x){fillCompatibility(x.compatibility);setPlot(x.plot);document.querySelector('#result>.tag').textContent='우리 둘의 이야기 · 전체 리포트';window.__yeonyeonFullChart=!!x.chart_evidence;setReportChapters(x.chapters);for(const [id,key] of [['story','story'],['sajuA','saju_a'],['roles','roles'],['crisis','crisis'],['scene','scene'],['tip','tip']])$(id).innerHTML=renderProse(x[key]);const proseByKey={roles:'roles',story:'story',saju_a:'sajuA',crisis:'crisis',scene:'scene',tip:'tip'};window.annotateSaju((x.chapters||Object.keys(proseByKey).map(key=>({key}))).map(({key})=>$(proseByKey[key])).filter(Boolean));window.annotateSaju([$('plotBody')]);$('ending').innerHTML=renderProse(x.ending||'');$('questions').replaceChildren();for(const q of x.questions||[]){const p=document.createElement('p');p.textContent='♥ '+q;$('questions').append(p)}}
 
 // Every result describes a romantic couple; friendship archetypes describe relational dynamics.
 function setRelationshipCopy(couple){
@@ -201,7 +233,7 @@ window.yeonyeonInitReader=function(couple){
  sections.forEach(el=>el.setAttribute('data-report-chapter','true'));
  currentChapterTitles=sections.map(el=>el.querySelector('h2')?.textContent||'우리 둘의 이야기');
  let nav=document.getElementById('chapterReaderNav');
- if(!nav){nav=document.createElement('div');nav.id='chapterReaderNav';nav.innerHTML='<div class="reader-count eyebrow"></div><div class="reader-progress"></div><div class="reader-intro"><h3 class="reader-title"></h3><p class="reader-summary"></p></div><iframe class="reader-art" title="오행 캐릭터 관계 일러스트" loading="lazy"></iframe><div class="reader-buttons"><button class="reader-prev">← 이전 장</button><button class="reader-next">다음 장 →</button></div>';root.insertBefore(nav,root.querySelector('.section'));nav.querySelector('.reader-prev').onclick=()=>show(active-1);nav.querySelector('.reader-next').onclick=()=>show(active+1);}
+ if(!nav){nav=document.createElement('div');nav.id='chapterReaderNav';nav.innerHTML='<div class="reader-count eyebrow"></div><div class="reader-progress"></div><div class="reader-intro"><h3 class="reader-title"></h3><p class="reader-summary"></p></div><iframe class="reader-art" title="오행 캐릭터 관계 일러스트" loading="lazy"></iframe><div class="reader-buttons"><button class="reader-prev">← 이전 장</button><button class="reader-next">다음 장 →</button></div>';root.insertBefore(nav,sections[0]);nav.querySelector('.reader-prev').onclick=()=>show(active-1);nav.querySelector('.reader-next').onclick=()=>show(active+1);}
  let bottom=document.getElementById('chapterReaderBottom');
  if(!bottom){bottom=document.createElement('div');bottom.id='chapterReaderBottom';bottom.innerHTML='<div class="reader-bottom-count"></div><div class="reader-buttons"><button type="button" class="reader-prev">← 이전 장</button><button type="button" class="reader-next">다음 장 →</button></div>';root.appendChild(bottom);bottom.querySelector('.reader-prev').onclick=()=>show(active-1);bottom.querySelector('.reader-next').onclick=()=>show(active+1);}
  root.classList.add('reading-mode');show(0);

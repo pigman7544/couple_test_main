@@ -64,7 +64,11 @@ class ReportPaths(unittest.TestCase):
                     'title': '/assets/baek_heo_title.png',
                     'plain': '/assets/baek_heo_plain.png',
                 })
-                if not fixture['unlock']:
+                if fixture['unlock']:
+                    compatibility = response['full_report'].pop('compatibility')
+                    self.assertEqual(compatibility['version'], '1.4')
+                    self.assertEqual(len(compatibility['chapters']), 3)
+                else:
                     preview = response['preview']
                     self.assertTrue(preview['story_excerpt'])
                     # Restore the previous display formatting for the historical envelope check.

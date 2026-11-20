@@ -3,6 +3,7 @@ import json, os, re, traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
+from compatibility_v14 import analyze_pair
 from engine import person
 from relationship_v08 import relation
 from matcher import DB, rank
@@ -32,8 +33,13 @@ def compute(payload, unlock=False):
         if t is not None and not isinstance(t,str):
             raise ValueError('태어난 시간을 확인해 주세요.')
         hh,mm=map(int,t.split(':')) if t else (None,0)
-        return person(*map(int,date),hour=hh,minute=mm,calendar=x.get('calendar','solar'),leap=bool(x.get('leap',False)))
-    a,b=build(payload['a']),build(payload['b'])
+        year, month, day = map(int, date)
+        calendar = x.get('calendar', 'solar')
+        return dict(year=year, month=month, day=day, hour=hh, minute=mm,
+                    calendar=calendar, leap=calendar == 'lunar' and bool(x.get('leap', False)))
+
+    birth_a, birth_b = build(payload['a']), build(payload['b'])
+    a, b = person(**birth_a), person(**birth_b)
     rel=relation(a,b)
     ranked=rank(rel['vector']);couple=ranked[0][2]
     story=describe(rel['vector'],couple['id'],ranked[1][2]['id'])
@@ -44,6 +50,11 @@ def compute(payload, unlock=False):
     if art and not all((ROOT / path.lstrip('/')).is_file() for path in art.values()):
         art = None
     if unlock:
+        compatibility = analyze_pair(birth_a, birth_b)
+        full['compatibility'] = {
+            'version': compatibility['version'],
+            'chapters': compatibility['report'],
+        }
         return {'full_report':full,'couple':{'id':couple['id'],'name':couple['name'],'work':couple['work']},'has_art':art is not None,'art':art,'test_mode':True}
     excerpt = full.get('plot', {}).get('body') or full.get('crisis') or full.get('story', '')
     excerpt = re.sub(r'^◆ .*\n', '', excerpt.strip(), count=1).split('\n\n')[0].replace('**', '')

@@ -34,6 +34,26 @@ TENSION_QUESTIONS = {
 }
 
 
+SCENES = {
+    "same_sources": (
+        "두 사람이 함께할 일을 가볍게 시험해 보는 장면을 떠올려 보세요. 둘 다 해 볼 만하다고 느낄 수 있지만, 한쪽은 한 번의 시도로, 다른 쪽은 다음에도 이어갈 약속으로 받아들일 수 있습니다.",
+        "다음 제안에는 ‘이번 한 번 해 보기’와 ‘이어서 맡기’를 따로 물어보세요. 해 본 뒤 둘 다 계속할 뜻이 있는지 다시 묻고, 처음 정할 때보다 편했는지 확인해 보세요.",
+    ),
+    "same_slots": (
+        "함께 결정한 일의 답장을 누군가 대신 쓰는 장면을 떠올려 보세요. 결론에는 뜻이 맞아도 그 문장이 내 이유와 조건까지 담았다고 느끼는지는 서로 다를 수 있습니다.",
+        "함께 답할 일이 생기면 보내기 전에 초안을 둘 다 읽고, 문장을 고치거나 자기 말로 따로 답할 수 있게 해 보세요. 답장을 보낸 뒤 각자의 뜻이 충분히 담겼는지 확인해 보세요.",
+    ),
+    "partial": (
+        "둘이 시작한 일에 다른 사람을 초대한다는 제안을 떠올려 보세요. 함께 시작할 이유가 충분해도, 더 많은 사람과 나누겠다는 제안에는 다른 조건이 붙을 수 있습니다.",
+        "다음에 함께할 작은 일을 하나 정하고, 이어서 할 의사와 다른 사람에게 알릴 의사를 나눠 물어보세요. 알리는 범위를 좁혔을 때 참여하기가 편해지는지 살펴보세요.",
+    ),
+    "separate": (
+        "같이 하고 싶은 활동을 골랐는데 모이는 요일이나 준비 분담에서 이야기가 길어지는 경우를 떠올려 보세요. 함께할 이유가 분명한 것과 같은 방식으로 운영할 수 있는지는 별개의 문제일 수 있습니다.",
+        "두 사람 모두 공감한 목적을 한 줄로 적어 두고, 운영 조건 하나만 다음 한 번 바꿔 보세요. 부담이 줄어도 활동 자체가 여전히 하고 싶은지 각자 확인해 보세요.",
+    ),
+}
+
+
 def letter(symbol):
     return f"{READINGS[symbol]}({symbol})"
 
@@ -172,8 +192,15 @@ def render(plan, evidence):
             f"첫째의 {letter(a['stem'])}에서 읽은 주제는 둘째의 {letter(b['stem'])}에도 보입니다. "
             f"두 명식에서 함께 눈여겨볼 주제는 ‘{topic}’입니다. "
             "두 사람에게 그 주제가 실제로 같은 뜻인지는 대화에서 확인해 볼 문제입니다.", refs))
+    relationship_paragraphs = [relationship]
+    reflection_paragraphs = [reflection]
+    scene = SCENES.get(plan["relationship"]["scope"])
+    if scene:
+        example, next_step = scene
+        relationship_paragraphs.append(_paragraph(example, relationship["evidence_ids"]))
+        reflection_paragraphs.append(_paragraph(next_step, reflection["evidence_ids"]))
     return [
         {"title": "각자의 명식에서 먼저 보이는 것", "paragraphs": individuals},
-        {"title": title, "paragraphs": [relationship]},
-        {"title": "둘이 나눠 볼 이야기", "paragraphs": [reflection]},
+        {"title": title, "paragraphs": relationship_paragraphs},
+        {"title": "둘이 나눠 볼 이야기", "paragraphs": reflection_paragraphs},
     ]
