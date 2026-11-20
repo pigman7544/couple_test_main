@@ -4,6 +4,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 from compatibility_editorial_round3 import analyze_pair
+from compatibility_v11 import STEM_ELEMENTS
+from compatibility_v12 import ELEMENT, READINGS as SYMBOL_READINGS
 from engine import person
 from relationship_v08 import relation
 from matcher import DB, rank
@@ -70,13 +72,28 @@ def compute_compatibility(payload, unlock=False):
 
     chapters = compatibility['report']
     evidence = compatibility['evidence']
+    relationship = compatibility['plan']['relationship']
+    highlights = [row['id'] for row in (
+        relationship['support'], relationship['tension'], *relationship['directions']
+    ) if row]
     cited = {ref for chapter in chapters for paragraph in chapter['paragraphs']
-             for ref in paragraph['evidence_ids']}
+             for ref in paragraph['evidence_ids']} | set(highlights)
     sources = {source for ref in cited for source in evidence[ref].get('source_ids', [])}
     response['full_report'] = {'compatibility': {
         'version': compatibility['version'],
         'chapters': chapters,
         'coverage': coverage,
+        'charts': {
+            owner: {
+                'pillars': chart['pillars'],
+                'day_master': chart['day_master'],
+                'day_master_label': SYMBOL_READINGS[chart['day_master']]
+                    + ELEMENT[STEM_ELEMENTS[chart['day_master']]],
+            }
+            for owner, chart in compatibility['charts'].items()
+        },
+        'highlights': highlights,
+        'literature': compatibility['literature'],
         'evidence': {ref: evidence[ref] for ref in sorted(cited | sources)},
     }}
     response['test_mode'] = True
@@ -117,14 +134,12 @@ class Handler(BaseHTTPRequestHandler):
             response=compute_compatibility(sample['payload'],unlock=True)
             response['sample_payload']=sample['payload']
             raw=json.dumps(response,ensure_ascii=False).encode('utf8');mime='application/json; charset=utf-8'
-        elif path=='/manuscripts':
-            raw=(ROOT/'manuscript-shelf.html').read_bytes();mime='text/html; charset=utf-8'
         elif path in ('/report-glossary.js', '/report-glossary.css'):
             raw=(ROOT/path.lstrip('/')).read_bytes()
             mime=('text/javascript' if path.endswith('.js') else 'text/css')+'; charset=utf-8'
         elif path=='/health':raw=b'OK';mime='text/plain; charset=utf-8'
         elif path in ('/preview','/preview.html'):
-            raw=(ROOT/'preview.html').read_bytes();mime='text/html; charset=utf-8'
+            raw=(ROOT/'index.html').read_bytes();mime='text/html; charset=utf-8'
         elif path in ('/','/index.html'):
             raw=(ROOT/'index.html').read_bytes();mime='text/html; charset=utf-8'
         elif path in ART_PATHS and (ROOT/path.lstrip('/')).is_file():

@@ -130,21 +130,24 @@ def natal_paragraph(finding, context, evidence):
     month = context["month_command"]
     month_id = month["principal_id"] if month else None
     location = f"{slot} 지지의 본기" if lead_id == month_id else f"{slot} 지지에 든"
-    text = (f"{NAMES[owner]}의 중심 글자인 {day} 일간에서 보면 {location} {symbol} 글자는 "
-            f"{finding['role']}입니다. 여기서 읽어 볼 관심은 {READINGS[finding['role']][0]}입니다.")
+    interest, contribution, _ = READINGS[finding["role"]]
+    text = (f"{NAMES[owner]}는 평소 {interest}을 중요하게 여길 수 있습니다. {contribution}. "
+            f"명식에서는 {day} 일간과 {location} {symbol} 사이의 {finding['role']} 관계에서 이 성향을 읽습니다.")
     if finding["exposed"]:
         exposed = "·".join(dict.fromkeys(POSITIONS[evidence[ref]["pillar"]] for ref in finding["exposed"]))
         text += f" {symbol} 글자는 {exposed} 천간에도 보여 이 단서를 먼저 살폈습니다."
         refs.extend(finding["exposed"])
     if month_id and month_id != lead_id:
         card = evidence[month_id]
-        text += f" 태어난 달의 중심 글자인 {_read(card['symbol'])}에서는 {ten_god(evidence[day_id]['symbol'], card['symbol'])}도 읽습니다."
+        month_role = ten_god(evidence[day_id]['symbol'], card['symbol'])
+        text += (f" 태어난 달을 읽는 기준인 월령의 중심 글자는 {_read(card['symbol'])}입니다. "
+                 f"이 글자의 {month_role} 관계에서는 {READINGS[month_role][0]}에도 마음이 쓰일 수 있다고 봅니다.")
         refs.append(month_id)
     if alternative := finding["alternative"]:
         card = evidence[alternative]
         if alternative != month_id:
             text += f" {POSITIONS[card['pillar']]} 지지의 {_read(card['symbol'])} 글자는 {finding['alternative_role']}입니다."
-        text += f" 그 단서를 따라가면 {READINGS[finding['alternative_role']][0]}도 중요해질 수 있습니다."
+            text += f" 그 단서를 따라가면 {READINGS[finding['alternative_role']][0]}도 중요해질 수 있습니다."
         refs.append(alternative)
     if finding["missing"]:
         missing = "와 ".join(POSITIONS[p] for p in finding["missing"])
@@ -182,6 +185,12 @@ def render(plan, base):
         direction_refs.extend(references(support))
     else:
         agreement += " 여기서 접점을 찾는 단서는 서로의 일간을 읽은 두 관점입니다."
+
+    individual_roles = [finding["role"] for finding in plan["natal"]]
+    individual_needs = [READINGS[role][0] for role in individual_roles]
+    handoff = (f"1장에서 읽은 첫째의 관심은 {individual_needs[0]}, 둘째의 관심은 {individual_needs[1]}이었습니다. "
+               "둘이 함께 정할 때는 그 관심을 어느 단계에서 먼저 드러내는지가 중요해집니다.")
+    natal_refs = [finding["lead"] for finding in plan["natal"]]
 
     focus_refs = []
     turn = ""
@@ -222,16 +231,36 @@ def render(plan, base):
              f"둘의 답이 여전히 멀다면 {competing}처럼 대화 방식 외에 실제로 달라져야 할 조건이 있는지 살펴보세요.")
     scene_refs = focus_refs or direction_refs
     return [
-        {"title": "함께 정할 때 각자가 챙기는 것", "paragraphs": natal},
+        {"title": "두 사람의 사주와 기질", "paragraphs": natal},
         {"title": title, "paragraphs": [
+            _paragraph(handoff, natal_refs),
             _paragraph(agreement, direction_refs),
             _paragraph(turn, scene_refs),
             _paragraph(scene, [*direction_refs, *scene_refs]),
         ]},
         {"title": "다음에 같은 대목을 만난다면", "paragraphs": [
             _paragraph(practice, scene_refs), _paragraph(trial, scene_refs),
+            _paragraph(f"서로에게 이렇게 물어보세요. “{proposal}”라고 말했을 때 "
+                       f"{detail}까지 함께 정한 줄 알았어? 바꿀 수 있는 마지막 순간은 언제였어?", scene_refs),
         ]},
     ]
+
+
+def literary_comparison(plan):
+    # Match a specific misunderstanding and contrasting viewpoints from Chapter 2.
+    if plan["mechanism"] not in {"육해", "상형"} or len(set(plan["reading_roles"])) != 2:
+        return None
+    return {
+        "work": "오만과 편견",
+        "pair": "엘리자베스와 다아시",
+        "text": (
+            "다아시는 첫 청혼에서 자신의 마음이 얼마나 강한지 전하려 하지만, 엘리자베스에게는 "
+            "그가 자기 가족을 낮춰 보는 말이 먼저 들립니다. 한 사람이 전하려는 뜻과 상대가 실제로 "
+            "받아들이는 뜻 사이에 간격이 생긴다는 점이 이 장의 해석과 닮았습니다. 소설에서는 계급에 "
+            "대한 판단과 쌓여 온 불신이 그 간격을 키웁니다. 여기서 살핀 두 사람의 장면은 일상적인 "
+            "결정에 관한 것이어서, 서로 어떤 범위까지 동의했다고 생각했는지를 그 자리에서 물어볼 수 있습니다."
+        ),
+    }
 
 
 def analyze_pair(a, b):
@@ -255,4 +284,4 @@ def analyze_pair(a, b):
                            for s in card.get("sources", [])):
                         raise ValueError(f"Unresolved interaction source: {ref}")
     return {**base, "version": "1.7-editorial-review", "plan": plan,
-            "report": report, "review": audit}
+            "report": report, "review": audit, "literature": literary_comparison(plan)}
