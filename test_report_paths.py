@@ -129,8 +129,18 @@ class HttpPaths(unittest.TestCase):
                     self.assertEqual(set(data["preview"]), {"title", "description", "coverage"})
                 else:
                     self.assertTrue(data['test_mode'])
-                    for key in (('tagline','roles','saju_a','tip','ending') if expected_id=='c11' else SECTIONS):
-                        self.assertTrue(data['full_report'][key], key)
+                    self.assertEqual(set(data['full_report']), {'compatibility'})
+                    reading = data['full_report']['compatibility']
+                    self.assertEqual(reading['version'], '1.7-editorial-review')
+                    self.assertEqual(len(reading['chapters']), 3)
+                    for chapter in reading['chapters']:
+                        self.assertTrue(chapter['paragraphs'])
+                        for paragraph in chapter['paragraphs']:
+                            self.assertTrue(paragraph['evidence_ids'])
+                            self.assertLessEqual(set(paragraph['evidence_ids']), set(reading['evidence']))
+                    for person_id in ('a', 'b'):
+                        if not payload[person_id].get('time'):
+                            self.assertIn('hour', reading['coverage'][person_id])
 
     def test_real_matching_preview_and_unlock(self):
         # Real dates and unmodified rank(), including the formerly failing path.
@@ -172,7 +182,7 @@ class HttpPaths(unittest.TestCase):
         for endpoint in ('/api/match', '/api/test-unlock'):
             with self.subTest(endpoint=endpoint):
                 RecordingHandler.logs.clear()
-                with patch('server.compute', side_effect=RuntimeError('internal-test-detail')):
+                with patch('server.compute_compatibility', side_effect=RuntimeError('internal-test-detail')):
                     status, data = self.post(endpoint, SAMPLE)
                 self.assertEqual(status, 500)
                 self.assertEqual(data, {'error': '계산 중 오류가 발생했습니다. 입력값을 확인해 주세요.'})
