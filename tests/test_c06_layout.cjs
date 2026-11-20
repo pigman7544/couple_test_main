@@ -13,7 +13,7 @@ for(const id of ['roles','story','sajuA','crisis','scene','tip']){
  nodes[id]={closest:()=>sections[id]};
 }
 const script=html.split('<script>')[1].split('</script>')[0];
-const code=script.slice(script.indexOf('function koreanParticle'),script.indexOf('function fill(x)'));
+const code=script.slice(script.indexOf('function koreanParticle'),script.indexOf('const plotOpen='));
 nodes.pairName={textContent:'백소정·허선',nextSibling:{textContent:'을 닮았어.'}};
 const context=vm.createContext({$:id=>nodes[id]});
 vm.runInContext(code,context);
@@ -28,7 +28,7 @@ for(let pass=0;pass<2;pass++){
  for(const [id,s] of Object.entries(sections)){
   assert.equal(s.classList.contains('hide'),false);
   assert.equal(s.querySelector('.chapter').textContent,'original '+id);
-  assert.equal(s.querySelector('h2').textContent,id==='story'?'백소정·허선은 어떤 사랑을 했을까?':'title '+id);
+  assert.equal(s.querySelector('h2').textContent,id==='story'?'백소정·허선은 어떤 이야기를 남겼을까?':'title '+id);
  }
 }
 // Parse the complete inline script as well, catching syntax errors outside the switch.
@@ -42,11 +42,11 @@ assert.equal(couples.length,12);
 for(const couple of couples){
  context.fillPairName(couple.name);
  assert.equal(nodes.pairName.textContent,couple.name);
- assert.equal(nodes.pairName.nextSibling.textContent,expectedParticles[couple.id]+' 닮았어.',couple.id);
+ assert.equal(nodes.pairName.nextSibling.textContent,expectedParticles[couple.id]+' 닮았어요.',couple.id);
  context.setReportChapters(chapters);
  context.setReportChapters(couple.id==='c06'?chapters:undefined);
  assert.equal(Object.values(sections).filter(s=>!s.classList.contains('hide')).length,couple.id==='c06'?5:6);
- assert.equal(sections.story.querySelector('h2').textContent,couple.id==='c06'?'c06 1':couple.name+(expectedParticles[couple.id]==='을'?'은':'는')+' 어떤 사랑을 했을까?');
+ assert.equal(sections.story.querySelector('h2').textContent,couple.id==='c06'?'c06 1':couple.name+(expectedParticles[couple.id]==='을'?'은':'는')+' 어떤 이야기를 남겼을까?');
  context.setReportChapters(chapters);
  assert.equal(sections.story.querySelector('h2').textContent,'c06 1');
 }
@@ -56,3 +56,12 @@ for(const [name,expected] of [['가','를'],['각','을'],['갈','을'],['힣','
 assert.ok(script.includes('fillPairName(d.couple.name);'));
 assert.ok(!script.includes("$('pairName').textContent=d.couple.name;"));
 console.log('PASS: all 12 couple names, preview particles, dynamic chapter titles, repeated type switches, Hangul boundaries and non-Hangul fallback');
+
+// c11 uses three chapters; switching back restores the original five.
+context.setReportChapters([{key:'roles',title:'c11 1'},{key:'saju_a',title:'c11 2'},{key:'tip',title:'c11 3'}]);
+assert.equal(Object.values(sections).filter(s=>!s.classList.contains('hide')).length,3);
+assert.equal(sections.tip.querySelector('.chapter').textContent,'CHAPTER 03');
+context.setReportChapters(chapters);
+assert.equal(Object.values(sections).filter(s=>!s.classList.contains('hide')).length,5);
+assert.equal(sections.story.classList.contains('hide'),false);
+console.log('PASS: c11 three chapters -> c06 five chapters');

@@ -1,0 +1,36 @@
+{
+  "base": "https://yeonyeon-preview-pr17.onrender.com",
+  "checks": [
+    {
+      "case": "A",
+      "width": 390,
+      "chapters": 5,
+      "liveApiEqualsLocal": true,
+      "url": "https://yeonyeon-preview-pr17.onrender.com/?sample=c06-A"
+    },
+    {
+      "case": "B",
+      "width": 390,
+      "chapters": 5,
+      "liveApiEqualsLocal": true,
+      "url": "https://yeonyeon-preview-pr17.onrender.com/?sample=c06-B"
+    },
+    {
+      "case": "A",
+      "width": 1440,
+      "chapters": 5,
+      "liveApiEqualsLocal": true,
+      "url": "https://yeonyeon-preview-pr17.onrender.com/?sample=c06-A"
+    },
+    {
+      "case": "B",
+      "width": 1440,
+      "chapters": 5,
+      "liveApiEqualsLocal": true,
+      "url": "https://yeonyeon-preview-pr17.onrender.com/?sample=c06-B"
+    }
+  ],
+  "normalInputPreviewUnlock": true,
+  "cardAssets": true,
+  "pageErrors": []
+}

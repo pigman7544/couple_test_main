@@ -1,0 +1,34 @@
+[
+  {
+    "sample": "A",
+    "badge": "우리 둘의 이야기 · 전체 리포트",
+    "cardLinks": 2,
+    "overflow": false,
+    "paywallHidden": true,
+    "width": 390
+  },
+  {
+    "sample": "B",
+    "badge": "우리 둘의 이야기 · 전체 리포트",
+    "cardLinks": 2,
+    "overflow": false,
+    "paywallHidden": true,
+    "width": 390
+  },
+  {
+    "sample": "A",
+    "badge": "우리 둘의 이야기 · 전체 리포트",
+    "cardLinks": 2,
+    "overflow": false,
+    "paywallHidden": true,
+    "width": 1440
+  },
+  {
+    "sample": "B",
+    "badge": "우리 둘의 이야기 · 전체 리포트",
+    "cardLinks": 2,
+    "overflow": false,
+    "paywallHidden": true,
+    "width": 1440
+  }
+]

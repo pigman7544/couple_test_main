@@ -1,0 +1,25 @@
+{
+  "base": "http://127.0.0.1:8931",
+  "checks": [
+    {
+      "sample": "A",
+      "width": 360,
+      "unchanged": true
+    },
+    {
+      "sample": "B",
+      "width": 360,
+      "unchanged": true
+    },
+    {
+      "sample": "A",
+      "width": 1440,
+      "unchanged": true
+    },
+    {
+      "sample": "B",
+      "width": 1440,
+      "unchanged": true
+    }
+  ]
+}
