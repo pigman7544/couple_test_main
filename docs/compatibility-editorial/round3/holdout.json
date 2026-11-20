@@ -1,0 +1,8 @@
+{
+  "seed": 313771,
+  "count": 24,
+  "start": "1960-01-01",
+  "end": "2005-12-31",
+  "policy": "Use Python Random.randrange over the inclusive range. Every sixth pair starts on a fixed boundary or leap date; every fourth pair has both times missing, every odd pair has one missing, others have both. No reroll.",
+  "anchors": ["1984-02-04", "2000-02-29", "1995-03-06", "1968-12-07"]
+}
