@@ -13,6 +13,14 @@ TOPICS = {
     "reception": "상대의 말을 받아들이고 이해하는 과정",
 }
 
+NATAL_EXAMPLES = {
+    "agency": "둘이 같은 일을 하더라도 각자 방법을 고를 여지가 있을 때 더 편하게 느끼는지 돌아보세요. 반대로 역할이 열려 있어서 모든 걸 혼자 결정해야 했던 날에는 어떤 도움이 필요했나요?",
+    "expression": "마음에 걸린 점을 말해 보니 둘의 선택지가 오히려 늘었던 때가 있었나요? 상대의 대답을 기다릴 때와 생각을 말로 풀면서 정리할 때를 견줘 보면 어떤 대화가 편한지 드러날 수 있습니다.",
+    "commitment": "상대가 시간을 내 주거나 맡은 일을 끝내 줬을 때 마음이 놓였던 순간을 떠올려 보세요. 도움의 크기와 다음에도 기대할 수 있다는 느낌 중 어느 쪽이 더 오래 남았나요?",
+    "standard": "둘이 함께 결정할 때 '여기까지는 지키고 싶어'라고 말할 수 있었는지 돌아보세요. 그 기준이 어디서 왔는지 서로 알고 있을 때 부탁과 부담을 더 잘 구분할 수도 있습니다.",
+    "reception": "짧은 대답만 들었을 때와 그 말의 앞뒤 사정을 함께 들었을 때 마음이 어떻게 달라졌나요? 설명을 듣는 일과 조용히 시간을 두는 일 중 그때 더 힘이 된 쪽을 떠올려 보세요.",
+}
+
 TENSION_READINGS = {
     "육충": "두 사람이 같은 문제를 두고 서로 다른 전제에서 출발하는지",
     "육해": "같은 말이나 제안이 건넨 뜻과 다르게 받아들여지는지",
@@ -98,6 +106,7 @@ def natal_prose(owner, finding, evidence):
     if missing:
         labels = "·".join(POSITIONS[p] for p in missing)
         detail += f" {labels}는 확정할 수 없어 여기서는 확인된 글자만 읽었습니다."
+    detail += " " + NATAL_EXAMPLES[finding["lead_lens"]]
     return _paragraph(f"{opening} {detail}", refs)
 
 
@@ -199,6 +208,13 @@ def render(plan, evidence):
         example, next_step = scene
         relationship_paragraphs.append(_paragraph(example, relationship["evidence_ids"]))
         reflection_paragraphs.append(_paragraph(next_step, reflection["evidence_ids"]))
+    else:
+        reflection_paragraphs.append(_paragraph(
+            "떠오르는 일이 있다면 당시 상대에게 바랐던 것을 한 문장씩 먼저 적어 보세요. "
+            "두 문장을 나란히 읽고, 다시 비슷한 일이 생기면 무엇을 먼저 알려 주면 좋을지 한 가지씩 정해 봅니다. "
+            "다음에 실제로 써 본 뒤 각자에게 편해진 점이 있었는지 물어보세요.",
+            reflection["evidence_ids"],
+        ))
     return [
         {"title": "각자의 명식에서 먼저 보이는 것", "paragraphs": individuals},
         {"title": title, "paragraphs": relationship_paragraphs},
