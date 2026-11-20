@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>우리 둘의 이야기 — 문학으로 만나는 사주 궁합</title><style>
+<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>우리 둘의 이야기 — 두 사람의 사주 궁합</title><style>
 :root{font-family:system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#3d3140;background:#fffaf6}*{box-sizing:border-box}body{margin:0}main{max-width:640px;margin:auto;padding:22px 19px 90px}.eyebrow{font-size:11px;letter-spacing:.18em;color:#a26e88;font-weight:850}h1{font-size:clamp(31px,7vw,42px);letter-spacing:-1.6px;line-height:1.28;margin:13px 0}h2{font-size:24px;letter-spacing:-.8px;line-height:1.4}h3{font-size:18px}p{line-height:2.05;word-break:keep-all}.subtitle{color:#826d79}.card{background:#fff;border:1px solid #f2e4e6;border-radius:22px;padding:21px;margin:17px 0;box-shadow:0 8px 28px #7448570b}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:11px}label{display:block;font-size:12px;color:#846b79;margin:12px 0 6px}input,select{width:100%;min-width:0;padding:12px;border:1px solid #e9d8df;border-radius:11px;background:white;color:#403040;font-size:15px}button{border:0;cursor:pointer;border-radius:13px;padding:15px;font-weight:800;font-size:15px}.primary{background:#895777;color:#fff;width:100%}.secondary{background:#f4e8ef;color:#744960}.hide{display:none!important}.tag{display:inline-block;background:#fce6ef;color:#965979;border-radius:22px;padding:7px 13px;font-size:12px;font-weight:800}.chapter{color:#ae7993;font-size:12px;font-weight:900;letter-spacing:.11em;margin-top:14px}.section{border-bottom:1px solid #efdee5;padding:27px 0 23px}.section h2{margin:12px 0 18px}.prose{white-space:normal;line-height:2.05;font-size:15px;color:#493a47}.prose p{margin:0 0 19px}.prose strong{color:#8b4c6b}.prose .subhead{font-weight:850;color:#794e66;font-size:17px;margin:25px 0 8px}.hero{display:block;width:100%;height:auto;border-radius:24px;box-shadow:0 12px 34px #71465724}.art-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.art-grid img{width:100%;border-radius:14px;display:block}.art-grid a{display:block;margin-top:9px;background:#f5e6ed;border-radius:12px;padding:12px 7px;text-align:center;text-decoration:none;color:#754662;font-weight:800;font-size:13px}.art-grid figcaption{font-size:12px;color:#8e7381;margin-top:6px;text-align:center}.art-grid figure{margin:0}.quote{font-size:21px;font-weight:850;line-height:1.65;color:#895875}.muted{font-size:12px;color:#917d87}.error{color:#b52b55;font-size:13px}.center{text-align:center}.questions p{background:#fff1f4;padding:13px 15px;border-radius:12px}.divider{height:1px;background:#efdee5;margin:20px 0}.pillars{font-size:13px;color:#80556e;background:#fff1f4;padding:13px;border-radius:12px;line-height:1.7}#result{animation:appear .3s ease}@keyframes appear{from{opacity:.1;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@media(max-width:360px){.twocol{grid-template-columns:1fr}}
 .blur-teaser{position:relative;max-height:172px;overflow:hidden;margin:12px 8px -22px;padding:20px 20px 45px;filter:blur(4px);opacity:.65;pointer-events:none;user-select:none}.blur-teaser:after{content:"";position:absolute;inset:55% 0 0;background:linear-gradient(transparent,#fff7fa)}#paywall{position:relative;z-index:1;box-shadow:0 -8px 28px #fff7fa}
 /* 짧은 문장, 두괄식, 읽기 쉬운 강조 */
@@ -7,84 +7,28 @@
 
 .brand-small{font-size:10px;font-weight:500;letter-spacing:.1em;margin-left:9px}.advisor{font-size:12px;line-height:1.8;color:#927584;border-top:1px solid #f1e5e9;padding-top:12px;margin-bottom:0}.prose strong{font-weight:650!important;font-size:1em!important}.prose .subhead{font-weight:750!important}.preview-hook strong{font-weight:750}.loading-overlay{position:fixed;inset:0;z-index:100;background:rgba(255,250,246,.98);display:flex;align-items:center;justify-content:center;padding:28px}.loading-box{text-align:center;width:min(100%,400px)}.loading-seal{font-size:48px;color:#87526f;letter-spacing:.08em;animation:sealPulse 1.6s ease-in-out infinite}.loading-title{font-size:25px;line-height:1.5;color:#493041;margin:22px 0 26px}.loading-steps{text-align:left;margin:auto;max-width:330px}.loading-step{padding:13px 16px;border-radius:13px;margin:8px 0;background:#f6edf0;color:#a18b97;transition:all .3s}.loading-step.active{background:#f5dfe9;color:#78415f;font-weight:700}.loading-step.done{color:#76576b}.loading-step.done:before{content:'✓ ';color:#9d547b}.loading-step.active:before{content:'◌ ';animation:sealPulse 1s infinite}.loading-step:not(.active):not(.done):before{content:'· '}.loading-note{font-size:12px;color:#987e8d;margin-top:25px}@keyframes sealPulse{0%,100%{opacity:.5;transform:scale(.97)}50%{opacity:1;transform:scale(1.03)}}@media(prefers-reduced-motion:reduce){.loading-seal,.loading-step.active:before{animation:none}}
 
-#plotDialog{box-sizing:border-box;width:min(560px,calc(100vw - 28px));max-height:80dvh;padding:0;border:1px solid #dbcbd5;border-radius:18px;color:#483b43;background:#fffaf7;box-shadow:0 18px 60px #38223240;overflow:hidden}
-#plotDialog::backdrop{background:#30222b80}
-.plot-header{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid #eadfe5}
-.plot-header h2{font-size:18px;flex:1;margin:0}
-#plotClose{width:auto;min-width:44px;min-height:44px;margin:0;padding:8px 12px;font-size:15px}
-#plotBody{overflow:auto;max-height:calc(80dvh - 84px);padding:8px 20px 20px;overscroll-behavior:contain;font-size:15px;line-height:1.85}
-#plotOpen{width:auto;min-height:44px;padding:9px 14px;margin:0 0 18px;font-size:14px;background:#f3e9ef;color:#714e66;border:1px solid #dfcfd9}
-#plotOpen:focus-visible,#plotClose:focus-visible{outline:3px solid #88668d;outline-offset:3px}
 </style><style>
 /* Chapter-by-chapter reading mode */
-#premiumReport.reading-mode>.section[data-report-chapter]{display:none}
-#premiumReport.reading-mode>.section[data-report-chapter].chapter-visible{display:block}
-#premiumReport.reading-mode>.section[data-report-chapter] .prose{font-size:15px}
-#compatibilityReading{margin:16px 0 24px;padding:0 18px;overflow-wrap:anywhere}
-#compatibilityReading summary{cursor:pointer;padding:14px 0;line-height:1.45;font-weight:750;color:#67465d}
-#compatibilityReading h3{font-size:17px;line-height:1.45;word-break:keep-all;margin:20px 0 8px}
-#compatibilityReading .prose, #compatibilityReading .advisor{padding-bottom:12px}
+#premiumReport.reading-mode #compatibilityChapters>.section[data-report-chapter]{display:none}
+#premiumReport.reading-mode #compatibilityChapters>.section[data-report-chapter].chapter-visible{display:block}
+#premiumReport.reading-mode #compatibilityChapters>.section[data-report-chapter] .prose{font-size:15px}
 #chapterReaderNav{display:none;margin:16px 0 28px}
 #premiumReport.reading-mode #chapterReaderNav{display:block}
 .reader-progress{display:flex;gap:6px;margin:13px 0 20px}
 .reader-progress i{height:5px;flex:1;border-radius:9px;background:#e9dfe5}
 .reader-progress i.current{background:#c47a9e}
-.reader-intro{background:linear-gradient(125deg,#fff0e7,#e9eefb);border-radius:18px;padding:19px;margin-bottom:19px}
-.reader-intro h3{word-break:keep-all;margin:5px 0 8px;font-size:21px;line-height:1.45;letter-spacing:-.035em}
-.reader-intro p{font-size:14px;line-height:1.7;margin:0}
-.reader-art{display:block;width:100%;height:260px;border:0;border-radius:16px;background:#f7ecf1;margin:12px 0}
 .reader-buttons{display:flex;gap:10px;justify-content:space-between;margin-top:18px}
 .reader-buttons button{border:1px solid #e8d6df;border-radius:13px;padding:13px 17px;background:white;color:#67465d;font-weight:750;cursor:pointer}
 .reader-buttons button:last-child{background:#503748;color:white}
 .reader-buttons button:disabled{opacity:.35}
-@media(max-width:500px){.reader-art{height:240px}}
 </style><style>
-#premiumReport.reading-mode:not([data-final-chapter='true']) [data-final-only='true']{display:none!important}
-#premiumReport .final-chapter-extra{margin:28px 0 0;padding:24px 0 0;border-top:1px solid #e9dce4}
-#premiumReport .final-chapter-extra .questions{margin-top:12px}
-#premiumReport .final-chapter-extra h2{font-size:20px}
-#premiumReport #ending{margin-top:30px}
-</style><style>#chapterReaderBottom{display:none;margin:26px 0 16px;padding:20px 0;border-top:1px solid #e9dce4}#premiumReport.reading-mode #chapterReaderBottom{display:block}.reader-bottom-count{text-align:center;font-size:12px;color:#987e8d;letter-spacing:.15em}.reader-buttons button:focus-visible{outline:3px solid #c47a9e;outline-offset:3px}</style><link rel="stylesheet" href="/report-glossary.css"><script src="/report-glossary.js"></script></head><body><main><div class="eyebrow">緣硏 · 연연 <span class="brand-small">OUR TWO STORIES ♡</span></div><p class="muted" role="status">연연 3차 검토 체험판 · 실제 결제 없음</p><section id="formSection"><p class="muted"><a href="/manuscripts">문학 원고 37편 검토하기</a></p><h1>우리 둘은<br/>어떤 이야기일까?</h1><p class="subtitle">사주로 읽는 연인 사이의 관계, 문학 속에서 만나는 우리만의 사랑 이야기.</p><section class="card" id="howItWorks"><div class="eyebrow">HOW IT WORKS</div><h2>우리 둘의 이야기는 어떻게 만들어질까요?</h2><p>서로에게 끌리는 이유, 가까워질수록 어긋나는 순간, 다시 마음이 닿는 선택. <strong>연연(緣硏)</strong>은 두 사람의 사주와 닮은 문학 속 관계를 하나의 이야기로 엮어요.</p><p class="advisor">전통 사주의 상징을 문학에 비춰 읽는 이야기예요. 두 사람의 성격이나 미래를 확정하지 않아요.</p></section><form id="matchForm"><div class="card"><h3>🌸 당신</h3><label>성별</label><select name="a_gender" required><option value="female">여성</option><option value="male">남성</option><option value="other">기타 / 응답하지 않음</option></select><label>생년월일</label><input name="a_date" required="" type="date" value="1992-03-18"/><div class="twocol"><div><label>달력</label><select name="a_calendar"><option value="solar">양력</option><option value="lunar">음력</option></select></div><div><label>태어난 시간 (선택)</label><input name="a_time" type="time" value="16:00"/></div></div></div><div class="card"><h3>🌼 상대방</h3><label>성별</label><select name="b_gender" required><option value="male">남성</option><option value="female">여성</option><option value="other">기타 / 응답하지 않음</option></select><label>생년월일</label><input name="b_date" required="" type="date" value="1992-04-30"/><div class="twocol"><div><label>달력</label><select name="b_calendar"><option value="solar">양력</option><option value="lunar">음력</option></select></div><div><label>태어난 시간 (선택)</label><input name="b_time" type="time" value="01:00"/></div></div></div><button class="primary" id="submit">연연으로 우리의 이야기 분석하기 ♥</button><p class="error" id="error"></p></form></section><section class="hide" id="result"><span class="tag">우리 둘의 이야기 · 무료 미리보기</span><h1>두 사람의 관계는<br/><span id="pairName"></span>을 닮았어요.</h1><div class="hide" id="heroWrap"><img alt="" class="hero" id="heroArt"/></div><p class="muted hide" id="heroNotice" role="status"></p><p class="quote" id="tagline"></p><p class="preview-hook" id="previewStory"></p><div class="blur-teaser" id="blurTeaser" aria-hidden="true"><h2>그들이 놓친 것, 우리가 배울 것</h2><p>같이 있고 싶은 마음은 같은데, 원하는 저녁은 다를 때. 서로의 바람이 만나는 자리는 어디일까요?</p><p>두 사람이 마음을 표현하는 방식에는 서로 다른 리듬이 숨어 있어요. 누가 먼저 다가가고, 누가 조금 더 시간을 필요로 하는지…</p></div><div class="card center" id="paywall"><span class="tag">PREMIUM REPORT</span><h2>끌림부터 갈등, 그다음의 선택까지</h2><p>왜 두 사람이 이 커플을 닮았는지, 그리고 다른 결말을 만들려면 무엇이 필요한지.</p><p class="quote">무료 체험</p><button class="primary" id="payButton" type="button">3차 리포트 무료로 열기</button><p class="muted">검토용 초안입니다. 버튼을 누르면 결제 없이 전체 리포트가 바로 열립니다.</p><p class="error" id="payNotice" role="status"></p></div><div class="hide" id="premiumReport"><span class="tag">PREMIUM REPORT · 전체 리포트</span><div class="section"><div class="chapter">CHAPTER 01 · 우리가 닮은 이유</div><h2>당신과 상대방은 누구를 닮았을까?</h2><div class="prose" id="roles"></div></div><div class="section"><div class="chapter">CHAPTER 02 · 그들의 이야기</div><h2>그들은 어떤 이야기를 남겼을까?</h2><div class="prose" id="story"></div></div><div class="section"><div class="chapter">CHAPTER 03 · 두 사주가 만나는 자리</div><h2>각자의 마음이 서로에게 닿는 방식</h2><div class="prose" id="sajuA"></div></div><div class="section"><div class="chapter">CHAPTER 04 · 그들이 놓친 것</div><h2>가까운 사이, 서로 다른 두려움</h2><div class="prose" id="crisis"></div></div><div class="section"><div class="chapter">CHAPTER 05 · 우리의 일상이라면</div><h2>“우리도 이런 적 있지 않아?”</h2><div class="prose" id="scene"></div></div><div class="section"><div class="chapter">CHAPTER 06 · 다른 결말을 쓰는 법</div><h2>우리만의 다음 장면</h2><div class="prose" id="tip"></div><p class="quote" id="ending"></p></div><div class="section"><div class="chapter">BONUS · 오늘 나눌 질문</div><div class="questions" id="questions"></div></div><div class="section hide" id="artSection"><div class="chapter">BONUS · 커플 일러스트 카드</div><h2>우리 둘의 커플 카드 ♡</h2><p class="subtitle" id="artNotice" role="status"></p><div class="art-grid">
+#premiumReport.reading-mode:not([data-final-chapter='true']) #artSection{display:none!important}
+.paragraph-evidence{margin:-8px 0 24px;padding:8px 12px;border:1px solid #efdee5;border-radius:10px;overflow-wrap:anywhere}.paragraph-evidence summary{cursor:pointer;color:#794e66;font-size:13px;font-weight:700}.paragraph-evidence ul{margin:6px 0;padding-left:20px;font-size:13px;line-height:1.65}
+</style><style>#chapterReaderBottom{display:none;margin:26px 0 16px;padding:20px 0;border-top:1px solid #e9dce4}#premiumReport.reading-mode #chapterReaderBottom{display:block}.reader-bottom-count{text-align:center;font-size:12px;color:#987e8d;letter-spacing:.15em}.reader-buttons button:focus-visible{outline:3px solid #c47a9e;outline-offset:3px}</style><link rel="stylesheet" href="/report-glossary.css"><script src="/report-glossary.js"></script></head><body><main><div class="eyebrow">緣硏 · 연연 <span class="brand-small">OUR TWO STORIES ♡</span></div><p class="muted" role="status">연연 3차 검토 체험판 · 실제 결제 없음</p><section id="formSection"><h1>두 사람의 사주 궁합</h1><p class="subtitle">두 사람의 명식이 만나는 지점과 함께 결정을 내릴 때의 차이를 살펴봐요.</p><section class="card" id="howItWorks"><div class="eyebrow">HOW IT WORKS</div><h2>궁합은 어떻게 읽나요?</h2><p><strong>연연(緣硏)</strong>은 두 사람의 명식에서 각자가 중요하게 여길 수 있는 점, 의견이 맞거나 엇갈릴 수 있는 순간, 다음에 함께 시도해 볼 대화를 읽어요.</p><p class="advisor">전통 명리의 상징을 바탕으로 관계를 돌아보는 해석이에요. 출생시간을 모르면 비워 두세요.</p></section><form id="matchForm"><div class="card"><h3>🌸 당신</h3><label>성별</label><select name="a_gender" required><option value="female">여성</option><option value="male">남성</option><option value="other">기타 / 응답하지 않음</option></select><label>생년월일</label><input name="a_date" required="" type="date" value="1992-03-18"/><div class="twocol"><div><label>달력</label><select name="a_calendar"><option value="solar">양력</option><option value="lunar">음력</option></select></div><div><label>태어난 시간 (선택)</label><input name="a_time" type="time" value="16:00"/></div></div></div><div class="card"><h3>🌼 상대방</h3><label>성별</label><select name="b_gender" required><option value="male">남성</option><option value="female">여성</option><option value="other">기타 / 응답하지 않음</option></select><label>생년월일</label><input name="b_date" required="" type="date" value="1992-04-30"/><div class="twocol"><div><label>달력</label><select name="b_calendar"><option value="solar">양력</option><option value="lunar">음력</option></select></div><div><label>태어난 시간 (선택)</label><input name="b_time" type="time" value="01:00"/></div></div></div><button class="primary" id="submit">두 사람의 궁합 보기</button><p class="error" id="error"></p></form></section><section class="hide" id="result"><span class="tag">우리 둘의 이야기 · 무료 미리보기</span><h1>두 사람의 사주 궁합</h1><div class="hide" id="heroWrap"><img alt="" class="hero" id="heroArt"/></div><p class="muted hide" id="heroNotice" role="status"></p><p class="quote" id="tagline"></p><p class="preview-hook" id="previewStory"></p><div class="blur-teaser" id="blurTeaser" aria-hidden="true"><h2>두 사람의 의견이 만나는 지점</h2><p>같은 제안에 동의해도 그 이유와 기대는 다를 수 있어요.</p></div><div class="card center" id="paywall"><span class="tag">PREMIUM REPORT</span><h2>두 사람의 궁합을 세 장으로 읽어요</h2><p>각자의 명식, 둘 사이의 접점과 긴장, 다음에 시도해 볼 대화를 살펴봐요.</p><p class="quote">무료 체험</p><button class="primary" id="payButton" type="button">3차 리포트 무료로 열기</button><p class="muted">검토용 초안입니다. 버튼을 누르면 결제 없이 전체 리포트가 바로 열립니다.</p><p class="error" id="payNotice" role="status"></p></div><div class="hide" id="premiumReport"><span class="tag">궁합 · 전체 리포트</span><p class="advisor" id="coverage"></p><div id="compatibilityChapters"></div><div class="section hide" id="artSection"><div class="chapter">BONUS · 커플 일러스트 카드</div><h2>우리 둘의 커플 카드 ♡</h2><p class="subtitle" id="artNotice" role="status"></p><div class="art-grid">
 <figure><img alt="" loading="lazy"/><figcaption>문구 있는 카드 · SNS 공유용</figcaption><a download>이미지 저장</a></figure>
 <figure><img alt="" loading="lazy"/><figcaption>문구 없는 카드 · 프로필용</figcaption><a download>이미지 저장</a></figure>
-</div></div></div><div class="card center"><button class="secondary" id="back">다른 생일로 다시 보기</button></div></section><div class="loading-overlay hide" id="analysisLoading" role="status" aria-live="polite" aria-label="관계 분석 중"><div class="loading-box"><div class="loading-seal">緣硏</div><h2 class="loading-title">두 사람의 이야기를<br>찾고 있어요…</h2><div class="loading-steps"><div class="loading-step" id="step0">두 사람의 사주를 살펴보고 있어요</div><div class="loading-step" id="step1">서로 다른 기운의 만남을 읽고 있어요</div><div class="loading-step" id="step2">닮은 문학 속 커플을 찾고 있어요</div></div><p class="loading-note">잠시만 기다려 주세요 ♡</p></div></div><p class="muted center">우리 둘의 이야기 · 연연 v6.7 · 결제 없이 전체 열람하는 테스트 버전</p></main><dialog id="plotDialog" aria-labelledby="plotTitle"><div class="plot-header"><h2 id="plotTitle">《오만과 편견》 줄거리</h2><button id="plotClose" type="button" aria-label="줄거리 창 닫기" autofocus>닫기 ×</button></div><div id="plotBody" class="prose" tabindex="0" aria-label="작품 줄거리 본문"></div></dialog><script>
+</div></div></div><div class="card center"><button class="secondary" id="back">다른 생일로 다시 보기</button></div></section><div class="loading-overlay hide" id="analysisLoading" role="status" aria-live="polite" aria-label="관계 분석 중"><div class="loading-box"><div class="loading-seal">緣硏</div><h2 class="loading-title">두 사람의 궁합을<br>읽고 있어요…</h2><div class="loading-steps"><div class="loading-step" id="step0">두 사람의 사주를 살펴보고 있어요</div><div class="loading-step" id="step1">서로 다른 기운의 만남을 읽고 있어요</div><div class="loading-step" id="step2">두 사람의 명식에서 해석 근거를 확인하고 있어요</div></div><p class="loading-note">잠시만 기다려 주세요 ♡</p></div></div><p class="muted center">우리 둘의 이야기 · 연연 3차 · 결제 없이 전체 열람하는 테스트 버전</p></main><script>
 const $=id=>document.getElementById(id);
-const escapeHTML=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function renderProse(s){return String(s||'').split(/\n\n+/).map(part=>{let safe=escapeHTML(part).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');if(safe.startsWith('◆ ')){const end=safe.indexOf('\n');safe='<span class="subhead">'+safe.slice(2,end<0?undefined:end)+'</span>'+(end<0?'':safe.slice(end+1));}return '<p>'+safe.replace(/\n/g,'<br>')+'</p>'}).join('')}
-// Hangul syllables encode the final consonant in the remainder modulo 28.
-// Names without a final Hangul syllable (including empty names) use the vowel form.
-function koreanParticle(name, consonant, vowel){
- const last=String(name||'').trim().normalize('NFC').slice(-1).charCodeAt(0);
- return last>=0xAC00&&last<=0xD7A3&&(last-0xAC00)%28!==0?consonant:vowel;
-}
-function fillPairName(name){
- $('pairName').textContent=name;
- $('pairName').nextSibling.textContent=koreanParticle(name,'을','를')+' 닮았어요.';
-}
-const reportLayoutIds=['roles','story','sajuA','crisis','scene','tip'];
-const originalReportLayout=reportLayoutIds.map(id=>{const section=$(id).closest('.section');return {section,chapter:section.querySelector('.chapter').textContent,title:section.querySelector('h2').textContent}});
-function setReportChapters(chapters){
- const keys={roles:'roles',story:'story',saju_a:'sajuA',crisis:'crisis',tip:'tip'};
- originalReportLayout.forEach(({section,chapter,title})=>{section.classList.remove('hide');section.querySelector('.chapter').textContent=chapter;section.querySelector('h2').textContent=title});
- if(!chapters){const name=$('pairName').textContent;$('story').closest('.section').querySelector('h2').textContent=name+koreanParticle(name,'은','는')+' 어떤 이야기를 남겼을까?';return;}
- originalReportLayout.forEach(({section})=>section.classList.add('hide'));
- chapters.forEach((chapter,i)=>{const id=keys[chapter.key];if(!id)return;const section=$(id).closest('.section');section.classList.remove('hide');section.querySelector('.chapter').textContent='CHAPTER '+String(i+1).padStart(2,'0');section.querySelector('h2').textContent=chapter.title});
-}
-function arrangeFinalChapter(){
- const tip=$('tip').closest('.section');
- const questions=$('questions').closest('.final-chapter-extra')||$('questions').closest('.section');
- const art=$('artSection');
- if(!tip||!questions||!art)return;
- for(const section of [questions,art]){
-   section.classList.remove('section');
-   section.classList.add('final-chapter-extra');
-   section.setAttribute('data-final-only','true');
-   section.querySelector('.chapter')?.remove();
-   if(section.parentElement!==tip)tip.appendChild(section);
- }
- const ending=$('ending');
- if(ending&&ending.parentElement!==tip)tip.appendChild(ending);
-}
 function setupPreviewArt(couple, art){
  const image=$('heroArt');
  const wrap=$('heroWrap');
@@ -129,57 +73,72 @@ function setupCoupleCard(couple, art){
    }
  }
 }
-const plotOpen=document.createElement('button');plotOpen.id='plotOpen';plotOpen.type='button';plotOpen.textContent='작품 줄거리 보기';plotOpen.className='hide';plotOpen.setAttribute('aria-haspopup','dialog');plotOpen.setAttribute('aria-controls','plotDialog');
-$('roles').before(plotOpen);
-let plotScrollOverflow=null;
-function restorePlotFocus(){if(plotScrollOverflow===null)return;document.body.style.overflow=plotScrollOverflow;plotScrollOverflow=null;if(!plotOpen.classList.contains('hide'))plotOpen.focus({preventScroll:true});}
-function closePlot(){if(!$('plotDialog').open)return;$('plotDialog').close();restorePlotFocus();}
-plotOpen.addEventListener('click',()=>{plotScrollOverflow=document.body.style.overflow;document.body.style.overflow='hidden';$('plotDialog').showModal();$('plotBody').scrollTop=0;});
-$('plotClose').addEventListener('click',closePlot);
-$('plotDialog').addEventListener('cancel',event=>{event.preventDefault();closePlot();});
-$('plotDialog').addEventListener('click',event=>{if(event.target!==$('plotDialog'))return;const r=$('plotDialog').getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)closePlot();});
-$('plotDialog').addEventListener('keydown',event=>{if(event.key!=='Tab')return;const first=$('plotClose'),last=$('plotBody').querySelector('button.saju-term:last-of-type')||$('plotBody');if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}});
-$('plotDialog').addEventListener('close',()=>{if(!$('plotDialog').open)restorePlotFocus();});
-function setPlot(plot){if($('plotDialog').open)closePlot();plotOpen.classList.toggle('hide',!plot);$('plotBody').innerHTML=plot?renderProse(plot.body):'';$('plotTitle').textContent=plot?.title||'작품 줄거리';}
-function fillCompatibility(reading){
- const root=$('premiumReport');
- root.querySelector('#compatibilityReading')?.remove();
- if(!reading?.chapters?.length)return;
- const details=document.createElement('details');
- details.id='compatibilityReading';
- details.className='section';
- const summary=document.createElement('summary');
- summary.textContent='두 사람의 명식으로 읽는 궁합';
- details.append(summary);
- for(const chapter of reading.chapters){
-  const heading=document.createElement('h3');
+const personLabels={a:'첫째',b:'둘째'};
+const pillarLabels={year:'년주',month:'월주',day:'일주',hour:'시주'};
+
+function coverageText(coverage){
+ return Object.entries(coverage).map(([person,missing])=>{
+  const hour=missing.includes('hour')?' 출생시간 미상으로 시주를 해석에서 보류했어요.':'';
+  const other=missing.filter(pillar=>pillar!=='hour').map(pillar=>pillarLabels[pillar]);
+  return hour||other.length?personLabels[person]+' ·'+hour+(other.length?' '+other.join('·')+(hour?'도':'가')+' 확정되지 않아 해석에서 보류했어요.':''):'';
+ }).filter(Boolean).join(' ');
+}
+
+function evidenceText(card, evidence){
+ if(card.sources) return card.kind+' · '+card.sources.map(source=>
+  personLabels[source.person]+' '+pillarLabels[source.pillar]+' '+source.symbol
+ ).join(' / ');
+ if(card.source_ids) return personLabels[card.perspective]+'의 관점 · '+card.ten_god+' · '+
+  card.source_ids.map(id=>evidenceText(evidence[id],evidence)).join(' / ');
+ if(card.kind==='확정 범위') return coverageText({[card.person]:card.unresolved_pillars})||personLabels[card.person]+' · 네 기둥 확인';
+ const layer=card.layer==='hidden'?card.branch+'의 지장간 '+card.tier:'천간';
+ return personLabels[card.person]+' '+pillarLabels[card.pillar]+' '+layer+' '+card.symbol;
+}
+
+function fill(reading){
+ if(reading?.chapters?.length!==3) throw Error('궁합 리포트를 불러오지 못했어요. 다시 시도해 주세요.');
+ const chapters=reading.chapters.map((chapter,index)=>{
+  const section=document.createElement('section');
+  section.className='section';
+  section.dataset.reportChapter='true';
+  const label=document.createElement('div');
+  label.className='chapter';
+  label.textContent='CHAPTER 0'+(index+1);
+  const heading=document.createElement('h2');
   heading.textContent=chapter.title;
   const prose=document.createElement('div');
   prose.className='prose';
   for(const entry of chapter.paragraphs){
    const paragraph=document.createElement('p');
    paragraph.textContent=entry.text;
-   prose.append(paragraph);
+   const details=document.createElement('details');
+   details.className='paragraph-evidence';
+   const summary=document.createElement('summary');
+   summary.textContent='해석 근거 보기';
+   const list=document.createElement('ul');
+   for(const id of entry.evidence_ids){
+    const item=document.createElement('li');
+    item.dataset.evidenceId=id;
+    item.textContent=evidenceText(reading.evidence[id],reading.evidence);
+    list.append(item);
+   }
+   details.append(summary,list);
+   prose.append(paragraph,details);
   }
-  details.append(heading,prose);
- }
- const note=document.createElement('p');
- note.className='advisor';
- note.textContent='연연 '+reading.version+' · 전통 명리의 해석을 바탕으로 두 사람의 경험을 함께 살펴봅니다.';
- details.append(note);
- root.prepend(details);
+  section.append(label,heading,prose);
+  return section;
+ });
+ $('compatibilityChapters').replaceChildren(...chapters);
+ $('coverage').textContent=coverageText(reading.coverage);
+ $('coverage').classList.toggle('hide',!$('coverage').textContent);
+ document.querySelector('#result>.tag').textContent='연연 · 전체 궁합 리포트';
+ window.annotateSaju(chapters.map(section=>section.querySelector('.prose')));
 }
-function fill(x){fillCompatibility(x.compatibility);setPlot(x.plot);document.querySelector('#result>.tag').textContent='우리 둘의 이야기 · 전체 리포트';window.__yeonyeonFullChart=!!x.chart_evidence;setReportChapters(x.chapters);for(const [id,key] of [['story','story'],['sajuA','saju_a'],['roles','roles'],['crisis','crisis'],['scene','scene'],['tip','tip']])$(id).innerHTML=renderProse(x[key]);const proseByKey={roles:'roles',story:'story',saju_a:'sajuA',crisis:'crisis',scene:'scene',tip:'tip'};window.annotateSaju((x.chapters||Object.keys(proseByKey).map(key=>({key}))).map(({key})=>$(proseByKey[key])).filter(Boolean));window.annotateSaju([$('plotBody')]);$('ending').innerHTML=renderProse(x.ending||'');$('questions').replaceChildren();for(const q of x.questions||[]){const p=document.createElement('p');p.textContent='♥ '+q;$('questions').append(p)}}
 
-// Every result describes a romantic couple; friendship archetypes describe relational dynamics.
-function setRelationshipCopy(couple){
- $('blurTeaser').querySelector('h2').textContent='그들이 놓친 것, 우리가 배울 것';
- $('blurTeaser').querySelectorAll('p')[1].textContent='연인 사이에도 서로 다른 리듬이 숨어 있어요. 함께 문제를 풀고, 서로를 지지하며, 마음을 표현하는 방식이 어떻게 다른지…';
+function fillPreview(preview){
+ $('tagline').textContent=preview.title;
+ $('previewStory').textContent=coverageText(preview.coverage)||preview.description;
 }
-const defaultBlur = $('blurTeaser').querySelector('p').textContent;
-function fillPreview(x){
- $('blurTeaser').querySelector('p').textContent=x.story_excerpt||defaultBlur;
-$('tagline').textContent=x.tagline||'';$('previewStory').innerHTML=renderProse(x.teaser||'');}
 let lastPayload=null;
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 let loadingTimer=null;
@@ -191,20 +150,13 @@ function showAnalysisLoading(){
 }
 function hideAnalysisLoading(){clearInterval(loadingTimer);$('analysisLoading').classList.add('hide')}
 
-$('payButton').addEventListener('click',async()=>{if(!lastPayload)return;const btn=$('payButton');btn.disabled=true;btn.textContent='전체 리포트를 준비하고 있어요…';$('payNotice').textContent='';try{const r=await fetch('/api/test-unlock',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(lastPayload)});const d=await r.json();if(!r.ok)throw Error(d.error||'다시 시도해 주세요');fill(d.full_report);setRelationshipCopy(d.couple);setupCoupleCard(d.couple,d.art);$('premiumReport').classList.remove('hide');arrangeFinalChapter();window.yeonyeonInitReader(d.couple);$('paywall').classList.add('hide');$('blurTeaser').classList.add('hide');$('premiumReport').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){$('payNotice').textContent=e.message;}finally{btn.disabled=false;btn.textContent='3차 리포트 무료로 열기';}});
-$('matchForm').addEventListener('submit',async e=>{e.preventDefault();$('error').textContent='';$('submit').disabled=true;$('submit').textContent='분석 중…';showAnalysisLoading();const started=Date.now();const f=new FormData(e.target),p=k=>({date:f.get(k+'_date'),calendar:f.get(k+'_calendar'),time:f.get(k+'_time'),gender:f.get(k+'_gender')});try{const r=await fetch('/api/match',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({a:p('a'),b:p('b')})});const d=await r.json();if(!r.ok)throw Error(d.error||'잠시 후 다시 시도해 주세요');await wait(Math.max(0,2000-(Date.now()-started)));lastPayload={a:p('a'),b:p('b')};$('premiumReport').classList.add('hide');$('paywall').classList.remove('hide');$('blurTeaser').classList.remove('hide');fillPreview(d.preview);document.querySelector('#result>.tag').textContent='우리 둘의 이야기 · 무료 미리보기';fillPairName(d.couple.name);setRelationshipCopy(d.couple);setupPreviewArt(d.couple,d.art);$('formSection').classList.add('hide');$('result').classList.remove('hide');window.scrollTo(0,0)}catch(err){$('error').textContent=err.message}finally{hideAnalysisLoading();$('submit').disabled=false;$('submit').textContent='연연으로 우리의 이야기 분석하기 ♥'}});
+$('payButton').addEventListener('click',async()=>{if(!lastPayload)return;const btn=$('payButton');btn.disabled=true;btn.textContent='전체 리포트를 준비하고 있어요…';$('payNotice').textContent='';try{const r=await fetch('/api/test-unlock',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(lastPayload)});const d=await r.json();if(!r.ok)throw Error(d.error||'다시 시도해 주세요');fill(d.full_report.compatibility);setupCoupleCard(d.couple,d.art);$('premiumReport').classList.remove('hide');window.yeonyeonInitReader();$('paywall').classList.add('hide');$('blurTeaser').classList.add('hide');$('premiumReport').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){$('payNotice').textContent=e.message;}finally{btn.disabled=false;btn.textContent='3차 리포트 무료로 열기';}});
+$('matchForm').addEventListener('submit',async e=>{e.preventDefault();$('error').textContent='';$('submit').disabled=true;$('submit').textContent='분석 중…';showAnalysisLoading();const started=Date.now();const f=new FormData(e.target),p=k=>({date:f.get(k+'_date'),calendar:f.get(k+'_calendar'),time:f.get(k+'_time'),gender:f.get(k+'_gender')});try{const r=await fetch('/api/match',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({a:p('a'),b:p('b')})});const d=await r.json();if(!r.ok)throw Error(d.error||'잠시 후 다시 시도해 주세요');await wait(Math.max(0,2000-(Date.now()-started)));lastPayload={a:p('a'),b:p('b')};$('premiumReport').classList.add('hide');$('paywall').classList.remove('hide');$('blurTeaser').classList.remove('hide');fillPreview(d.preview);document.querySelector('#result>.tag').textContent='우리 둘의 이야기 · 무료 미리보기';setupPreviewArt(d.couple,d.art);$('formSection').classList.add('hide');$('result').classList.remove('hide');window.scrollTo(0,0)}catch(err){$('error').textContent=err.message}finally{hideAnalysisLoading();$('submit').disabled=false;$('submit').textContent='두 사람의 궁합 보기'}});
 $('back').onclick=()=>{lastPayload=null;$('premiumReport').classList.add('hide');$('paywall').classList.remove('hide');$('blurTeaser').classList.remove('hide');$('result').classList.add('hide');$('formSection').classList.remove('hide');window.scrollTo(0,0)};
 for(const im of document.querySelectorAll('img'))im.addEventListener('error',()=>{$('imageError').classList.remove('hide')});
 </script><script>
 (function(){
-const meta=[
-["사랑을 움직이는 사람, 사랑을 머물게 하는 사람","서로 다른 사랑의 언어가 만나는 첫 장면이에요."],
-["서로 다른 두 마음이 가까워졌어요","작은 친절이 사랑으로 자라는 이야기예요."],
-["다르기에 새로운 풍경이 피어나요","병화와 계수의 차이에서 발견하는 매력이에요."],
-["같은 마음도 다른 속도로 전해져요","서로의 행동을 다르게 받아들이는 순간이에요."],
-["우리의 다음 장면은 우리가 만들어요","서로를 바꾸지 않고도 함께 성장할 수 있어요."]
-];
-let active=0,sections=[];let currentChapterTitles=[];
+let active=0,sections=[];
 function show(i){
  active=Math.max(0,Math.min(sections.length-1,i));
  sections.forEach((el,n)=>el.classList.toggle('chapter-visible',n===active));
@@ -213,34 +165,25 @@ function show(i){
  const nav=document.getElementById('chapterReaderNav');
  nav.querySelector('.reader-count').textContent='CHAPTER '+String(active+1).padStart(2,'0')+' / '+String(sections.length).padStart(2,'0');
  nav.querySelector('.reader-progress').innerHTML=sections.map((_,n)=>'<i class="'+(n<=active?'current':'')+'"></i>').join('');
- nav.querySelector('.reader-title').textContent=currentChapterTitles[active]||meta[active]?.[0]||'우리 둘의 이야기';
- nav.querySelector('.reader-summary').textContent=window.__yeonyeonIsC06?(meta[active]?.[1]||''):'';
- nav.querySelector('.reader-intro').classList.toggle('hide',!!window.__yeonyeonFullChart);
- const art=nav.querySelector('.reader-art');
- art.style.display=window.__yeonyeonIsC06?'block':'none';
- if(window.__yeonyeonIsC06)art.src='/preview?embed=1&chapter='+active;
  nav.querySelector('.reader-prev').disabled=active===0;
  nav.querySelector('.reader-next').disabled=active===sections.length-1;
  nav.querySelector('.reader-next').textContent=active===sections.length-1?'마지막 장':'다음 장 →';
  const bottom=document.getElementById('chapterReaderBottom');
- if(bottom){bottom.querySelector('.reader-bottom-count').textContent=(active+1)+' / '+sections.length;bottom.querySelector('.reader-prev').disabled=active===0;bottom.querySelector('.reader-next').disabled=active===sections.length-1;bottom.querySelector('.reader-next').textContent=active===sections.length-1?'이야기 끝':'다음 장 →';}
+ if(bottom){bottom.querySelector('.reader-bottom-count').textContent=(active+1)+' / '+sections.length;bottom.querySelector('.reader-prev').disabled=active===0;bottom.querySelector('.reader-next').disabled=active===sections.length-1;bottom.querySelector('.reader-next').textContent=active===sections.length-1?'마지막 장':'다음 장 →';}
  if(!document.getElementById('premiumReport').classList.contains('hide'))nav.scrollIntoView({behavior:'smooth',block:'start'});
 }
-window.yeonyeonInitReader=function(couple){
- const root=document.getElementById('premiumReport');window.__yeonyeonIsC06=couple?.id==='c06'&&!window.__yeonyeonFullChart;
- sections=[...root.querySelectorAll('.section')].filter(el=>!el.classList.contains('hide')&&el.querySelector('.chapter')?.textContent.startsWith('CHAPTER'));
- root.querySelectorAll('[data-report-chapter]').forEach(el=>{el.removeAttribute('data-report-chapter');el.classList.remove('chapter-visible')});
- sections.forEach(el=>el.setAttribute('data-report-chapter','true'));
- currentChapterTitles=sections.map(el=>el.querySelector('h2')?.textContent||'우리 둘의 이야기');
+window.yeonyeonInitReader=function(){
+ const root=$('premiumReport');
+ sections=[...$('compatibilityChapters').children];
  let nav=document.getElementById('chapterReaderNav');
- if(!nav){nav=document.createElement('div');nav.id='chapterReaderNav';nav.innerHTML='<div class="reader-count eyebrow"></div><div class="reader-progress"></div><div class="reader-intro"><h3 class="reader-title"></h3><p class="reader-summary"></p></div><iframe class="reader-art" title="오행 캐릭터 관계 일러스트" loading="lazy"></iframe><div class="reader-buttons"><button class="reader-prev">← 이전 장</button><button class="reader-next">다음 장 →</button></div>';root.insertBefore(nav,sections[0]);nav.querySelector('.reader-prev').onclick=()=>show(active-1);nav.querySelector('.reader-next').onclick=()=>show(active+1);}
+ if(!nav){nav=document.createElement('div');nav.id='chapterReaderNav';nav.innerHTML='<div class="reader-count eyebrow"></div><div class="reader-progress"></div><div class="reader-buttons"><button class="reader-prev">← 이전 장</button><button class="reader-next">다음 장 →</button></div>';root.insertBefore(nav,$('compatibilityChapters'));nav.querySelector('.reader-prev').onclick=()=>show(active-1);nav.querySelector('.reader-next').onclick=()=>show(active+1);}
  let bottom=document.getElementById('chapterReaderBottom');
  if(!bottom){bottom=document.createElement('div');bottom.id='chapterReaderBottom';bottom.innerHTML='<div class="reader-bottom-count"></div><div class="reader-buttons"><button type="button" class="reader-prev">← 이전 장</button><button type="button" class="reader-next">다음 장 →</button></div>';root.appendChild(bottom);bottom.querySelector('.reader-prev').onclick=()=>show(active-1);bottom.querySelector('.reader-next').onclick=()=>show(active+1);}
  root.classList.add('reading-mode');show(0);
 };
 })();
 </script><script>
-// Two public synthetic review cases; reports are recomputed by the real engine.
+// Public synthetic review cases; reports are recomputed by the real engine.
 (async function(){
  const sample=new URLSearchParams(location.search).get('sample');
  if(!['c06-A','c06-B','c11-A','c11-B'].includes(sample))return;
@@ -248,12 +191,12 @@ window.yeonyeonInitReader=function(couple){
   const r=await fetch('/api/'+sample.slice(0,3)+'-sample/'+sample.slice(-1));
   if(!r.ok)throw Error('비교 리포트를 불러오지 못했어요.');
   const d=await r.json();lastPayload=d.sample_payload;
-  fillPairName(d.couple.name);fill(d.full_report);setupCoupleCard(d.couple,d.art);
+  fill(d.full_report.compatibility);setupCoupleCard(d.couple,d.art);
   $('formSection').classList.add('hide');$('result').classList.remove('hide');
   $('paywall').classList.add('hide');$('blurTeaser').classList.add('hide');
-  $('premiumReport').classList.remove('hide');arrangeFinalChapter();
-  // The old fire/water sample illustration describes one fixed chart only.
-  window.yeonyeonInitReader({...d.couple,id:d.couple.id+'-review'});
+  $('premiumReport').classList.remove('hide');
+
+  window.yeonyeonInitReader();
   const notice=document.createElement('p');notice.className='subtitle';notice.id='sampleNotice';
   notice.textContent='비교용 가상 입력 '+sample.slice(-1)+' · 당신 '+lastPayload.a.date+' '+lastPayload.a.time+' / 상대방 '+lastPayload.b.date+' '+lastPayload.b.time+' · 실제 청구 없는 테스트 리포트';
   $('premiumReport').prepend(notice);

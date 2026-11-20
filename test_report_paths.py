@@ -66,7 +66,7 @@ class ReportPaths(unittest.TestCase):
                 })
                 if fixture['unlock']:
                     compatibility = response['full_report'].pop('compatibility')
-                    self.assertEqual(compatibility['version'], '1.4')
+                    self.assertEqual(compatibility['version'], '1.7-editorial-review')
                     self.assertEqual(len(compatibility['chapters']), 3)
                 else:
                     preview = response['preview']
@@ -126,6 +126,7 @@ class HttpPaths(unittest.TestCase):
                 if endpoint == '/api/match':
                     self.assertIn('preview', data)
                     self.assertNotIn('full_report', data)
+                    self.assertEqual(set(data["preview"]), {"title", "description", "coverage"})
                 else:
                     self.assertTrue(data['test_mode'])
                     for key in (('tagline','roles','saju_a','tip','ending') if expected_id=='c11' else SECTIONS):

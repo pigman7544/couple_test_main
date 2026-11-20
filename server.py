@@ -21,7 +21,7 @@ COUPLE_ART = {
 }
 ART_PATHS = {path for art in COUPLE_ART.values() for path in art.values()}
 
-def compute(payload, unlock=False):
+def match_inputs(payload):
     if not isinstance(payload,dict):
         raise ValueError('두 사람의 정보를 입력해 주세요.')
     def build(x):
@@ -41,14 +41,56 @@ def compute(payload, unlock=False):
     birth_a, birth_b = build(payload['a']), build(payload['b'])
     a, b = person(**birth_a), person(**birth_b)
     rel=relation(a,b)
-    ranked=rank(rel['vector']);couple=ranked[0][2]
+    ranked = rank(rel['vector'])
+    couple = ranked[0][2]
+    art = COUPLE_ART.get(couple['id'])
+    if art and not all((ROOT / path.lstrip('/')).is_file() for path in art.values()):
+        art = None
+    return birth_a, birth_b, a, b, rel, ranked, art
+
+
+def compute_compatibility(payload, unlock=False):
+    birth_a, birth_b, _, _, _, ranked, art = match_inputs(payload)
+    couple = ranked[0][2]
+    compatibility = analyze_pair(birth_a, birth_b)
+    coverage = {owner: context['unresolved_pillars']
+                for owner, context in compatibility['contexts'].items()}
+    response = {
+        'couple': {'id': couple['id'], 'name': couple['name']},
+        'has_art': art is not None,
+        'art': art,
+    }
+    if not unlock:
+        response['preview'] = {
+            'title': compatibility['report'][0]['title'],
+            'description': '두 사람의 명식에서 각자가 중요하게 여길 수 있는 점을 살펴봤어요.',
+            'coverage': coverage,
+        }
+        return response
+
+    chapters = compatibility['report']
+    evidence = compatibility['evidence']
+    cited = {ref for chapter in chapters for paragraph in chapter['paragraphs']
+             for ref in paragraph['evidence_ids']}
+    sources = {source for ref in cited for source in evidence[ref].get('source_ids', [])}
+    response['full_report'] = {'compatibility': {
+        'version': compatibility['version'],
+        'chapters': chapters,
+        'coverage': coverage,
+        'evidence': {ref: evidence[ref] for ref in sorted(cited | sources)},
+    }}
+    response['test_mode'] = True
+    return response
+
+
+def compute(payload, unlock=False):
+    """Keep the legacy report available to offline editorial checks."""
+    birth_a, birth_b, a, b, rel, ranked, art = match_inputs(payload)
+    couple = ranked[0][2]
     story=describe(rel['vector'],couple['id'],ranked[1][2]['id'])
     full=make_report(a,b,rel,couple,story)
     full['gender_a']=payload['a'].get('gender','other')
     full['gender_b']=payload['b'].get('gender','other')
-    art = COUPLE_ART.get(couple['id'])
-    if art and not all((ROOT / path.lstrip('/')).is_file() for path in art.values()):
-        art = None
     if unlock:
         compatibility = analyze_pair(birth_a, birth_b)
         full['compatibility'] = {
@@ -72,7 +114,7 @@ class Handler(BaseHTTPRequestHandler):
             cid=path.split('/')[2].split('-')[0]
             cases=json.loads((ROOT/f'tests/fixtures/{cid}_comparison.json').read_text(encoding='utf8'))
             sample=next(x for x in cases if x['id']==path.rsplit('/',1)[1])
-            response=compute(sample['payload'],unlock=True)
+            response=compute_compatibility(sample['payload'],unlock=True)
             response['sample_payload']=sample['payload']
             raw=json.dumps(response,ensure_ascii=False).encode('utf8');mime='application/json; charset=utf-8'
         elif path=='/manuscripts':
@@ -100,7 +142,7 @@ class Handler(BaseHTTPRequestHandler):
         try:
             size=int(self.headers.get('Content-Length','0'))
             if size<=0 or size>MAX_BODY:raise ValueError('입력 형식이 올바르지 않습니다.')
-            result=compute(json.loads(self.rfile.read(size)),unlock=(endpoint=='/api/test-unlock'));status=200
+            result=compute_compatibility(json.loads(self.rfile.read(size)),unlock=(endpoint=='/api/test-unlock'));status=200
         except (ValueError,TypeError,KeyError,IndexError,OverflowError):
             result={'error':'입력 정보를 확인해 주세요. 생년월일과 시간을 올바르게 입력해 주세요.'};status=400
         except Exception:
