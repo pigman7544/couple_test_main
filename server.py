@@ -21,9 +21,10 @@ COUPLE_ART = {
 }
 ART_PATHS = {path for art in COUPLE_ART.values() for path in art.values()}
 
-def compute(payload, unlock=False):
-    if not isinstance(payload,dict):
+def birth_inputs(payload):
+    if not isinstance(payload, dict):
         raise ValueError('두 사람의 정보를 입력해 주세요.')
+
     def build(x):
         if not isinstance(x,dict) or not isinstance(x.get('date'),str):
             raise ValueError('생년월일을 입력해 주세요.')
@@ -38,7 +39,23 @@ def compute(payload, unlock=False):
         return dict(year=year, month=month, day=day, hour=hh, minute=mm,
                     calendar=calendar, leap=calendar == 'lunar' and bool(x.get('leap', False)))
 
-    birth_a, birth_b = build(payload['a']), build(payload['b'])
+    return build(payload['a']), build(payload['b'])
+
+
+def compute_compatibility(payload, unlock=False):
+    analysis = analyze_pair(*birth_inputs(payload))
+    chapters = analysis['report']
+    if not unlock:
+        return {
+            'title': chapters[1]['title'],
+            'excerpt': chapters[1]['paragraphs'][0]['text'],
+            'chapters': [chapter['title'] for chapter in chapters],
+        }
+    return {'version': analysis['version'], 'chapters': chapters}
+
+
+def compute(payload, unlock=False):
+    birth_a, birth_b = birth_inputs(payload)
     a, b = person(**birth_a), person(**birth_b)
     rel=relation(a,b)
     ranked=rank(rel['vector']);couple=ranked[0][2]
@@ -83,7 +100,11 @@ class Handler(BaseHTTPRequestHandler):
         elif path=='/health':raw=b'OK';mime='text/plain; charset=utf-8'
         elif path in ('/preview','/preview.html'):
             raw=(ROOT/'preview.html').read_bytes();mime='text/html; charset=utf-8'
-        elif path in ('/','/index.html'):
+        elif path in ('/', '/index.html'):
+            raw=(ROOT/'compatibility.html').read_bytes();mime='text/html; charset=utf-8'
+        elif path == '/compatibility.js':
+            raw=(ROOT/'compatibility.js').read_bytes();mime='text/javascript; charset=utf-8'
+        elif path == '/literary-samples':
             raw=(ROOT/'index.html').read_bytes();mime='text/html; charset=utf-8'
         elif path in ART_PATHS and (ROOT/path.lstrip('/')).is_file():
             raw=(ROOT/path.lstrip('/')).read_bytes();mime='image/png'
@@ -95,11 +116,17 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers();self.wfile.write(raw)
     def do_POST(self):
         endpoint=urlparse(self.path).path
-        if endpoint not in ('/api/match','/api/test-unlock'):self.send_error(404);return
+        if endpoint not in ('/api/match', '/api/test-unlock', '/api/compatibility/preview', '/api/compatibility/report'):
+            self.send_error(404);return
         try:
             size=int(self.headers.get('Content-Length','0'))
             if size<=0 or size>MAX_BODY:raise ValueError('입력 형식이 올바르지 않습니다.')
-            result=compute(json.loads(self.rfile.read(size)),unlock=(endpoint=='/api/test-unlock'));status=200
+            payload = json.loads(self.rfile.read(size))
+            if endpoint.startswith('/api/compatibility/'):
+                result = compute_compatibility(payload, unlock=endpoint.endswith('/report'))
+            else:
+                result = compute(payload, unlock=endpoint == '/api/test-unlock')
+            status = 200
         except (ValueError,TypeError,KeyError,IndexError,OverflowError):
             result={'error':'입력 정보를 확인해 주세요. 생년월일과 시간을 올바르게 입력해 주세요.'};status=400
         except Exception:

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 둘의 이야기 | 연연 사주 궁합</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#392931;background:#faf5f0;font-size:16px}
+*{box-sizing:border-box}body{margin:0}main,header,footer{width:min(100% - 36px, 860px);margin:auto}
+header{padding:25px 0;border-bottom:1px solid #e5d6cf;font-weight:750}header span{margin-left:12px;color:#8d4358}
+.landing{padding:54px 0 28px}h1,h2,h3,p{margin:0 0 16px;word-break:keep-all}h1{font-size:clamp(2.3rem,6vw,4.25rem);line-height:1.2;letter-spacing:-.055em}h2{font-size:clamp(1.45rem,4vw,2.15rem);letter-spacing:-.04em}p,li{line-height:1.8}a{color:#804157}small{color:#705b61}
+.panel{background:#fffdf9;border:1px solid #eadad3;border-radius:22px;padding:clamp(18px,4vw,34px);margin:0 0 22px}
+.fields,.samples{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+fieldset{min-width:0;border:1px solid #e9d9d1;border-radius:14px;padding:14px;margin:0}legend{font-weight:750;padding:0 5px}
+label{display:block;margin:10px 0 5px;font-size:.875rem;font-weight:650}input,select,button{font:inherit}input:not([type=checkbox]),select{width:100%;min-width:0;padding:10px;border:1px solid #d8c5c9;border-radius:8px;background:white;color:inherit}
+button{padding:12px 20px;min-height:44px;border:1px solid #824457;background:#824457;color:white;border-radius:9px;font-weight:700;cursor:pointer}button:disabled{opacity:.6;cursor:wait}button.secondary{background:transparent;color:#824457}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+[role=alert]:empty,[role=status]:empty{display:none}[role=alert]{color:#921a3b;margin-top:12px}[role=status]{margin-top:12px}
+article+article{border-top:1px solid #eadad3;padding-top:24px;margin-top:24px}article h3 span{display:block;font-size:.8rem;color:#824457;margin-bottom:8px}article p{font-size:1.03rem}
+details{margin:12px 0;color:#705b61}summary{cursor:pointer;font-weight:650}
+.samples img{display:block;width:100%;border-radius:12px;aspect-ratio:4/3;object-fit:contain;background:#f7ece9}.samples figure{margin:0}.samples figcaption{margin:8px 0;line-height:1.6}
+footer{padding:6px 0 36px;color:#705b61;font-size:.83rem}[hidden]{display:none!important}
+@media(max-width:580px){.landing{padding-top:34px}.fields{grid-template-columns:1fr}.samples{gap:12px}}
+</style>
+<script src="/compatibility.js" defer></script>
+</head>
+<body>
+<header>우리 둘의 이야기 <span>연연 緣硏</span></header>
+<main>
+<section class="landing" aria-labelledby="landing-title">
+<h1 id="landing-title">두 사람의 사주로 읽는<br>우리의 궁합</h1>
+<p>서로에게 마음이 가는 순간, 같은 말이 다르게 들리는 순간.<br>두 사람의 생년월일로 각자의 관계 방식과 함께 살펴볼 질문을 읽어요.</p>
+</section>
+<section id="input-panel" class="panel" aria-labelledby="input-title">
+<h2 id="input-title" tabindex="-1">두 사람의 출생 정보</h2>
+<p><small>태어난 시간을 모르면 비워 두세요. 확인할 수 있는 사주만 해석에 사용해요.</small></p>
+<form id="birth-form">
+<div class="fields" id="birth-fields"></div>
+<div class="actions"><button id="submit" type="submit">궁합 미리보기</button></div>
+<p id="input-status" role="status"></p><p id="input-error" role="alert"></p>
+</form>
+</section>
+<section id="preview" class="panel" hidden aria-labelledby="preview-label">
+<h2 id="preview-label" tabindex="-1">우리의 궁합 미리보기</h2>
+<h3 id="preview-title"></h3><p id="preview-excerpt"></p>
+<h3>전체 리포트에서 읽을 내용</h3><ol id="contents"></ol>
+<small>미리보기 기간에는 결제 없이 전체 리포트를 열 수 있어요.</small>
+<div class="actions"><button id="open-report" type="button">3장 리포트 보기</button><button id="edit" class="secondary" type="button">출생 정보 수정</button></div>
+<p id="report-status" role="status"></p><p id="report-error" role="alert"></p>
+</section>
+<section id="report" class="panel" hidden aria-labelledby="report-title">
+<h2 id="report-title" tabindex="-1">우리 둘의 궁합 리포트</h2>
+<p><small>전통 사주 상징을 바탕으로 관계를 돌아보는 해석이에요. 예시 장면을 두 사람의 경험에 비춰 읽어 보세요.</small></p>
+<div id="chapters"></div>
+<div class="actions"><button id="again" class="secondary" type="button">다른 궁합 보기</button></div>
+</section>
+<section id="samples" class="panel" hidden aria-labelledby="samples-title">
+<h2 id="samples-title">작품 속 관계 읽어보기</h2>
+<div class="samples">
+<figure><img src="/assets/baek_heo_title.png" loading="lazy" alt="백소정과 허선 일러스트"><figcaption><strong>백소정과 허선</strong><br>백사전 · 비밀을 마주한 두 사람</figcaption><a href="/assets/baek_heo_title.png" download>공유용 카드</a> · <a href="/assets/baek_heo_plain.png" download>소장용 카드</a></figure>
+<figure><img src="/assets/c11_title.png" loading="lazy" alt="엘리자베스와 다아시 일러스트"><figcaption><strong>엘리자베스와 다아시</strong><br>오만과 편견 · 서로의 판단을 돌아보는 두 사람</figcaption><a href="/assets/c11_title.png" download>공유용 카드</a> · <a href="/assets/c11_plain.png" download>소장용 카드</a></figure>
+</div>
+</section>
+</main>
+<footer>연연 緣硏 · 우리 둘의 이야기</footer>
+<template id="birth-template">
+<fieldset><legend></legend>
+<label>생년월일<input name="date" type="date" required></label>
+<label>양력·음력<select name="calendar"><option value="solar">양력</option><option value="lunar">음력</option></select></label>
+<label hidden><input type="checkbox" name="leap"> 윤달</label>
+<label>태어난 시간 (선택)<input name="time" type="time"></label>
+</fieldset>
+</template>
+</body>
+</html>
