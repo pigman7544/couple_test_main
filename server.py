@@ -3,7 +3,7 @@ import json, os, re, traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
-from compatibility_v14 import analyze_pair
+from compatibility_editorial_round3 import analyze_pair
 from engine import person
 from relationship_v08 import relation
 from matcher import DB, rank
@@ -92,6 +92,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type',mime)
         self.send_header('Content-Length',str(len(raw)))
         self.send_header('Cache-Control','no-cache, must-revalidate')
+        self.send_header('X-Robots-Tag','noindex, nofollow')
         self.end_headers();self.wfile.write(raw)
     def do_POST(self):
         endpoint=urlparse(self.path).path
