@@ -5,7 +5,7 @@ from collections import Counter
 from compatibility_editorial_round3 import READINGS as ROLE_READINGS
 from compatibility_v11 import BRANCH_ELEMENTS, STEM_ELEMENTS, SUPPORT, ten_god
 from compatibility_v12 import (
-    EDITORIAL_WEIGHT, ELEMENT, GOD_LENS, POSITION, READINGS,
+    EDITORIAL_WEIGHT, ELEMENT, GOD_LENS, GOD_QUESTIONS, POSITION, READINGS,
     analyze_pair, review_report,
 )
 from engine import STEMS
@@ -96,7 +96,7 @@ def natal(result, owner, gender):
                    else " 이 본기는 지지 안에서 계절의 바탕을 이뤄요.")
         month_entry = paragraph(
             f"{name}의 월지는 {season['season']}의 {branch}예요. {link} "
-            f"월지 안의 중심 글자 {symbol(month['stem'])}에 해당하는 십성은 ‘{role}’로 분류해요. "
+            f"월지 안의 중심 글자 {symbol(month['stem'])}에서 십성 ‘{role}’의 의미를 읽어요. "
             f"일이나 생활의 틀에서는 ‘{ROLE_READINGS[role][0]}’을 중요하게 보는 자리로 읽어요."
             f"{exposed}{extra}", [day_id, *(p["id"] for p in hidden), *month["exposed_at"]],
             owner, "월지와 생활의 리듬",
@@ -235,7 +235,7 @@ def analyze_preview(a, b, genders=None):
             god = ten_god(result["charts"][owner]["day_master"], month["stem"])
             month_reads.append(
                 f"{NAMES[owner]}의 일간에서 본 {NAMES[other]} 월지의 중심 글자 {symbol(month['stem'])}에서 "
-                f"‘{god}’을 읽어요. 상대의 평소 생활 방식을 이해하는 데 ‘{GOD_LENS[god]}’라는 주제가 따라와요."
+                f"십성 ‘{god}’의 뜻을 읽어요. 상대의 평소 생활 방식에서 살펴볼 주제는 ‘{GOD_LENS[god]}’예요."
             )
             month_refs.extend((f"{owner}.day.stem", month["id"]))
     if month_reads:
@@ -288,7 +288,8 @@ def analyze_preview(a, b, genders=None):
         paragraph(
             f"관계에서 중요해질 수 있는 조건을 한 문장씩 적으면 첫째는 ‘{ROLE_READINGS[roles[0]][0]}’, 둘째는 ‘{ROLE_READINGS[roles[1]][0]}’이에요. "
             "함께 정할 일이 생기면 어떤 결론을 원하는지와 어떤 방식으로 결정하고 싶은지를 한 번씩 말해 보세요. "
-            "결론은 같은데 절차에서 의견이 갈리는지, 각자가 기대하는 결과부터 다른지 가늠할 수 있어요.",
+            f"첫째의 관점에서는 “{GOD_QUESTIONS[roles[0]]}”, 둘째의 관점에서는 “{GOD_QUESTIONS[roles[1]]}”라고 물어볼 수 있어요. "
+            "두 질문에 함께 답해 보면 같은 결론을 원하는지, 기대하는 방법까지 같은지 가늠할 수 있어요.",
             links, heading="각자가 중요하게 여기는 조건을 말해요",
         ),
         paragraph(
