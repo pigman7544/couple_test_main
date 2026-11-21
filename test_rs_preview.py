@@ -1,66 +1,65 @@
-import re
 import unittest
+from datetime import date, timedelta
 
 from rs_synthesis import analyze_preview
 from server import compute_compatibility
 
 
-CASES = (
-    ("shared-time", ("1992-10-08", None), ("1981-03-09", "22:00"),
-     ("壬申", None, "丁巳", None), ("辛酉", "辛卯", "丙戌", "己亥")),
-    ("ongoing-help", ("1974-06-24", "15:00"), ("1983-06-22", "12:00"),
-     ("甲寅", "庚午", "丙申", "丙申"), ("癸亥", "戊午", "辛巳", "甲午")),
-    ("terms-of-agreement", ("2007-10-17", "09:00"), ("1973-08-31", None),
-     ("丁亥", "庚戌", "甲申", "己巳"), ("癸丑", "庚申", "己亥", None)),
-    ("routine-and-exception", ("1975-01-16", "07:00"), ("1979-04-08", "03:00"),
-     ("甲寅", "丁丑", "壬戌", "甲辰"), ("己未", "戊辰", "乙巳", "戊寅")),
-)
-
-
 def payload(a, b):
-    return {owner: {"date": date, "time": time} for owner, (date, time) in zip(("a", "b"), (a, b))}
+    return {owner: {"date": day, "time": time, "gender": gender, "calendar": "solar"}
+            for owner, (day, time), gender in zip(("a", "b"), (a, b), ("male", "female"))}
 
 
 class RsPreviewTests(unittest.TestCase):
-    def test_reports_and_coverage(self):
-        seen = set()
-        for focus, a, b, chart_a, chart_b in CASES:
-            with self.subTest(focus=focus):
-                data = payload(a, b)
-                free = compute_compatibility(data)
-                self.assertNotIn("full_report", free)
-                full = compute_compatibility(data, unlock=True)
-                self.assertTrue(full["test_mode"])
-                self.assertEqual(free["art"], full["art"])
-                report = full["full_report"]["compatibility"]
-                self.assertEqual(report["synthesis"]["focus"], focus)
-                self.assertEqual(len(report["chapters"]), 3)
-                self.assertEqual(free["preview"]["title"], report["chapters"][1]["title"])
-                for owner, expected in (("a", chart_a), ("b", chart_b)):
-                    pillars = report["charts"][owner]["pillars"]
-                    self.assertEqual(tuple(pillars.values()), expected)
-                    self.assertEqual(report["coverage"][owner], [pos for pos, val in pillars.items() if val is None])
-                for chapter in report["chapters"][1:]:
-                    for entry in chapter["paragraphs"]:
-                        self.assertTrue(entry["evidence_ids"])
-                        self.assertLessEqual(set(entry["evidence_ids"]), report["evidence"].keys())
-                        sentences = {s for s in re.split(r"(?<=[.?])\s+", entry["text"]) if s}
-                        self.assertFalse(seen & sentences)
-                        seen.update(sentences)
+    def test_review_couple(self):
+        data = payload(("1992-03-18", None), ("1992-04-30", None))
+        free = compute_compatibility(data)
+        self.assertNotIn("full_report", free)
+        full = compute_compatibility(data, unlock=True)
+        self.assertTrue(full["test_mode"])
+        self.assertEqual(free["art"], full["art"])
+        self.assertEqual(full["couple"]["id"], "c06")
+        report = full["full_report"]["compatibility"]
+        self.assertEqual(report["coverage"], {"a": ["hour"], "b": ["hour"]})
+        self.assertEqual(report["charts"]["a"]["pillars"],
+                         {"year": "壬申", "month": "癸卯", "day": "癸巳", "hour": None})
+        self.assertEqual(report["charts"]["b"]["pillars"],
+                         {"year": "壬申", "month": "甲辰", "day": "丙子", "hour": None})
+        self.assertEqual(free["preview"]["title"], report["chapters"][1]["title"])
+        text = str(report)
+        for word in ("정재", "정관", "배우자궁", "월지", "지장간", "육해"):
+            self.assertIn(word, text)
+        for token in ("evidence_ids", "pair.a.reads.b", "literature", "다아시", "빌린 물건"):
+            self.assertNotIn(token, text)
+
+    def test_holdouts_generate_grounded_reports(self):
+        signatures = set()
+        for i in range(32):
+            a = date(1964, 1, 1) + timedelta(days=i * 277)
+            b = date(1997, 8, 21) - timedelta(days=i * 311)
+            report = analyze_preview(
+                dict(year=a.year, month=a.month, day=a.day, hour=None if i % 2 else 5),
+                dict(year=b.year, month=b.month, day=b.day, hour=None if i % 3 else 17),
+                {"a": "male", "b": "female" if i % 2 else "other"},
+            )
+            self.assertEqual(len(report["report"]), 3)
+            self.assertEqual(len(report["report"][0]["paragraphs"]), 6)
+            self.assertGreaterEqual(len(report["report"][1]["paragraphs"]), 4)
+            self.assertEqual(len(report["report"][2]["paragraphs"]), 3)
+            self.assertEqual(report["review"]["unresolved_ids"], [])
+            self.assertEqual(report["review"]["unlinked_paragraphs"], 0)
+            signatures.add(tuple(p["text"] for p in report["report"][1]["paragraphs"]))
+        self.assertEqual(len(signatures), 32)
 
     def test_ambiguous_month_is_not_cited(self):
-        a, b = CASES[0][1:3]
-        report = compute_compatibility(payload(a, b), unlock=True)["full_report"]["compatibility"]
-        self.assertEqual(report["coverage"]["a"], ["month", "hour"])
-        self.assertEqual([row["month"] for row in report["charts"]["a"]["year_month_alternatives"]],
-                         ["己酉", "庚戌"])
-        self.assertFalse(any(key.startswith(("a.month.", "a.hour.")) for key in report["evidence"]))
+        report = analyze_preview(dict(year=1992, month=10, day=8),
+                                 dict(year=1981, month=3, day=9, hour=22))
+        self.assertEqual(report["contexts"]["a"]["unresolved_pillars"], ["month", "hour"])
+        refs = [ref for chapter in report["report"]
+                for entry in chapter["paragraphs"] for ref in entry["evidence_ids"]]
+        self.assertFalse(any(ref.startswith(("a.month.", "a.hour.")) for ref in refs))
 
-    def test_other_births_and_invalid_input(self):
-        report = analyze_preview(dict(year=1992, month=3, day=18, hour=16),
-                                 dict(year=1992, month=4, day=30, hour=1))
-        self.assertEqual(report["synthesis"]["focus"], "editorial")
-        for date, time in (("2024-02-30", None), ("1992-03-18", "24:00"), ("1992-03-18", "08:99")):
-            with self.subTest(date=date, time=time):
-                with self.assertRaises(ValueError):
-                    compute_compatibility(payload((date, time), CASES[0][2]))
+    def test_invalid_input(self):
+        for day, time in (("2024-02-30", None), ("1992-03-18", "24:00"), ("1992-03-18", "08:99")):
+            with self.subTest(day=day, time=time), self.assertRaises(ValueError):
+                compute_compatibility(payload((day, time), ("1992-04-30", None)))

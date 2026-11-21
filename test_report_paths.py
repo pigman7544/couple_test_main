@@ -131,13 +131,14 @@ class HttpPaths(unittest.TestCase):
                     self.assertTrue(data['test_mode'])
                     self.assertEqual(set(data['full_report']), {'compatibility'})
                     reading = data['full_report']['compatibility']
-                    self.assertEqual(reading['version'], '1.7-editorial-review')
+                    self.assertEqual(reading['version'], 'RS-preview-2')
                     self.assertEqual(len(reading['chapters']), 3)
                     for chapter in reading['chapters']:
                         self.assertTrue(chapter['paragraphs'])
                         for paragraph in chapter['paragraphs']:
-                            self.assertTrue(paragraph['evidence_ids'])
-                            self.assertLessEqual(set(paragraph['evidence_ids']), set(reading['evidence']))
+                            self.assertTrue(paragraph['text'])
+                            self.assertNotIn('evidence_ids', paragraph)
+                    self.assertNotIn('evidence', reading)
                     for person_id in ('a', 'b'):
                         if not payload[person_id].get('time'):
                             self.assertIn('hour', reading['coverage'][person_id])

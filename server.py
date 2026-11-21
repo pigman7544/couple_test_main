@@ -61,7 +61,9 @@ def match_inputs(payload):
 def compute_compatibility(payload, unlock=False):
     birth_a, birth_b, _, _, _, ranked, art = match_inputs(payload)
     couple = ranked[0][2]
-    compatibility = analyze_preview(birth_a, birth_b)
+    compatibility = analyze_preview(
+        birth_a, birth_b, {owner: payload[owner].get('gender') for owner in ('a', 'b')}
+    )
     coverage = {owner: context['unresolved_pillars']
                 for owner, context in compatibility['contexts'].items()}
     response = {
@@ -77,18 +79,17 @@ def compute_compatibility(payload, unlock=False):
         }
         return response
 
-    chapters = compatibility['report']
-    evidence = compatibility['evidence']
-    synthesis = compatibility['synthesis']
-    highlights = [*synthesis['core'], *synthesis['counter'], 'pair.a.reads.b', 'pair.b.reads.a']
-    cited = {ref for chapter in chapters for paragraph in chapter['paragraphs']
-             for ref in paragraph['evidence_ids']} | set(highlights)
-    sources = {source for ref in cited for source in evidence[ref].get('source_ids', [])}
+    chapters = [
+        {**chapter, 'paragraphs': [
+            {key: value for key, value in paragraph.items() if key != 'evidence_ids'}
+            for paragraph in chapter['paragraphs']
+        ]}
+        for chapter in compatibility['report']
+    ]
     response['full_report'] = {'compatibility': {
         'version': compatibility['version'],
         'chapters': chapters,
         'coverage': coverage,
-        'synthesis': synthesis,
         'charts': {
             owner: {
                 'pillars': chart['pillars'],
@@ -99,9 +100,6 @@ def compute_compatibility(payload, unlock=False):
             }
             for owner, chart in compatibility['charts'].items()
         },
-        'highlights': highlights,
-        'literature': compatibility['literature'],
-        'evidence': {ref: evidence[ref] for ref in sorted(cited | sources)},
     }}
     response['test_mode'] = True
     return response

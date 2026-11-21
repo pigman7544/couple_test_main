@@ -2,13 +2,7 @@ const assert = require('node:assert/strict');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
 const url = process.argv[2] || 'http://127.0.0.1:8897';
-const samples = {
-  '01': ['비워 둔 시간이 약속이 되는 순간', 'pair.육충.a.day.b.hour'],
-  '02': ['한 번 손을 보탠 뒤에 생기는 일', 'pair.상형.a.day.b.day'],
-  '04': ['같은 곳에 가기로 하고 다른 주말을 그릴 때', 'pair.육해.a.day.b.day'],
-  '03': ['한 번 바뀐 저녁을 다음 주에도 바꿀 수 있을까', 'pair.육충.a.day.b.month'],
-  art: [null, null],
-};
+const samples = ['01', '02', '04', '03', 'art', 'review'];
 
 async function run() {
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
@@ -19,10 +13,16 @@ async function run() {
       page.on('pageerror', error => errors.push(error.message));
       const fit = async () => assert(await page.evaluate(() =>
         document.documentElement.scrollWidth <= innerWidth));
-      for (const [sample, [title, id]] of Object.entries(samples)) {
+      for (const sample of samples) {
         await page.goto(url);
         await fit();
         await page.selectOption('#demo', sample);
+        if (sample === 'review') {
+          for (const [field, value] of Object.entries({
+            a_date: '1992-03-18', b_date: '1992-04-30', a_time: '', b_time: '',
+            a_gender: 'male', b_gender: 'female', a_calendar: 'solar', b_calendar: 'solar',
+          })) assert.equal(await page.locator('#' + field).inputValue(), value);
+        }
         await page.fill('#a_name', '봄');
         await page.fill('#b_name', '여름');
         if (sample === '02') {
@@ -41,7 +41,7 @@ async function run() {
         const preview = await (await free).json();
         assert(!preview.full_report);
         await page.locator('#result').waitFor({ state: 'visible' });
-        if (title) assert.equal(await page.locator('#tagline').textContent(), title);
+        assert.equal(await page.locator('#tagline').textContent(), '두 명식이 만나는 자리');
         await fit();
         if (preview.art) {
           await page.waitForFunction(() => document.querySelector('#heroArt').naturalWidth > 0);
@@ -52,21 +52,22 @@ async function run() {
         assert.equal(full.test_mode, true);
         await page.locator('#premiumReport').waitFor({ state: 'visible' });
         assert.equal(await page.locator('.natal-chart:visible').count(), 2);
-        assert.match(await page.locator('.natal-chart caption').first().textContent(), /봄님/);
+        assert.match(await page.locator('.natal-chart caption').first().textContent(), /봄/);
         if (sample === '01') {
           assert.match(await page.locator('#coverage').textContent(), /월주.*보류/);
           assert.match(await page.locator('.natal-chart').first().textContent(), /己酉.*庚戌/);
         }
         await fit();
         await page.locator('#chapterReaderNav .reader-next').click();
-        if (title) {
-          assert.equal(await page.locator('.chapter-visible h2').textContent(), title);
-          await page.locator('.chapter-visible details summary').first().click();
-          assert(await page.locator('.chapter-visible [data-evidence-id="' + id + '"]:visible').count());
+        assert.equal(await page.locator('.chapter-visible h2').textContent(), '두 명식이 만나는 자리');
+        assert.equal(await page.locator('.paragraph-evidence, [data-evidence-id], .literature-corner').count(), 0);
+        if (sample === 'review') {
+          assert.deepEqual(full.full_report.compatibility.coverage, { a: ['hour'], b: ['hour'] });
+          assert.match(await page.locator('.chapter-visible').textContent(), /정재.*편관|정재.*정관/);
         }
         await fit();
         await page.locator('#chapterReaderNav .reader-next').click();
-        await page.locator('.chapter-visible').getByRole('heading', { level: 2 }).waitFor();
+        await page.locator('.chapter-visible').getByRole('heading', { name: '두 사람의 관계를 이어 가는 법' }).waitFor();
         await fit();
         if (preview.art) {
           await page.locator('#artSection').scrollIntoViewIfNeeded();
