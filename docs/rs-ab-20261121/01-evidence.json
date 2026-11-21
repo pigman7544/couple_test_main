@@ -1,0 +1,320 @@
+{
+  "births": [
+    {
+      "year": 1992,
+      "month": 10,
+      "day": 8,
+      "hour": null
+    },
+    {
+      "year": 1981,
+      "month": 3,
+      "day": 9,
+      "hour": 22
+    }
+  ],
+  "charts": {
+    "a": {
+      "solar_date": "1992-10-08",
+      "pillars": {
+        "year": "壬申",
+        "month": null,
+        "day": "丁巳",
+        "hour": null
+      },
+      "day_master": "丁",
+      "birth_time_known": false,
+      "year_month_alternatives": [
+        {
+          "year": "壬申",
+          "month": "己酉"
+        },
+        {
+          "year": "壬申",
+          "month": "庚戌"
+        }
+      ],
+      "details": {
+        "year": {
+          "stem": "壬",
+          "branch": "申",
+          "stem_ten_god": "정관",
+          "hidden_stems": [
+            {
+              "stem": "庚",
+              "element": "metal",
+              "ten_god": "정재"
+            },
+            {
+              "stem": "壬",
+              "element": "water",
+              "ten_god": "정관"
+            },
+            {
+              "stem": "戊",
+              "element": "earth",
+              "ten_god": "상관"
+            }
+          ]
+        },
+        "day": {
+          "stem": "丁",
+          "branch": "巳",
+          "stem_ten_god": null,
+          "hidden_stems": [
+            {
+              "stem": "丙",
+              "element": "fire",
+              "ten_god": "겁재"
+            },
+            {
+              "stem": "戊",
+              "element": "earth",
+              "ten_god": "상관"
+            },
+            {
+              "stem": "庚",
+              "element": "metal",
+              "ten_god": "정재"
+            }
+          ]
+        }
+      },
+      "known_pillar_element_counts": {
+        "wood": 0,
+        "fire": 2,
+        "earth": 0,
+        "metal": 1,
+        "water": 1
+      }
+    },
+    "b": {
+      "solar_date": "1981-03-09",
+      "pillars": {
+        "year": "辛酉",
+        "month": "辛卯",
+        "day": "丙戌",
+        "hour": "己亥"
+      },
+      "day_master": "丙",
+      "birth_time_known": true,
+      "year_month_alternatives": [],
+      "details": {
+        "year": {
+          "stem": "辛",
+          "branch": "酉",
+          "stem_ten_god": "정재",
+          "hidden_stems": [
+            {
+              "stem": "辛",
+              "element": "metal",
+              "ten_god": "정재"
+            }
+          ]
+        },
+        "month": {
+          "stem": "辛",
+          "branch": "卯",
+          "stem_ten_god": "정재",
+          "hidden_stems": [
+            {
+              "stem": "乙",
+              "element": "wood",
+              "ten_god": "정인"
+            }
+          ]
+        },
+        "day": {
+          "stem": "丙",
+          "branch": "戌",
+          "stem_ten_god": null,
+          "hidden_stems": [
+            {
+              "stem": "戊",
+              "element": "earth",
+              "ten_god": "식신"
+            },
+            {
+              "stem": "辛",
+              "element": "metal",
+              "ten_god": "정재"
+            },
+            {
+              "stem": "丁",
+              "element": "fire",
+              "ten_god": "겁재"
+            }
+          ]
+        },
+        "hour": {
+          "stem": "己",
+          "branch": "亥",
+          "stem_ten_god": "상관",
+          "hidden_stems": [
+            {
+              "stem": "壬",
+              "element": "water",
+              "ten_god": "편관"
+            },
+            {
+              "stem": "甲",
+              "element": "wood",
+              "ten_god": "편인"
+            }
+          ]
+        }
+      },
+      "known_pillar_element_counts": {
+        "wood": 1,
+        "fire": 1,
+        "earth": 2,
+        "metal": 3,
+        "water": 1
+      }
+    }
+  },
+  "evidence": {
+    "a.coverage": {
+      "person": "a",
+      "kind": "확정 범위",
+      "unresolved_pillars": [
+        "month",
+        "hour"
+      ],
+      "year_month_alternatives": [
+        {
+          "year": "壬申",
+          "month": "己酉"
+        },
+        {
+          "year": "壬申",
+          "month": "庚戌"
+        }
+      ],
+      "examined_hidden_ids": [
+        "a.year.hidden.庚",
+        "a.year.hidden.壬",
+        "a.year.hidden.戊",
+        "a.day.hidden.丙",
+        "a.day.hidden.庚",
+        "a.day.hidden.戊"
+      ]
+    },
+    "a.day.hidden.丙": {
+      "person": "a",
+      "pillar": "day",
+      "layer": "hidden",
+      "symbol": "丙",
+      "branch": "巳",
+      "tier": "본기",
+      "ten_god_from_own_day": "겁재"
+    },
+    "a.day.hidden.庚": {
+      "person": "a",
+      "pillar": "day",
+      "layer": "hidden",
+      "symbol": "庚",
+      "branch": "巳",
+      "tier": "중기",
+      "ten_god_from_own_day": "정재"
+    },
+    "a.day.stem": {
+      "person": "a",
+      "pillar": "day",
+      "layer": "stem",
+      "symbol": "丁",
+      "ten_god_from_own_day": "비견"
+    },
+    "b.coverage": {
+      "person": "b",
+      "kind": "확정 범위",
+      "unresolved_pillars": [],
+      "year_month_alternatives": [],
+      "examined_hidden_ids": [
+        "b.year.hidden.辛",
+        "b.month.hidden.乙",
+        "b.day.hidden.戊",
+        "b.day.hidden.丁",
+        "b.day.hidden.辛",
+        "b.hour.hidden.壬",
+        "b.hour.hidden.甲"
+      ]
+    },
+    "b.day.hidden.辛": {
+      "person": "b",
+      "pillar": "day",
+      "layer": "hidden",
+      "symbol": "辛",
+      "branch": "戌",
+      "tier": "여기",
+      "ten_god_from_own_day": "정재"
+    },
+    "b.day.stem": {
+      "person": "b",
+      "pillar": "day",
+      "layer": "stem",
+      "symbol": "丙",
+      "ten_god_from_own_day": "비견"
+    },
+    "b.hour.hidden.壬": {
+      "person": "b",
+      "pillar": "hour",
+      "layer": "hidden",
+      "symbol": "壬",
+      "branch": "亥",
+      "tier": "본기",
+      "ten_god_from_own_day": "편관"
+    },
+    "b.month.hidden.乙": {
+      "person": "b",
+      "pillar": "month",
+      "layer": "hidden",
+      "symbol": "乙",
+      "branch": "卯",
+      "tier": "본기",
+      "ten_god_from_own_day": "정인"
+    },
+    "pair.a.reads.b": {
+      "kind": "일간 교차 십성",
+      "perspective": "a",
+      "ten_god": "겁재",
+      "source_ids": [
+        "a.day.stem",
+        "b.day.stem"
+      ]
+    },
+    "pair.b.reads.a": {
+      "kind": "일간 교차 십성",
+      "perspective": "b",
+      "ten_god": "겁재",
+      "source_ids": [
+        "b.day.stem",
+        "a.day.stem"
+      ]
+    },
+    "pair.육충.a.day.b.hour": {
+      "kind": "육충",
+      "layer": "branch",
+      "sources": [
+        {
+          "person": "a",
+          "pillar": "day",
+          "symbol": "巳",
+          "read_stem": "丙",
+          "owner_ten_god": "겁재",
+          "other_ten_god": "비견",
+          "source_id": "a.day.hidden.丙"
+        },
+        {
+          "person": "b",
+          "pillar": "hour",
+          "symbol": "亥",
+          "read_stem": "壬",
+          "owner_ten_god": "편관",
+          "other_ten_god": "정관",
+          "source_id": "b.hour.hidden.壬"
+        }
+      ]
+    }
+  }
+}
