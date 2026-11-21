@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 from compatibility_editorial_round3 import analyze_pair
 from compatibility_v11 import STEM_ELEMENTS
 from compatibility_v12 import ELEMENT, READINGS as SYMBOL_READINGS
+from rs_synthesis import analyze_preview
 from engine import person
 from relationship_v08 import relation
 from matcher import DB, rank
@@ -34,9 +35,15 @@ def match_inputs(payload):
         t=x.get('time') or None
         if t is not None and not isinstance(t,str):
             raise ValueError('태어난 시간을 확인해 주세요.')
+        if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', x['date']):
+            raise ValueError('생년월일을 확인해 주세요.')
+        if t and not re.fullmatch(r'(?:[01]\d|2[0-3]):[0-5]\d', t):
+            raise ValueError('태어난 시간을 확인해 주세요.')
         hh,mm=map(int,t.split(':')) if t else (None,0)
         year, month, day = map(int, date)
         calendar = x.get('calendar', 'solar')
+        if calendar not in ('solar', 'lunar') or not isinstance(x.get('leap', False), bool):
+            raise ValueError('달력 종류를 확인해 주세요.')
         return dict(year=year, month=month, day=day, hour=hh, minute=mm,
                     calendar=calendar, leap=calendar == 'lunar' and bool(x.get('leap', False)))
 
@@ -54,28 +61,26 @@ def match_inputs(payload):
 def compute_compatibility(payload, unlock=False):
     birth_a, birth_b, _, _, _, ranked, art = match_inputs(payload)
     couple = ranked[0][2]
-    compatibility = analyze_pair(birth_a, birth_b)
+    compatibility = analyze_preview(birth_a, birth_b)
     coverage = {owner: context['unresolved_pillars']
                 for owner, context in compatibility['contexts'].items()}
     response = {
-        'couple': {'id': couple['id'], 'name': couple['name']},
+        'couple': {'id': couple['id'], 'name': couple['name'], 'work': couple['work']},
         'has_art': art is not None,
         'art': art,
     }
     if not unlock:
         response['preview'] = {
-            'title': compatibility['report'][0]['title'],
-            'description': '두 사람의 명식에서 각자가 중요하게 여길 수 있는 점을 살펴봤어요.',
+            'title': compatibility['report'][1]['title'],
+            'description': compatibility['preview_text'],
             'coverage': coverage,
         }
         return response
 
     chapters = compatibility['report']
     evidence = compatibility['evidence']
-    relationship = compatibility['plan']['relationship']
-    highlights = [row['id'] for row in (
-        relationship['support'], relationship['tension'], *relationship['directions']
-    ) if row]
+    synthesis = compatibility['synthesis']
+    highlights = [*synthesis['core'], *synthesis['counter'], 'pair.a.reads.b', 'pair.b.reads.a']
     cited = {ref for chapter in chapters for paragraph in chapter['paragraphs']
              for ref in paragraph['evidence_ids']} | set(highlights)
     sources = {source for ref in cited for source in evidence[ref].get('source_ids', [])}
@@ -83,9 +88,11 @@ def compute_compatibility(payload, unlock=False):
         'version': compatibility['version'],
         'chapters': chapters,
         'coverage': coverage,
+        'synthesis': synthesis,
         'charts': {
             owner: {
                 'pillars': chart['pillars'],
+                'year_month_alternatives': chart['year_month_alternatives'],
                 'day_master': chart['day_master'],
                 'day_master_label': SYMBOL_READINGS[chart['day_master']]
                     + ELEMENT[STEM_ELEMENTS[chart['day_master']]],
