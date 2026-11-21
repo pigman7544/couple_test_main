@@ -67,8 +67,9 @@ def letter(symbol):
 
 
 def source_summary(card):
+    layer = {"stem": "천간", "branch": "지지"}[card["layer"]]
     return " · ".join(
-        f"{NAMES[s['person']]}의 {POSITIONS[s['pillar']]} {letter(s['symbol'])}"
+        f"{NAMES[s['person']]}의 {POSITIONS[s['pillar']]} {layer} {letter(s['symbol'])}"
         for s in card["sources"]
     )
 
@@ -131,16 +132,15 @@ def pair_prose(plan, evidence):
         support_topic = SUPPORT_READINGS[support["kind"]]
         tension_topic = TENSION_READINGS[tension["kind"]]
         if shared == "same_sources":
-            symbols = "·".join(letter(s["symbol"]) for s in support["sources"])
             title = "통하는 지점에서 다시 걸릴 때"
-            reading = (f"두 사람을 잇는 {symbols}에는 두 작용이 함께 잡힙니다. {support['kind']}과 {tension['kind']}입니다. "
+            reading = (f"{source_summary(support)} 사이에는 {support['kind']}과 {tension['kind']}이 함께 성립합니다. "
                        f"{support_topic}에서 {tension_topic}도 살펴볼 만합니다.")
             question = ("쉽게 뜻이 맞았는데 막상 해 보니 서로 다르게 생각한 일이 있었나요? "
                         "상대의 설명을 듣기 전에 그때의 합의를 각자 한 문장으로 적어 보세요.")
         elif shared == "same_slots":
             title = "뜻이 맞은 뒤에 남는 차이"
             reading = (f"{source_summary(support)}에서 합을 읽을 수 있습니다. "
-                       f"{support_topic}입니다. 같은 자리의 아래쪽 글자인 {source_summary(tension)}에서는 "
+                       f"{support_topic}입니다. 같은 기둥에서 {source_summary(tension)} 사이에는 {tension['kind']} 관계가 있습니다. 이 관계를 바탕으로 "
                        f"{tension_topic} 묻게 됩니다.")
             question = ("둘 다 좋다고 답했던 일이 있다면 무엇이 좋았는지, 이후 마음에 남은 점은 무엇이었는지 따로 이야기해 보세요.")
         elif shared == "partial":
@@ -154,14 +154,14 @@ def pair_prose(plan, evidence):
                         "좋은 이유를 놓치지 않으면서 망설임을 덜어 줄 조건을 함께 찾아보세요.")
         else:
             title = "잘 맞는 문제와 다시 볼 문제"
-            reading = (f"{source_summary(support)}에서는 {support_topic}을 읽습니다. "
-                       f"마찰의 단서는 별개의 자리인 {source_summary(tension)}에 있습니다. "
+            reading = (f"{source_summary(support)} 사이에 {support['kind']}이 있습니다. 전통 명리에서는 여기서 {support_topic}을 읽습니다. "
+                       f"{source_summary(tension)} 사이에는 {tension['kind']}이 있습니다. "
                        f"어떤 일에서는 뜻이 잘 맞더라도 다른 일에서는 {tension_topic} 따로 살펴볼 만합니다.")
             question = ("최근 뜻이 맞았던 일 하나와 말이 평행선을 달렸던 일 하나를 따로 떠올려 보세요. "
                         "잘 풀린 일에서 무엇을 공유하고 시작했는지, 어려웠던 일에도 그 전제가 있었는지 이야기해 보세요.")
     elif tension:
         title = "어디서 대화가 어긋나는가"
-        reading = (f"{source_summary(tension)} 사이의 관계가 한 가지 단서를 줍니다. "
+        reading = (f"{source_summary(tension)} 사이에는 {tension['kind']} 관계가 있습니다. "
                    f"{TENSION_READINGS[tension['kind']]} 살펴볼 만합니다.")
         question = ("같은 문제를 두고 엇갈린 적이 있다면, 당시 서로 무엇을 이미 이해했다고 여겼는지 "
                     "각자의 말로 설명해 보세요.")
