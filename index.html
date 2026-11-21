@@ -195,11 +195,13 @@ function relationshipCards(reading){
   if(card.sources){
    row.append(element('dt',card.kind),element('dd',card.sources.map(source=>
     displayName(source.person)+' '+pillarLabels[source.pillar]+' '+source.symbol).join(' · ')));
-  }else{
+  }else if(card.perspective){
    const viewer=card.perspective;
    const other=viewer==='a'?'b':'a';
    row.append(element('dt',displayName(viewer)+' → '+displayName(other)),
     element('dd',`상대의 일간 ${reading.charts[other].day_master}를 ${reading.charts[viewer].day_master}에서 보면 ${card.ten_god}`));
+  }else{
+   row.append(element('dt','해석 범위를 좁히는 단서'),element('dd',evidenceText(card,reading.evidence)));
   }
   list.append(row);
  }
