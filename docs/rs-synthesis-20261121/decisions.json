@@ -1,0 +1,260 @@
+{
+  "01": {
+    "thesis": "서로 자기 몫을 정할 여지가 필요하다는 공통점이 있어도, 개인 일정이 공동 시간에 닿는 경계는 따로 합의할 수 있다.",
+    "core": [
+      "pair.a.reads.b",
+      "pair.b.reads.a",
+      "pair.육충.a.day.b.hour"
+    ],
+    "support": [
+      "a.day.hidden.丙",
+      "b.month.hidden.乙"
+    ],
+    "counter": [
+      "a.day.hidden.庚",
+      "b.day.hidden.辛"
+    ],
+    "limits": [
+      "a.coverage",
+      "b.coverage"
+    ],
+    "unused": [
+      "b.hour.hidden.壬"
+    ],
+    "paragraphs": [
+      [
+        "a.day.stem",
+        "b.day.stem",
+        "pair.a.reads.b",
+        "pair.b.reads.a",
+        "a.day.hidden.丙",
+        "a.day.hidden.庚",
+        "b.day.hidden.辛"
+      ],
+      [
+        "b.month.hidden.乙",
+        "a.coverage",
+        "b.coverage"
+      ],
+      [
+        "pair.육충.a.day.b.hour",
+        "pair.a.reads.b",
+        "pair.b.reads.a"
+      ],
+      [
+        "pair.육충.a.day.b.hour",
+        "pair.a.reads.b",
+        "pair.b.reads.a"
+      ],
+      [
+        "pair.육충.a.day.b.hour",
+        "a.day.hidden.庚",
+        "b.day.hidden.辛"
+      ]
+    ],
+    "prior_B_paragraphs": [
+      [
+        "a.day.stem",
+        "a.day.hidden.丙",
+        "a.day.hidden.庚",
+        "a.coverage"
+      ],
+      [
+        "b.day.stem",
+        "b.month.hidden.乙",
+        "b.day.hidden.辛"
+      ],
+      [
+        "pair.a.reads.b",
+        "pair.b.reads.a",
+        "pair.육충.a.day.b.hour"
+      ],
+      [
+        "pair.a.reads.b",
+        "pair.b.reads.a",
+        "pair.육충.a.day.b.hour"
+      ],
+      [
+        "pair.a.reads.b",
+        "pair.b.reads.a",
+        "pair.육충.a.day.b.hour"
+      ]
+    ]
+  },
+  "02": {
+    "thesis": "함께 시작하기 쉬운 바로 그 일에서, 한 번 보탠 몫과 계속 맡을 책임을 구분할 필요가 생길 수 있다.",
+    "core": [
+      "pair.육합.a.day.b.day",
+      "pair.상형.a.day.b.day",
+      "pair.a.reads.b",
+      "pair.b.reads.a"
+    ],
+    "support": [
+      "a.day.hidden.庚",
+      "a.month.stem",
+      "a.month.hidden.丁",
+      "b.month.hidden.丁",
+      "b.day.hidden.丙"
+    ],
+    "counter": [
+      "pair.육합.a.day.b.day",
+      "pair.상형.a.day.b.day",
+      "b.day.hidden.戊"
+    ],
+    "limits": [
+      "a.coverage",
+      "b.coverage"
+    ],
+    "unused": [
+      "b.day.hidden.戊"
+    ],
+    "paragraphs": [
+      [
+        "a.day.stem",
+        "b.day.stem",
+        "pair.a.reads.b",
+        "pair.b.reads.a"
+      ],
+      [
+        "a.day.hidden.庚",
+        "a.month.stem",
+        "a.month.hidden.丁",
+        "b.month.hidden.丁",
+        "b.day.hidden.丙"
+      ],
+      [
+        "pair.육합.a.day.b.day",
+        "pair.상형.a.day.b.day"
+      ],
+      [
+        "pair.육합.a.day.b.day",
+        "pair.상형.a.day.b.day",
+        "pair.a.reads.b",
+        "pair.b.reads.a"
+      ],
+      [
+        "pair.a.reads.b",
+        "pair.b.reads.a",
+        "pair.상형.a.day.b.day"
+      ]
+    ],
+    "prior_B_paragraphs": [
+      [
+        "a.day.stem",
+        "a.day.hidden.庚",
+        "a.month.stem",
+        "a.month.hidden.丁"
+      ],
+      [
+        "b.day.stem",
+        "b.month.hidden.丁",
+        "b.day.hidden.丙",
+        "b.day.hidden.戊",
+        "pair.a.reads.b",
+        "pair.b.reads.a"
+      ],
+      [
+        "pair.육합.a.day.b.day",
+        "pair.상형.a.day.b.day"
+      ],
+      [
+        "pair.육합.a.day.b.day",
+        "pair.상형.a.day.b.day"
+      ],
+      [
+        "pair.육합.a.day.b.day",
+        "pair.상형.a.day.b.day"
+      ]
+    ]
+  },
+  "04": {
+    "thesis": "공동 목표에 동의한 뒤, 무엇을 감당하고 어떤 조건을 지킬지 각자의 말로 풀어볼 여지가 있다.",
+    "core": [
+      "pair.천간합.a.day.b.day",
+      "pair.육해.a.day.b.day"
+    ],
+    "support": [
+      "pair.a.reads.b",
+      "pair.b.reads.a",
+      "a.day.hidden.庚",
+      "a.month.stem",
+      "b.month.hidden.庚",
+      "b.month.stem",
+      "b.day.hidden.壬"
+    ],
+    "counter": [
+      "pair.천간합.a.day.b.day",
+      "pair.육해.a.day.b.day",
+      "a.month.hidden.戊"
+    ],
+    "limits": [
+      "a.coverage",
+      "b.coverage"
+    ],
+    "unused": [
+      "a.coverage"
+    ],
+    "paragraphs": [
+      [
+        "a.day.stem",
+        "b.day.stem",
+        "pair.a.reads.b",
+        "pair.b.reads.a"
+      ],
+      [
+        "a.day.hidden.庚",
+        "a.month.stem",
+        "a.month.hidden.戊",
+        "b.month.hidden.庚",
+        "b.month.stem",
+        "b.day.hidden.壬",
+        "b.coverage"
+      ],
+      [
+        "pair.천간합.a.day.b.day",
+        "pair.육해.a.day.b.day"
+      ],
+      [
+        "pair.천간합.a.day.b.day",
+        "pair.육해.a.day.b.day",
+        "a.day.hidden.庚",
+        "b.month.hidden.庚",
+        "b.day.hidden.壬"
+      ],
+      [
+        "pair.천간합.a.day.b.day",
+        "pair.육해.a.day.b.day",
+        "b.month.hidden.庚",
+        "pair.a.reads.b",
+        "pair.b.reads.a"
+      ]
+    ],
+    "prior_B_paragraphs": [
+      [
+        "a.day.stem",
+        "a.day.hidden.庚",
+        "a.month.stem",
+        "a.month.hidden.戊"
+      ],
+      [
+        "b.day.stem",
+        "b.month.hidden.庚",
+        "b.month.stem",
+        "b.day.hidden.壬",
+        "b.coverage"
+      ],
+      [
+        "pair.천간합.a.day.b.day",
+        "pair.육해.a.day.b.day"
+      ],
+      [
+        "pair.천간합.a.day.b.day",
+        "pair.육해.a.day.b.day"
+      ],
+      [
+        "pair.천간합.a.day.b.day",
+        "pair.육해.a.day.b.day"
+      ]
+    ]
+  }
+}
