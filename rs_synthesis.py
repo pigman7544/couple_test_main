@@ -6,10 +6,15 @@ from compatibility_v12 import (
     EDITORIAL_WEIGHT, ELEMENT, GOD_LENS, GOD_QUESTIONS, READINGS,
     analyze_pair, review_report,
 )
-from engine import STEMS
 
 
 NAMES = {"a": "첫째", "b": "둘째"}
+ELEMENT_WORD = {"wood": "나무", "fire": "불", "earth": "흙", "metal": "쇠", "water": "물"}
+
+
+def stem_with_element(stem):
+    element = STEM_ELEMENTS[stem]
+    return f"{READINGS[stem]}{ELEMENT[element]}({stem}, {ELEMENT_WORD[element]} 기운)"
 ELEMENT_STYLE = {
     "wood": "아직 모양이 잡히지 않은 일에 방향을 내고 키우는 힘",
     "fire": "마음속에 있던 뜻을 드러내고 눈앞의 반응에 응하는 힘",
@@ -29,15 +34,22 @@ ROLE_MEANING = {
     "편인": "받아들인 것을 자기 방식으로 곱씹고 해석하는 힘",
     "정인": "이해와 보살핌을 받으며 마음을 놓고 힘을 얻는 경험",
 }
+ELEMENT_SCENE = {
+    "wood": "둘이 처음 해 보는 일이 생기면, 함께 첫발을 떼는 데서 호흡을 맞춰 볼 수 있습니다.",
+    "fire": "반가운 일이나 서운한 일이 생겼을 때 그 마음을 말로 건네면 상대도 반응할 여지가 생깁니다.",
+    "earth": "둘의 사정이 제각각일 때 시간을 맞추거나 일을 나누며 함께할 방법을 찾아볼 수 있습니다.",
+    "metal": "할 일이 겹쳤을 때 무엇부터 지킬지 정해 두면 서로 어디에 힘을 쓸지 분명해집니다.",
+    "water": "둘이 세운 계획이 틀어졌을 때 상대의 사정을 듣고 다른 방법을 찾는 쪽으로 이 힘을 써 볼 수 있습니다.",
+}
 RELATIONS = {
-    "천간합": "겉으로 드러난 뜻이 서로 닿기 쉬운 자리예요.",
-    "육합": "서로 다른 두 자리가 자연스럽게 맞물리는 관계를 뜻해요.",
-    "삼합": "흩어진 세 자리가 오행의 한 흐름으로 모이는 관계예요.",
-    "육충": "서로 마주한 두 글자가 만나 익숙한 방향에 변화를 일으키는 관계예요.",
-    "상형": "서로의 기준이 걸리면서 같은 문제를 거듭 조율하기 쉬운 관계예요.",
-    "삼형": "세 자리의 기대가 얽혀 어느 한쪽의 방식만 바꾸어도 풀기 어려운 관계예요.",
-    "자형": "같은 글자의 반응이 되풀이되며 긴장이 깊어질 수 있는 관계예요.",
-    "육해": "한쪽의 뜻과 다른 쪽이 받아들이는 뜻 사이에 틈이 생길 수 있는 관계예요.",
+    "천간합": "두 사람은 원하는 바를 직접 말할 때 접점을 찾기 쉽습니다.",
+    "육합": "각자 편한 방식이 상대의 수고를 덜어 주는 쪽으로 맞물릴 수 있습니다.",
+    "삼합": "두 사람이 흩어진 일을 하나의 목표로 모으기 쉬운 접점이 있습니다.",
+    "육충": "함께 지내며 각자 당연하게 여겼던 생활 방식을 바꿔야 할 수 있습니다.",
+    "상형": "둘 다 성의를 들여도 일하는 순서나 기준을 두고 같은 얘기를 몇 번씩 할 수 있습니다.",
+    "삼형": "각자 맡은 일을 잘해도 다른 쪽 일정까지 얽히면 함께 풀어야 할 일이 생깁니다.",
+    "자형": "한 사람이 물러서면 다른 사람도 말을 아끼듯, 비슷하게 반응할 때 문제가 길어질 수 있습니다.",
+    "육해": "도와주려는 말이 상대에게는 재촉처럼 들리는 등 뜻이 어긋날 수 있습니다.",
 }
 SEAT = {"year": "오래 익힌 관계의 틀", "month": "평소 일을 꾸려 가는 방식",
         "day": "가까운 사이에 바라는 것", "hour": "앞날에 품은 뜻"}
@@ -101,7 +113,6 @@ def natal(result, owner, gender):
     chart = result["charts"][owner]
     stem = chart["day_master"]
     element = STEM_ELEMENTS[stem]
-    polarity = "음" if STEMS.index(stem) % 2 else "양"
     day_id = f"{owner}.day.stem"
     palace = principal(context, "day")
     month = principal(context, "month")
@@ -110,53 +121,36 @@ def natal(result, owner, gender):
     main_elements = [STEM_ELEMENTS[d["stem"]] for d in chart["details"].values()]
     main_elements.extend(BRANCH_ELEMENTS[d["branch"]] for d in chart["details"].values())
     count = main_elements.count(element)
-    orientation = (
-        f"확정된 글자 가운데 {ELEMENT[element]}의 성질을 대표하는 자리가 {count}곳이에요. "
-        "같은 성질이 명식 어디에 놓였는지는 달과 날의 글자를 차례로 보면 드러나요."
-        if count > 1 else
-        f"겉으로 드러난 {ELEMENT[element]}의 자리는 일간 하나예요. "
-        "그 성질이 어디서 힘을 얻고 어디에 쓰이는지는 주변 글자를 함께 읽어야 알 수 있어요."
-    )
-    lead = (
-        f"태어난 날의 앞 글자, 곧 일간부터 볼게요. 첫째는 {symbol(stem)} 일간이에요."
-        if owner == "a" else
-        f"{NAMES[owner]}의 명식은 태어난 날의 앞 글자인 {symbol(stem)}에서 읽기 시작해요."
-    )
     opening = paragraph(
-        f"{lead} {polarity}의 {ELEMENT[element]}에 속하는 이 글자는 전통 명리에서 "
-        f"{ELEMENT_STYLE[element]}으로 풀이해요. {orientation}",
+        f"{NAMES[owner]}의 관계에서 눈여겨볼 점은 {ELEMENT_STYLE[element]}입니다. "
+        f"태어난 날의 첫 글자인 일간은 {stem_with_element(stem)}이고, 확인된 글자 중 같은 기운을 대표하는 자리는 {count}곳입니다. "
+        f"{ELEMENT_SCENE[element]}",
         [*basics, *(p["id"] for p in branches)], owner, "태어난 날의 글자",
     )
 
     if month:
         season = context["month_command"]
         role = month["ten_god"]
-        support = (
-            "계절을 나타내는 글자에도 일간과 같은 성질이 실려 있어요."
-            if season["same_element"] else
-            "계절의 오행은 일간에 힘을 보태는 쪽으로 읽혀요."
-            if season["generates_day_master"] else
-            f"일간의 {ELEMENT[element]} 기운은 이 달의 {ELEMENT[season['branch_element']]} 기운 속에서 읽어요."
-        )
         hidden = [p for p in context["placements"] if p["pillar"] == "month"]
         layers = ""
         if hidden[1:]:
-            layers = (" 이 글자에 깃든 다른 기운, 즉 지장간도 함께 보면 "
-                      f"{hidden_text(hidden[1:])}도 보여요. "
-                      f"그중 {hidden[1]['ten_god']}에는 {ROLE_MEANING[hidden[1]['ten_god']]}도 담겨 있어요.")
+            layers = (" 월지 안에 함께 든 글자를 지장간이라 하며, 여기에는 "
+                      f"{hidden_text(hidden[1:])}도 있습니다.")
         if month["exposed_at"]:
-            layers += " 달의 중심 기운은 명식의 앞 글자에도 한 번 더 나타나요."
+            layers += " 달의 중심 기운은 명식의 앞 글자에도 한 번 더 나타납니다."
         month_entry = paragraph(
-            f"태어난 달의 뒤 글자인 월지는 {season['season']}의 {symbol(season['branch'])}예요. {support} "
-            f"그 속에 든 {symbol(month['stem'])}에서 일간을 기준으로 {role}의 뜻을 읽어요. "
-            f"평소 생활이나 일을 꾸려 가는 방식에서는 {with_particle(ROLE_MEANING[role], '을', '를')} 눈여겨볼 만해요."
-            f"{layers}", [day_id, *(p["id"] for p in hidden), *month["exposed_at"]],
+            f"{NAMES[owner]}의 평소 생활에서는 {with_particle(ROLE_MEANING[role], '을', '를')} 눈여겨볼 만합니다. "
+            f"태어난 달의 뒤 글자인 월지는 {season['season']}의 {symbol(season['branch'])}이고, "
+            f"그 속의 중심 글자 {with_particle(symbol(month['stem']), '은', '는')} 일간을 기준으로 {role}에 해당합니다."
+            f"{layers} 가까운 사람이 이 모습을 알아보려면, 바쁜 날 무엇을 먼저 챙기는지 살펴볼 수 있습니다.",
+            [day_id, *(p["id"] for p in hidden), *month["exposed_at"]],
             owner, "태어난 계절과 평소의 모습",
         )
     else:
         month_entry = paragraph(
-            "태어난 날이 절기가 바뀌는 때와 겹쳐 월주에 두 후보가 있어요. "
-            "계절에 따른 풀이는 시각을 알 때까지 보류하고, 확인된 날의 글자로 가까운 관계를 살펴볼게요.",
+            "평소 생활에 관한 계절 풀이는 태어난 시각을 확인한 뒤 이어갈 수 있습니다. "
+            "태어난 날이 절기가 바뀌는 때와 겹쳐 월주에 두 후보가 있습니다. "
+            "가까운 사람에게 무엇을 기대하는지는 확인된 일지에서 살펴볼 수 있습니다.",
             [day_id, f"{owner}.coverage"], owner, "절기가 바뀌는 날",
         )
 
@@ -164,30 +158,30 @@ def natal(result, owner, gender):
     role = palace["ten_god"]
     branch = symbol(chart["pillars"]["day"][1])
     text = (
-        f"태어난 날의 뒤 글자인 일지는 가까운 관계를 살피는 자리라 배우자궁이라고 불러요. "
-        f"{branch}에 든 {symbol(palace['stem'])}에서 읽는 십성, 곧 일간과 맺는 관계의 이름은 {with_particle(role, '이에요', '예요')}. "
-        f"가까이 지내는 사이에서 {with_particle(ROLE_MEANING[role], '을', '를')} 소중하게 여길 수 있다는 뜻이에요."
+        f"{NAMES[owner]}는 가까운 사이에서 {with_particle(ROLE_MEANING[role], '을', '를')} 소중하게 여길 수 있습니다. "
+        f"태어난 날의 뒤 글자이자 가까운 관계를 살피는 배우자궁은 {branch}이며, "
+        f"그 중심 글자 {with_particle(symbol(palace['stem']), '은', '는')} 자신의 일간을 기준으로 {role}에 해당합니다."
     )
     if hidden[1:]:
         other_role = hidden[1]["ten_god"]
-        text += (f" 이 자리에는 {hidden_text(hidden[1:])}도 들어 있어요. "
-                 f"{ROLE_MEANING[other_role]}도 친밀함을 이루는 한 부분이 될 수 있어요.")
+        text += (f" 이 자리의 {hidden_text(hidden[1:])}에서는 "
+                 f"{with_particle(ROLE_MEANING[other_role], '을', '를')} 함께 살핍니다.")
     tradition = PARTNER_ROLES.get(gender) if isinstance(gender, str) else None
     markers = []
     if tradition:
         category, roles = tradition
         markers = partner_placements(result, owner, owner, roles)
         if role in roles:
-            text += (f" 전통 명리에서 배우자를 상징하는 글자를 배우자성이라 해요. "
-                     f"이 명식에서는 {with_particle(category, '을', '를')} 배우자성으로 보는데, 배우자궁의 중심에 바로 그 {with_particle(role, '이', '가')} 자리해요.")
+            text += (f" 이 {with_particle(role, '은', '는')} 전통적으로 배우자를 상징하는 "
+                     f"{category}, 곧 이 명식의 배우자성에도 해당합니다.")
         elif markers:
             text += (f" 이 명식에서 배우자를 상징하는 {with_particle(category, '은', '는')} "
-                     f"{markers[0][0]}에서 {markers[0][2]}에 해당해요. 배우자궁은 가까운 사이에 무엇을 바라는지, "
-                     "배우자성은 어떤 관계의 성질을 반기는지 살피는 데 쓰여요.")
+                     f"{markers[0][0]}에서 {markers[0][2]}에 해당합니다.")
         else:
-            text += f" 확인된 글자에는 전통적으로 배우자성을 뜻하는 {with_particle(category, '이', '가')} 드러나지 않아요."
+            text += f" 확인된 글자에는 전통적으로 배우자성을 뜻하는 {with_particle(category, '이', '가')} 드러나지 않습니다."
     palace_entry = paragraph(
-        text, [day_id, f"{owner}.coverage", *(p["id"] for p in hidden),
+        text + f" “{GOD_QUESTIONS[role]}” 하고 물어보면 가까운 사람에게 바라는 점을 구체적으로 이야기할 수 있습니다.",
+        [day_id, f"{owner}.coverage", *(p["id"] for p in hidden),
                *(ref for _, ref, _ in markers)],
         owner, "가까운 관계에 바라는 것",
     )
@@ -203,28 +197,28 @@ def direction(result, owner, gender):
     palace = principal(result["contexts"][other], "day")
     palace_role = ten_god(own_stem, palace["stem"])
     tradition = PARTNER_ROLES.get(gender) if isinstance(gender, str) else None
-    text = (f"{NAMES[owner]}의 {symbol(own_stem)}에서 바라보면 "
-            f"{NAMES[other]}의 일간 {with_particle(symbol(other_stem), '은', '는')} {role}에 해당해요. "
-            f"이 글자에서 읽는 관계의 성질은 {with_particle(ROLE_MEANING[role], '이에요', '예요')}.")
+    text = (f"{NAMES[owner]}는 {NAMES[other]}와 함께 지내며 {with_particle(ROLE_MEANING[role], '을', '를')} 눈여겨볼 수 있습니다. "
+            f"{NAMES[owner]}의 {symbol(own_stem)}에서 바라보면 "
+            f"{NAMES[other]}의 일간 {with_particle(symbol(other_stem), '은', '는')} {role}에 해당합니다.")
     refs = [ref, palace["id"]]
     if tradition:
         category, roles = tradition
         found = partner_placements(result, owner, other, roles)
         if role in roles:
-            text += f" {with_particle(role, '은', '는')} 이 명식의 배우자성인 {category}에 속해요."
+            text += f" {with_particle(role, '은', '는')} 이 명식의 배우자성인 {category}에 속합니다."
         elif found:
             place, _, partner_role = found[0]
-            text += (f" 배우자성을 나타내는 {with_particle(category, '은', '는')} 상대의 {place}에서 {partner_role}에 해당해요. "
-                     "상대의 첫인상에 가까운 일간과 함께, 그 글자가 놓인 자리도 살펴야 해요.")
+            text += (f" 배우자성을 나타내는 {with_particle(category, '은', '는')} "
+                     f"상대의 {place}에서 {partner_role}에 해당합니다.")
         else:
-            text += f" 상대의 확인된 글자에서는 이 방향의 배우자성인 {with_particle(category, '이', '가')} 드러나지 않아요."
+            text += f" 상대의 확인된 글자에서는 이 방향의 배우자성인 {with_particle(category, '이', '가')} 드러나지 않습니다."
         refs += [f"{other}.coverage", *(source for _, source, _ in found)]
     if palace_role == "비견":
-        text += (f" 한편 상대의 배우자궁에 든 {with_particle(symbol(palace['stem']), '은', '는')} {NAMES[owner]}의 일간과 같은 글자예요. "
-                 "전통 명리에서 비견이라고 부르는 관계로, 서로 가까이 지낼 때 상대에게서 익숙한 면을 발견할 수 있다는 풀이예요.")
+        text += (f" 상대의 배우자궁에도 {NAMES[owner]}의 일간과 같은 {with_particle(symbol(palace['stem']), '이', '가')} 있습니다. "
+                 "상대가 익숙하게 해 온 일을 따라가다 보면 자기와 닮은 점을 발견할 수 있습니다.")
     else:
-        text += (f" 상대의 배우자궁 속 {with_particle(symbol(palace['stem']), '은', '는')} 같은 방향에서 보면 {with_particle(palace_role, '이에요', '예요')}. "
-                 f"가까이 지내는 과정에서는 {ROLE_MEANING[palace_role]}도 눈여겨볼 만해요.")
+        text += (f" 상대의 배우자궁 속 {with_particle(symbol(palace['stem']), '은', '는')} 같은 방향에서 보면 {palace_role}입니다. "
+                 f"둘만의 생활이 생긴 뒤에는 {ROLE_MEANING[palace_role]}도 중요해질 수 있습니다.")
     return paragraph(text, refs, heading=f"{NAMES[owner]}의 눈으로 본 {NAMES[other]}")
 
 
@@ -239,30 +233,26 @@ def interaction_places(fact):
     return ", ".join(places[:-1]) + f" 그리고 {places[-1]}"
 
 
-def interaction_meaning(fact):
-    if fact["kind"] == "삼합":
-        element = TRINE_ELEMENT[frozenset(source["symbol"] for source in fact["sources"])]
-        return f"세 글자가 만나 {element}의 흐름을 이루는 자리예요."
-    return RELATIONS[fact["kind"]]
-
-
 def interaction_sentence(fact):
     places = interaction_places(fact)
     positions = {source["pillar"] for source in fact["sources"]}
     kind = fact["kind"]
     if len(positions) == 1:
         seat = SEAT[next(iter(positions))]
-        scope = f"두 사람 모두에게 {with_particle(seat, '과', '와')} 관련된 자리예요."
+        scope = f"두 사람 모두 {with_particle(seat, '을', '를')} 이야기할 때 이 점을 떠올려 볼 만합니다."
     elif kind == "삼합" and positions == {"year", "month", "day"}:
-        scope = ("오래 익힌 관계의 틀이 상대의 생활 방식과 배우자궁에 이어져요. "
-                 "가까운 사이에서 뜻을 모으는 데 두 사람 각자의 배경도 한몫할 수 있다는 풀이예요.")
+        scope = "자라며 배운 방식이 지금 둘의 살림이나 가족 약속을 꾸리는 데 도움이 될 수 있습니다."
     elif "day" in positions:
         other = next(position for position in SEAT if position in positions and position != "day")
-        scope = f"{with_particle(SEAT[other], '이', '가')} 상대의 배우자궁에 닿는 구조예요."
+        scope = f"한 사람의 {with_particle(SEAT[other], '이', '가')} 상대에게는 둘 사이의 약속으로 받아들여질 수 있습니다."
     else:
-        scope = "이 작용은 두 사람이 각자 익혀 온 방식이 만나는 자리에서 살펴볼 수 있어요."
-    return (f"{places} 사이에서는 {kind}을 살펴요. " if kind != "육해" else
-            f"{places} 사이에는 육해가 성립해요. ") + f"{interaction_meaning(fact)} {scope}"
+        scope = "예전부터 각자 해 오던 방식이 무엇인지 말해 보면 함께할 때의 차이가 분명해집니다."
+    if kind == "삼합":
+        element = TRINE_ELEMENT[frozenset(source["symbol"] for source in fact["sources"])]
+        evidence_text = f"{places}의 세 글자가 모여 {element}의 흐름을 이루는 삼합입니다."
+    else:
+        evidence_text = f"{places} 사이에 {with_particle(kind, '이', '가')} 있습니다."
+    return f"{RELATIONS[kind]} {evidence_text} {scope}"
 
 
 def analyze_preview(a, b, genders=None):
@@ -295,25 +285,42 @@ def analyze_preview(a, b, genders=None):
         for index, owner in enumerate(NAMES)
     )
 
-    if mutual and roles == ["정재", "정관"]:
-        relationship.append(paragraph(
-            "두 사람은 상대를 대표하는 글자에서 각자의 배우자성을 마주해요. "
-            "첫째 쪽의 정재가 함께 감당할 수 있는 몫에 마음을 둔다면, 둘째 쪽의 정관은 그 몫을 나누는 약속이 "
-            "서로에게 같은 뜻인지 살펴요. 서로에게 기대하는 것이 서로를 향해 있는 구조예요. 다만 "
-            "첫째에게 충분히 책임을 다한 일도 둘째에게는 아직 뜻을 확인할 일로 남을 수 있어요.",
+    stems = [result["charts"][owner]["day_master"] for owner in NAMES]
+    if mutual:
+        categories = [PARTNER_ROLES[genders[owner]][0] for owner in NAMES]
+        relationship.insert(0, paragraph(
+            "두 사람은 각자가 배우자에게 바라는 모습을 상대에게서 발견하기 쉬운 궁합입니다. "
+            f"첫째의 배우자성은 {categories[0]}이며 둘째의 일간 {with_particle(stem_with_element(stems[1]), '이', '가')} 그중 {roles[0]}에 해당합니다. "
+            f"둘째의 배우자성은 {categories[1]}이며 첫째의 일간 {with_particle(stem_with_element(stems[0]), '이', '가')} {roles[1]}에 해당합니다. "
+            "서로에게 어떤 점이 든든한지 말해 보면, 각자가 관계에서 소중하게 여기는 것도 자연스레 드러납니다.",
             links, heading="서로에게서 알아보는 배우자의 모습",
+        ))
+    if [p["stem"] for p in palaces] == stems[::-1]:
+        branches = [symbol(result["charts"][owner]["pillars"]["day"][1]) for owner in NAMES]
+        relationship.insert(int(mutual), paragraph(
+            "두 사람이 가까워질수록 상대의 방식이 낯설지 않게 다가올 수 있습니다. "
+            f"첫째의 배우자궁 {branches[0]}의 중심 글자는 둘째의 일간 {symbol(stems[1])}이고, "
+            f"둘째의 배우자궁 {branches[1]}의 중심 글자는 첫째의 일간 {symbol(stems[0])}입니다. "
+            "둘이 함께 일정을 챙기거나 집안일을 나눌 때, 상대가 무엇을 중요하게 여기는지 알아차리기 쉬운 접점입니다.",
+            [*palace_refs, *links], heading="서로의 가까운 자리에 든 사람",
+        ))
+    months = [principal(contexts[owner], "month") for owner in NAMES]
+    if all(month and month["ten_god"] == "식신" for month in months):
+        relationship.append(paragraph(
+            "마음을 행동으로 전하는 방식에서 두 사람이 서로를 이해하기 쉬운 면도 있습니다. "
+            "두 명식 모두 태어난 달의 중심 글자가 일간을 기준으로 식신에 해당합니다. "
+            "바쁜 날 음식을 챙겨 주거나 밀린 일을 거드는 작은 행동을 서로의 배려로 알아차릴 수 있습니다.",
+            [*(month["id"] for month in months), "a.day.stem", "b.day.stem"],
+            heading="마음을 행동으로 전하는 두 사람",
         ))
 
     palace_interactions = groups.get("palace", [])
     if not palace_interactions:
         a_branch, b_branch = [symbol(chart["pillars"]["day"][1]) for chart in result["charts"].values()]
-        opening = (
-            "서로의 일간에서 배우자성을 읽었다면, 이제 가까운 관계의 자리를 나란히 놓을 차례예요. "
-            if mutual else "상대를 대표하는 일간을 살폈으니 이제 두 배우자궁을 나란히 놓아 볼게요. "
-        )
         relationship.append(paragraph(
-            opening + f"첫째의 {with_particle(a_branch, '과', '와')} 둘째의 {b_branch} 사이에는 직접 성립하는 합·충·형·해가 없어요. "
-            "두 사람이 가까워졌을 때의 모습은 각 배우자궁에 담긴 기대와, 그 자리에 상대의 다른 글자가 어떻게 닿는지를 함께 봐야 드러나요.",
+            "둘이 얼마나 쉽게 맞춰 가는지는 각자 살아온 방식까지 함께 살펴야 드러납니다. "
+            f"두 배우자궁인 첫째의 {with_particle(a_branch, '과', '와')} 둘째의 {b_branch} 사이에는 직접 성립하는 합·충·형·해가 없습니다. "
+            "함께 지낼 때 어떤 점이 편하고 어떤 점에 손이 가는지는 평소 집안일이나 약속을 다뤄 온 방식에서 실마리를 찾을 수 있습니다.",
             [*palace_refs, *links], heading="두 배우자궁을 나란히 놓으면",
         ))
 
@@ -338,15 +345,13 @@ def analyze_preview(a, b, genders=None):
                 counterpart = overlaps[0]
                 shared, strained = (ref, counterpart) if fact["kind"] in SUPPORT else (counterpart, ref)
                 same_text = (
-                    f"{interaction_places(fact)}에는 {evidence[shared]['kind']}과 {evidence[strained]['kind']}이 겹쳐요. "
-                    "함께 움직이게 하는 힘과 서로의 기준을 자꾸 되묻게 하는 힘이 한곳에서 나와요. "
-                    "쉽게 뜻이 통하는 사이일수록, 둘이 같은 방식에 동의했다고 여기기 쉬운 자리이기도 해요."
+                    "뜻을 모으기는 쉬워도 구체적인 방법까지 같지는 않을 수 있습니다. "
+                    f"{interaction_places(fact)}에는 {with_particle(evidence[shared]['kind'], '과', '와')} "
+                    f"{with_particle(evidence[strained]['kind'], '이', '가')} 겹칩니다. "
+                    "예를 들어 가족을 챙기자는 데 뜻이 맞아도, 얼마나 자주 찾아뵐지는 따로 상의할 일입니다."
                 )
                 if layer != "palace" and any(source["pillar"] == "day" for source in fact["sources"]):
-                    same_text += (" 한 사람에게는 오래 써 온 방식이 다른 사람에게는 둘만의 관계에 관한 약속처럼 "
-                                  "들릴 수 있다는 점에서, 이 겹침이 특히 중요해요."
-                                  if any(source["pillar"] == "year" for source in fact["sources"]) else
-                                  " 한 사람의 배우자궁이 걸린 만큼, 방식의 차이가 친밀함에 대한 기대까지 건드릴 수 있어요.")
+                    same_text += (" 한 사람은 원래 해 오던 일이라고 생각해도, 다른 사람에게는 둘이 새로 정할 약속일 수 있습니다.")
                 relationship.append(paragraph(same_text, [shared, strained],
                                               heading="한 자리에서 맞물리고 걸리는 두 힘"))
                 shown.update((ref, counterpart))
@@ -363,14 +368,14 @@ def analyze_preview(a, b, genders=None):
             god = ten_god(result["charts"][owner]["day_master"], month["stem"])
             month_reads.append(
                 f"{NAMES[owner]}에게 {NAMES[other]}의 월지에 든 {with_particle(symbol(month['stem']), '은', '는')} "
-                f"{god}에 해당해요. 상대가 평소 살아가는 방식에서 "
-                f"{with_particle(ROLE_MEANING[god], '을', '를')} 발견할 수 있는 자리예요."
+                f"{god}에 해당하고, 이 자리에서는 {with_particle(ROLE_MEANING[god], '을', '를')} 살핍니다."
             )
             month_refs.extend((f"{owner}.day.stem", month["id"]))
     if month_reads:
         relationship.append(paragraph(
-            " ".join(month_reads) + " 일간에서 서로를 알아보는 이유와, 함께 지내며 상대에게서 새로 발견하는 면이 "
-            "어떻게 이어지는지 이 두 방향에서 살펴볼 수 있어요.",
+            "함께 지내 보면 상대에게 처음에는 몰랐던 면이 보일 수 있습니다. "
+            + " ".join(month_reads)
+            + " 각자 일이 몰린 날 어떻게 하루를 꾸리는지 이야기해 보면, 상대가 무엇을 먼저 챙기는지 알 수 있습니다.",
             month_refs, heading="함께 지내며 발견하는 면",
         ))
 
@@ -379,56 +384,56 @@ def analyze_preview(a, b, genders=None):
     refs = [ref for ref in (support, tension) if ref]
     if support and tension:
         summary = (
-            f"앞에서 본 {with_particle(evidence[support]['kind'], '과', '와')} "
-            f"{with_particle(evidence[tension]['kind'], '을', '를')} 함께 놓고 보면, "
-            "한 관계 안에서도 마음이 통하는 자리와 기준을 조율해야 하는 자리가 함께 보여요. "
-            "서로 뜻을 모은 순간을 떠올릴 때, 그 뜻에 두 사람이 같은 기대를 담았는지도 돌아볼 만해요."
+            "함께하고 싶은 일이 생기면 뜻을 모은 다음, 각자가 어디까지 맡을지도 확인해 볼 만합니다. "
+            f"앞에서 살핀 {with_particle(evidence[support]['kind'], '과', '와')} "
+            f"{with_particle(evidence[tension]['kind'], '이', '가')} 뜻을 모으는 부분과 손을 맞춰야 할 부분을 각각 보여 줍니다. "
+            "같은 계획을 두고도 한 사람은 벌써 날짜를 정했다고 생각하고 다른 사람은 가능성을 검토 중일 수 있습니다."
         )
     elif support:
         summary = (
-            f"확인된 {with_particle(evidence[support]['kind'], '은', '는')} 서로 뜻을 이어 갈 자리를 보여 줘요. "
-            f"그 자리에서 첫째가 눈여겨볼 것은 {ROLE_MEANING[roles[0]]}, "
-            f"둘째가 살펴볼 것은 {with_particle(ROLE_MEANING[roles[1]], '이에요', '예요')}. "
-            "같은 방향을 바라볼 때 서로 무엇을 반가워하는지도 헤아려 보세요."
+            "둘이 힘을 모을 때는 서로에게 어떤 도움이 반가웠는지 살펴볼 만합니다. "
+            f"앞에서 본 {with_particle(evidence[support]['kind'], '이', '가')} 두 사람이 뜻을 이어 갈 실마리입니다. "
+            "최근 같이 해낸 일 하나를 떠올리고 상대가 해 줘서 고마웠던 일을 말해 보세요."
         )
     elif tension:
         summary = (
-            f"확인된 {with_particle(evidence[tension]['kind'], '은', '는')} 익숙한 반응을 그대로 주고받을 때 기준이 어긋날 수 있음을 보여 줘요. "
-            f"그때 첫째가 지키고 싶은 것은 {ROLE_MEANING[roles[0]]}, "
-            f"둘째에게 의미가 있는 것은 {ROLE_MEANING[roles[1]]}에 닿아 있을 수 있어요. "
-            "엇갈린 의견 뒤에 무엇을 지키려는 마음이 있었는지 살필 자리예요."
+            "의견이 자주 어긋나는 일이라면 각자 무엇을 지키려 했는지부터 들어볼 만합니다. "
+            f"앞에서 본 {with_particle(evidence[tension]['kind'], '은', '는')} 익숙한 반응이 반복될 때 생기는 차이를 보여 줍니다. "
+            "일정 하나를 두고도 한 사람은 시간을 아끼고 싶고 다른 사람은 여유를 남기고 싶을 수 있습니다."
         )
     else:
         summary = (
-            f"확인된 기둥에서 합·충·형·해를 찾기 어려울 때는 서로가 상대에게서 읽는 뜻에 무게를 둬요. "
-            f"첫째는 {ROLE_MEANING[roles[0]]}에, 둘째는 {ROLE_MEANING[roles[1]]}에 마음이 갈 수 있어요."
+            "두 사람이 무엇을 반갑게 여기는지 각자의 입장에서 살펴볼 만합니다. "
+            f"확인된 기둥에서 합·충·형·해가 두드러지지 않아 서로의 일간에서 본 {with_particle(roles[0], '과', '와')} {roles[1]}에 무게를 둡니다. "
+            "상대가 최근 했던 말과 행동 중에 마음이 놓였던 순간을 서로 들려주어도 좋습니다."
         )
     relationship.append(paragraph(summary, [*refs, *links], heading="이 궁합에서 함께 읽을 것"))
 
     practice = [
         paragraph(
-            f"첫째가 둘째에게서 읽은 {with_particle(roles[0], '과', '와')} 둘째가 첫째에게서 읽은 {with_particle(roles[1], '은', '는')} "
-            "서로에게 어떤 점을 바라는지 대화를 시작할 실마리가 돼요. "
-            "함께 내리는 결정에서 서로의 뜻을 한 문장씩 들어 보세요. "
+            "함께 결정을 내릴 때 서로 무엇을 중요하게 여기는지 먼저 물어보면 대화가 한결 쉬워집니다. "
+            f"2장에서 살핀 첫째 쪽의 {with_particle(roles[0], '과', '와')} 둘째 쪽의 {with_particle(roles[1], '이', '가')} "
+            "각자 어떤 질문부터 꺼내 볼지 실마리를 줍니다. "
             f"“{GOD_QUESTIONS[roles[0]]}”와 “{GOD_QUESTIONS[roles[1]]}”처럼, "
-            "각자가 중요하게 여기는 점부터 물으면 같은 대답 속에 담긴 서로 다른 기대도 들을 수 있어요.",
+            "먼저 이렇게 물으면 같은 대답 안에 담긴 서로 다른 기대도 들을 수 있습니다.",
             links, heading="같은 결정에 담긴 두 사람의 뜻",
         ),
         paragraph(
-            (f"두 명식의 {evidence[tension]['kind']}에서 살핀 엇갈림이 반복된다면, "
-             "누가 결론을 내리기 전에 각자 어디까지 결정됐다고 생각했는지 맞춰 보세요. "
-             "서로의 동의가 필요한 범위를 먼저 정하면 무엇을 더 이야기할지 분명해져요. "
+            ("의견이 자주 어긋난다면 각자 어디까지 결정됐다고 생각하는지부터 맞춰 보세요. "
+             f"앞에서 본 {with_particle(evidence[tension]['kind'], '은', '는')} 같은 일을 두고도 기준이 다를 수 있음을 보여 줍니다. "
+             "날짜까지 정한 건지, 아직 갈 수 있는 날을 알아보는 중인지 한 문장으로 확인하면 됩니다. "
              if tension else
              "이미 둘이 뜻을 모았던 결정을 떠올려 보세요. 그때 어떤 말이 서로의 마음을 놓이게 했는지 이야기해 보세요. ")
-            + ("함께 뜻을 모으기 쉬운 자리에서부터 이 합의를 실천해 보면, 둘이 함께 감당할 수 있는 범위가 조금씩 선명해질 거예요."
+            + ("부담이 적은 결정부터 이 방식으로 맞춰 볼 수 있습니다."
                if support else "다음 결정에서는 서로의 말에 어떤 뜻을 담았는지 한 번 더 확인해 보세요."),
             [*refs, *links], heading="함께 정했다는 감각",
         ),
         paragraph(
-            "둘만의 관계에 무엇이 필요한지는 당사자의 말에서 가장 잘 드러나요. "
-            f"첫째의 배우자궁에 담긴 {ROLE_MEANING[palace_roles[0]]}, "
-            f"둘째의 배우자궁에 담긴 {ROLE_MEANING[palace_roles[1]]} 가운데 "
-            "지금 우리에게 더 필요한 것이 무엇인지 물어보세요. 서로의 답을 듣고 두 사람이 함께 지킬 약속을 하나만 골라도 충분해요.",
+            "지금 함께 지킬 수 있는 작은 약속을 하나 골라 보세요. "
+            f"두 배우자궁의 중심에서 살핀 {with_particle(palace_roles[0], '과', '와')} {palace_roles[1]}은 "
+            "둘이 가까운 사이에 바라는 점을 돌아볼 단서입니다. "
+            f"“{GOD_QUESTIONS[palace_roles[0]]}” “{GOD_QUESTIONS[palace_roles[1]]}” "
+            "서로 답을 들어 보고 이번 주에 해 볼 수 있는 일로 좁혀도 충분합니다.",
             palace_refs, heading="지금의 두 사람에게 필요한 약속",
         ),
     ]
