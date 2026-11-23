@@ -27,8 +27,8 @@ REVIEW_STATE = {"started": False, "done": False, "results": []}
 
 
 @contextmanager
-def review_budget(reservation):
-    if not 0 < reservation <= 2.155001:
+def review_budget(reservation_micro_usd):
+    if not 0 < reservation_micro_usd <= 2_155_000:
         raise ExperimentError("budget", "검증 호출의 비용 상한을 초과했습니다.")
     yield
 
