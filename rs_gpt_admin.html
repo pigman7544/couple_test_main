@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>연연 · 실시간 궁합 리포트</title>
+<style>
+:root{color-scheme:light;--paper:#f7f4ee;--ink:#292520;--red:#823a34;--line:#ded5c9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:1rem/1.65 system-ui,sans-serif}
+main{max-width:800px;margin:auto;padding:clamp(20px,5vw,60px)}
+h1,h2{font-family:Batang,serif;color:var(--red)}
+h1{font-size:clamp(1.75rem,5vw,2.8rem);margin-bottom:.25em}
+form,article{background:#fffdf8;border:1px solid var(--line);padding:clamp(16px,4vw,30px);margin:20px 0;border-radius:9px}
+label{display:block;margin:.55rem 0}
+input,select,button{font:inherit;min-height:42px;border:1px solid #807165;border-radius:5px;padding:6px 10px}
+input,select{display:block;width:100%;background:white}
+button{cursor:pointer;background:var(--red);color:white;margin-top:.65rem}
+button:disabled{opacity:.55;cursor:default}
+.people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+fieldset{min-width:0;border:1px solid var(--line)}
+pre,small{white-space:pre-wrap;overflow-wrap:anywhere}
+summary{cursor:pointer}
+[hidden]{display:none!important}
+@media(max-width:520px){.people{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<h1>연연 실시간 궁합 리포트</h1>
+<p>두 사람의 명식을 계산해 GPT-6.2 Sol이 리포트 1~3장을 집필합니다.</p>
+<form id="login">
+<label>실험 관리자 토큰<input id="token" type="password" autocomplete="off" required></label>
+<button>인증</button>
+</form>
+<form id="report" hidden>
+<div class="people" id="people"></div>
+<p>양력 생년월일을 입력해 주세요. 출생시간을 모르면 비워 두세요.</p>
+<button type="button" id="preset">고정 검토 명식 입력</button>
+<button id="generate">리포트 생성</button>
+</form>
+<p id="status" role="status" aria-live="polite"></p>
+<section id="reading" aria-label="생성된 리포트"></section>
+</main>
+<script>
+const byId = id => document.getElementById(id);
+const endpoint = '/api/rs-gpt/admin';
+const login = byId('login'), form = byId('report'), status = byId('status');
+const reading = byId('reading'), generate = byId('generate');
+let token = '';
+for (const [id, label] of [['a', '첫째'], ['b', '둘째']]) {
+  const fields = document.createElement('fieldset');
+  fields.innerHTML = `<legend>${label}</legend>
+    <label>생년월일<input type="date" id="${id}-date" min="1000-01-01" max="2050-12-31" required></label>
+    <label>출생시간<input type="time" id="${id}-time"></label>
+    <label>성별<select id="${id}-gender"><option value="">응답하지 않음</option>
+    <option value="female">여성</option><option value="male">남성</option></select></label>`;
+  byId('people').append(fields);
+}
+async function call(secret, body) {
+  const headers = {Authorization: 'Bearer ' + secret};
+  const options = {headers, cache: 'no-store', redirect: 'error'};
+  if (body) {
+    headers['Content-Type'] = 'application/json';
+    Object.assign(options, {method: 'POST', body: JSON.stringify(body)});
+  }
+  const response = await fetch(endpoint, options);
+  if (!response.headers.get('content-type')?.includes('application/json')) {
+    throw new Error('실험 서버에 연결하지 못했습니다.');
+  }
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || '실험 요청에 실패했습니다.');
+  return data;
+}
+login.addEventListener('submit', async event => {
+  event.preventDefault();
+  const button = login.querySelector('button');
+  button.disabled = true;
+  try {
+    const value = byId('token').value.trim();
+    const data = await call(value);
+    token = value;
+    byId('token').value = '';
+    login.hidden = true;
+    form.hidden = false;
+    generate.disabled = !data.live_enabled;
+    status.textContent = data.live_enabled ? '두 사람의 정보를 입력해 주세요.' : '실시간 집필 설정이 준비되지 않았습니다.';
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+byId('preset').addEventListener('click', () => {
+  for (const [id, date, gender] of [['a', '1992-03-18', 'male'], ['b', '1992-04-30', 'female']]) {
+    byId(id + '-date').value = date;
+    byId(id + '-time').value = '';
+    byId(id + '-gender').value = gender;
+  }
+});
+function append(parent, tag, value) {
+  const item = document.createElement(tag);
+  item.textContent = value;
+  parent.append(item);
+}
+function show(data) {
+  const metrics = data.metrics, usage = metrics.usage;
+  append(reading, 'p', [metrics.response_model || data.model,
+    metrics.latency_ms === null ? '' : (metrics.latency_ms / 1000).toFixed(2) + '초',
+    usage ? `입력 ${usage.input_tokens} · 캐시 입력 ${usage.cached_input_tokens} · 출력 ${usage.output_tokens} 토큰` : '',
+    usage ? '추정 비용 $' + usage.estimated_usd : ''].filter(Boolean).join(' / '));
+  for (const [index, chapter] of data.chapters.entries()) {
+    const section = document.createElement('article');
+    append(section, 'h2', `${index + 1}장. ${chapter.title}`);
+    for (const paragraph of chapter.paragraphs) {
+      append(section, 'p', paragraph.text);
+      append(section, 'small', paragraph.evidence_ids.join(' · '));
+    }
+    reading.append(section);
+  }
+  const details = document.createElement('details');
+  append(details, 'summary', '계산된 명식과 근거');
+  append(details, 'pre', JSON.stringify({명식: data.charts, 근거: data.facts}, null, 2));
+  reading.append(details);
+}
+form.addEventListener('submit', async event => {
+  event.preventDefault();
+  generate.disabled = true;
+  reading.replaceChildren();
+  status.textContent = 'OpenAI가 원고를 작성하고 있습니다.';
+  const body = Object.fromEntries(['a', 'b'].map(id => [id, Object.fromEntries(
+    ['date', 'time', 'gender'].map(field => [field, byId(id + '-' + field).value])
+  )]));
+  try {
+    show(await call(token, body));
+    status.textContent = '원고 작성이 완료됐습니다.';
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    generate.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

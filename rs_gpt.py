@@ -11,7 +11,8 @@ from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from compatibility_v11 import STEM_ELEMENTS, ten_god
+from compatibility_v11 import STEM_ELEMENTS, analyze_pair, ten_god
+from compatibility_v12 import cross_chart, natal_context
 from rs_synthesis import PARTNER_ROLES, analyze_preview
 
 ROOT = Path(__file__).resolve().parent
@@ -29,9 +30,18 @@ INSTRUCTIONS = """연연 궁합 리포트 1~3장을 존댓말 한국어 산문�
 2장은 가장 설득력 있는 공통점부터 시작합니다. 서로의 일간을 보는 방향별 십성과
 배우자궁 본기의 상대 일간 일치를 구분해 설명하고, 다른 자리의 합·충·형·해는
 실제 작용에 한해 편한 부분과 조율할 부분을 함께 설명하세요.
-3장은 2장에서 나온 관계 주제를 한 가지 가상의 일상 장면에서 이어 가세요.
-질문 목록이나 상담 체크리스트, 같은 요지의 반복, 관계 성공·실패 예언은 피하세요.
-전문 용어는 첫 사용 때 문맥에서 뜻을 풀고 명리학의 전통적 해석임을 드러내세요.
+배우자궁 본기와 상대 일간의 일치는 a.palace가 첫째에서 둘째를, b.palace가 둘째에서
+첫째를 향합니다. 두 값이 모두 참일 때만 양방향 일치로 읽으세요. 일지끼리의 직접
+작용은 pair.palaces의 direct_branch_relation_ids에 있는 사실만 설명하세요.
+교차 십성은 pair.a.reads.b가 첫째 관점이고 pair.b.reads.a가 둘째 관점입니다.
+정재나 정관 같은 십성 하나를 돌봄, 시간 준수, 집안일이나 약속 같은 행동에 배정하지
+마세요. 여러 근거가 맞물리는 자리에서 두 사람이 가깝게 느끼거나 긴장할 수 있는
+이유를 해석하고, 실제 행동이나 구조의 희귀성을 단정하지 마세요.
+3장은 첫 장에서 읽은 두 시선이 둘째 장의 만남으로 이어지면서 끌림과 긴장이
+어떻게 같은 관계 안에 머무를 수 있는지 보여 주세요. 앞 장의 해석을 한데 모아
+여운을 남기는 문학적인 결말을 쓰세요. 가상의 저녁 약속, 대화 대본, 상담 사례,
+질문 목록과 행동 처방을 쓰지 마세요. 익숙한 말로 관계를 읽고, 필요한 명리 용어만
+문맥 속에서 풀어 주세요. 직역투를 피하고 자연스러운 한국어 존댓말로 통일하세요.
 미확정 시주는 산출하거나 추정하지 마세요. 명식에서 확인한 사실과 해석을 구분하고
 관계나 실제 성격을 단정하지 마세요. 제공된 fact ID만 문단별로 인용하세요.
 십성·합충형해를 언급할 때는 그 문단에서 해당 명칭과 방향 또는 자리를 뒷받침하는
@@ -75,6 +85,22 @@ def fixed_case():
         dict(year=1992, month=3, day=18, hour=None),
         dict(year=1992, month=4, day=30, hour=None), genders,
     )
+    return evidence_payload(result, genders), result["report"]
+
+
+def birth_payload(a, b, genders):
+    result = analyze_pair(a, b)
+    evidence = {}
+    result["contexts"] = {
+        owner: natal_context(chart, owner, evidence)
+        for owner, chart in result["charts"].items()
+    }
+    result["interactions"] = cross_chart(result, evidence)
+    result["evidence"] = evidence
+    return evidence_payload(result, genders)
+
+
+def evidence_payload(result, genders):
     scopes = {owner: ctx["unresolved_pillars"] for owner, ctx in result["contexts"].items()}
     facts = {}
     for ref, fact in result["evidence"].items():
@@ -96,14 +122,16 @@ def fixed_case():
         for placement in context["placements"]:
             if placement["id"] in facts:
                 facts[placement["id"]]["ten_god"] = placement["ten_god"]
-        category, roles = PARTNER_ROLES[genders[owner]]
+        tradition = PARTNER_ROLES.get(genders.get(owner))
         cross = f"pair.{owner}.reads.{other}"
-        facts[f"{owner}.partner"] = {
-            "category": category, "traditional_roles": sorted(roles),
-            "cross_ten_god": facts[cross]["ten_god"],
-            "cross_is_partner_star": facts[cross]["ten_god"] in roles,
-            "source_ids": [cross],
-        }
+        if tradition:
+            category, roles = tradition
+            facts[f"{owner}.partner"] = {
+                "category": category, "traditional_roles": sorted(roles),
+                "cross_ten_god": facts[cross]["ten_god"],
+                "cross_is_partner_star": facts[cross]["ten_god"] in roles,
+                "source_ids": [cross],
+            }
         palace = next(p for p in context["placements"]
                       if p["pillar"] == "day" and p["tier"] == "본기")
         other_master = result["charts"][other]["day_master"]
@@ -119,7 +147,7 @@ def fixed_case():
             and {s["pillar"] for s in facts[ref]["sources"]} == {"day"}
         ],
     }
-    return {"charts": charts, "facts": facts}, result["report"]
+    return {"charts": charts, "facts": facts}
 
 
 def validate(manuscript, facts):
@@ -187,10 +215,10 @@ def request_openai(payload, profile, key, budget=None):
     raw = json.dumps(body, ensure_ascii=False).encode("utf-8")
     if len(raw) > MAX_REQUEST_BYTES:
         raise ExperimentError("input_limit", "계산 근거가 요청 한도를 초과했습니다.")
-    # Reserve the full documented model context for input, independently of tokenization.
-    # The configured profiles share Standard rates. Prices are USD per million tokens.
+    # The UTF-8 cap covers the text, instructions and schema. Allow 64k input
+    # tokens for those bytes and provider framing, and reserve cache-write rates.
     input_rate, _, output_rate = profile["rates"]
-    reservation = 1_050_000 * input_rate + MAX_OUTPUT_TOKENS * output_rate
+    reservation = int(64_000 * (input_rate + 2.5) + MAX_OUTPUT_TOKENS * output_rate)
     request = Request("https://api.openai.com/v1/responses", raw,
                       {"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
     try:
@@ -224,10 +252,11 @@ def extract_report(response):
         raise ExperimentError("invalid_response", "모델 원고의 형식을 읽을 수 없습니다.") from None
 
 
-def run_report(profile_id, mode, live_enabled=False, budget=None):
+def run_report(profile_id, mode, live_enabled=False, budget=None, payload=None):
     if not isinstance(profile_id, str) or profile_id not in PROFILES or mode not in ("mock", "live"):
         raise ExperimentError("input", "모델 설정과 실행 방식을 선택해 주세요.", 400)
-    payload, _ = fixed_case()
+    if payload is None:
+        payload, _ = fixed_case()
     profile = PROFILES[profile_id]
     metrics = {"latency_ms": None, "usage": None}
     status = "ok"
