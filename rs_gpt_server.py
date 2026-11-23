@@ -163,6 +163,39 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     if len(admin_token()) < 32:
         logging.warning("RS GPT administrator authentication is unavailable: configure a token of at least 32 characters.")
+    if (os.environ.get("RENDER_SERVICE_ID") == RENDER_SERVICE_ID
+            and os.environ.get("RS_GPT_LIVE") == "0"):
+        import psycopg
+        from rs_gpt_budget import connect_render_ledger
+
+        try:
+            with connect_render_ledger():
+                pass
+            verify_render_ledger()
+        except psycopg.Error as error:
+            message = str(error).lower()
+            categories = (
+                ("certificate verify failed", "certificate_verification"),
+                ("root certificate", "ca_bundle"),
+                ("certificate", "certificate"),
+                ("password authentication failed", "invalid_password"),
+                ("role ", "role"),
+                ("channel binding", "channel_binding"),
+                ("could not translate host", "dns"),
+                ("timeout expired", "timeout"),
+                ("connection refused", "connection_refused"),
+                ("invalid connection option", "invalid_connection_option"),
+                ("unsupported startup parameter", "startup_parameter"),
+                ("endpoint", "endpoint"),
+                ("database ", "database"),
+            )
+            category = next((label for fragment, label in categories if fragment in message), "unknown")
+            logging.warning("RS GPT startup ledger probe connection failure: category=%s pq=%d",
+                            category, psycopg.pq.version())
+        except ExperimentError as error:
+            logging.warning("RS GPT startup ledger probe failed: status=%d", error.status)
+        else:
+            logging.info("RS GPT startup ledger probe passed and rolled back")
     host = "0.0.0.0" if os.environ.get("RENDER") == "true" else "127.0.0.1"
     port = int(os.environ.get("PORT", "8766"))
     with ThreadingHTTPServer((host, port), Handler) as server:
