@@ -58,12 +58,20 @@ async function run() {
           assert.match(await page.locator('.natal-chart').first().textContent(), /己酉.*庚戌/);
         }
         await fit();
+        assert(await page.locator('.saju-term').count());
+        assert(await page.locator('.saju-term').evaluateAll(terms =>
+          terms.every(term => getComputedStyle(term).textDecorationLine === 'none')));
         await page.locator('#chapterReaderNav .reader-next').click();
         assert.equal(await page.locator('.chapter-visible h2').textContent(), '두 명식이 만나는 자리');
         assert.equal(await page.locator('.paragraph-evidence, [data-evidence-id], .literature-corner').count(), 0);
         if (sample === 'review') {
           assert.deepEqual(full.full_report.compatibility.coverage, { a: ['hour'], b: ['hour'] });
-          assert.match(await page.locator('.chapter-visible').textContent(), /정재.*편관|정재.*정관/);
+          assert.deepEqual(full.full_report.compatibility.charts.a.pillars,
+            { year: '壬申', month: '癸卯', day: '癸巳', hour: null });
+          assert.deepEqual(full.full_report.compatibility.charts.b.pillars,
+            { year: '壬申', month: '甲辰', day: '丙子', hour: null });
+          assert.match(await page.locator('.chapter-visible').textContent(), /정재.*정관/);
+          assert.match(await page.locator('.chapter-visible').textContent(), /육합과 상형이 겹쳐요/);
         }
         await fit();
         await page.locator('#chapterReaderNav .reader-next').click();
