@@ -15,8 +15,8 @@ from rs_synthesis import PARTNER_ROLES, analyze_preview
 
 ROOT = Path(__file__).resolve().parent
 PROFILES = {
-    "sol-61": {"model": "gpt-6.1-sol", "effort": "low", "rates": (1, 0.05, 5)},
-    "sol-62": {"model": "gpt-6.2-sol", "effort": "medium", "rates": (1, 0.05, 5)},
+    "sol-61": {"model": "gpt-6.1-sol", "effort": "low", "rates": (2, 0.10, 10)},
+    "sol-62": {"model": "gpt-6.2-sol", "effort": "medium", "rates": (2, 0.10, 10)},
 }
 INSTRUCTIONS = """연연 궁합 리포트 1~3장을 존댓말 한국어 산문으로 집필하세요.
 각 장은 그 장의 가장 중요한 해석으로 시작한 뒤, 계산된 글자와 자리, 방향을 짚고

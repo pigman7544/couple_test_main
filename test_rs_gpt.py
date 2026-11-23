@@ -82,7 +82,7 @@ class RsGptTests(unittest.TestCase):
         self.assertFalse(body["store"])
         self.assertTrue(body["text"]["format"]["strict"])
         self.assertNotIn("1992", body["input"])
-        self.assertEqual(report["metrics"]["usage"]["estimated_usd"], 0.003025)
+        self.assertEqual(report["metrics"]["usage"]["estimated_usd"], 0.00605)
         self.assertIsInstance(report["metrics"]["latency_ms"], int)
 
     def test_rejects_unknown_reference_and_uncited_interaction(self):
