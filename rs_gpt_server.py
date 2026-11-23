@@ -18,6 +18,11 @@ ADMIN_API = "/api/rs-gpt/admin"
 LEDGER_API = "/api/rs-gpt/admin/ledger"
 
 
+def admin_token():
+    # The browser trims surrounding whitespace before sending the bearer token.
+    return os.environ.get("RS_GPT_ADMIN_TOKEN", "").strip()
+
+
 def parse_birth(data):
     if not isinstance(data, dict) or set(data) != {"date", "time", "gender"}:
         raise ValueError
@@ -63,17 +68,16 @@ class Handler(BaseHTTPRequestHandler):
 
     def live_enabled(self):
         if (os.environ.get("RS_GPT_LIVE") != "1" or not os.environ.get("OPENAI_API_KEY")
-                or len(os.environ.get("RS_GPT_ADMIN_TOKEN", "")) < 32):
+                or len(admin_token()) < 32):
             return False
         if os.environ.get("RENDER") != "true":
             return (self.server.server_address[0] in LOOPBACK
                     and bool(os.environ.get("RS_GPT_LOCAL_LEDGER")))
         return (os.environ.get("RENDER_SERVICE_ID") == RENDER_SERVICE_ID
-                and bool(os.environ.get("RS_GPT_BUDGET_DSN"))
-                and len(os.environ.get("RS_GPT_ADMIN_TOKEN", "")) >= 32)
+                and bool(os.environ.get("RS_GPT_BUDGET_DSN")))
 
     def admin_authorized(self):
-        secret = os.environ.get("RS_GPT_ADMIN_TOKEN", "")
+        secret = admin_token()
         actual = self.headers.get("Authorization", "").encode("utf-8")
         return len(secret) >= 32 and hmac.compare_digest(actual, f"Bearer {secret}".encode())
 
@@ -157,6 +161,8 @@ if __name__ == "__main__":
         init_local_budget(sys.argv[2])
         raise SystemExit
     logging.basicConfig(level=logging.INFO, format="%(message)s")
+    if len(admin_token()) < 32:
+        logging.warning("RS GPT administrator authentication is unavailable: configure a token of at least 32 characters.")
     host = "0.0.0.0" if os.environ.get("RENDER") == "true" else "127.0.0.1"
     port = int(os.environ.get("PORT", "8766"))
     with ThreadingHTTPServer((host, port), Handler) as server:

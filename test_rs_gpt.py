@@ -162,6 +162,18 @@ class RsGptTests(unittest.TestCase):
                 self.assertEqual(json.load(response), verify.return_value)
         verify.assert_called_once_with()
 
+    def test_admin_auth_normalizes_configured_token_with_live_disabled(self):
+        address = self.origin + "/api/rs-gpt/admin"
+        request = Request(address, headers={"Authorization": f"Bearer {self.token}"})
+        config = {"RS_GPT_ADMIN_TOKEN": f"  {self.token}\n", "RS_GPT_LIVE": "0"}
+        with patch.dict("os.environ", config):
+            with urlopen(request, timeout=5) as response:
+                self.assertEqual(response.status, 200)
+                self.assertFalse(json.load(response)["live_enabled"])
+            with self.assertRaises(HTTPError) as error:
+                urlopen(address, timeout=5)
+            self.assertEqual(error.exception.code, 403)
+
     def test_admin_mixed_birth_times(self):
         config = {"RS_GPT_LIVE": "1", "OPENAI_API_KEY": "mock-transport-key",
                   "RS_GPT_ADMIN_TOKEN": self.token, "RS_GPT_LOCAL_LEDGER": "test-only"}
