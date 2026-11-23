@@ -17,7 +17,7 @@ def stem_with_element(stem):
     return f"{READINGS[stem]}{ELEMENT[element]}({stem}, {ELEMENT_WORD[element]} 기운)"
 ELEMENT_STYLE = {
     "wood": "아직 모양이 잡히지 않은 일에 방향을 내고 키우는 힘",
-    "fire": "마음속에 있던 뜻을 드러내고 눈앞의 반응에 응하는 힘",
+    "fire": "마음을 말로 건네고 상대의 반응에 화답하는 힘",
     "earth": "흩어진 사정을 받아들여 계속 이어 갈 틀을 만드는 힘",
     "metal": "지킬 기준을 세우고 남길 것과 덜어 낼 것을 가르는 힘",
     "water": "상황의 흐름을 살피고 그에 맞는 길을 찾는 힘",
@@ -25,10 +25,10 @@ ELEMENT_STYLE = {
 ROLE_MEANING = {
     "비견": "가까운 사이에서도 각자의 판단을 존중하는 태도",
     "겁재": "한정된 몫을 두고 서로 주도권을 의식하는 마음",
-    "식신": "마음을 꾸준한 돌봄이나 손에 잡히는 결과로 표현하는 힘",
+    "식신": "마음을 돌봄과 행동으로 보여 주는 힘",
     "상관": "익숙한 방식에서 걸리는 점을 찾아 자기 말로 드러내는 힘",
     "편재": "새로운 가능성을 알아보고 여러 자원을 유연하게 쓰는 감각",
-    "정재": "맡은 몫을 헤아리고 오래 감당할 수 있게 가꾸는 태도",
+    "정재": "맡은 일을 꾸준히 챙기고 감당할 몫을 헤아리는 태도",
     "편관": "어려운 상황에서 결단하고 책임을 떠맡는 힘",
     "정관": "서로의 역할을 분명히 하고 한 번 맺은 약속을 지키는 태도",
     "편인": "받아들인 것을 자기 방식으로 곱씹고 해석하는 힘",
@@ -124,7 +124,7 @@ def natal(result, owner, gender):
     opening = paragraph(
         f"{NAMES[owner]}의 관계에서 눈여겨볼 점은 {ELEMENT_STYLE[element]}입니다. "
         f"태어난 날의 첫 글자인 일간은 {stem_with_element(stem)}이고, 확인된 글자 중 같은 기운을 대표하는 자리는 {count}곳입니다. "
-        f"{ELEMENT_SCENE[element]}",
+        + ELEMENT_SCENE[element],
         [*basics, *(p["id"] for p in branches)], owner, "태어난 날의 글자",
     )
 
@@ -142,7 +142,7 @@ def natal(result, owner, gender):
             f"{NAMES[owner]}의 평소 생활에서는 {with_particle(ROLE_MEANING[role], '을', '를')} 눈여겨볼 만합니다. "
             f"태어난 달의 뒤 글자인 월지는 {season['season']}의 {symbol(season['branch'])}이고, "
             f"그 속의 중심 글자 {with_particle(symbol(month['stem']), '은', '는')} 일간을 기준으로 {role}에 해당합니다."
-            f"{layers} 가까운 사람이 이 모습을 알아보려면, 바쁜 날 무엇을 먼저 챙기는지 살펴볼 수 있습니다.",
+            f"{layers} {GOD_LENS[role]}에 관한 이야기를 나눠 보면 평소 무엇을 먼저 챙기는지 알 수 있습니다.",
             [day_id, *(p["id"] for p in hidden), *month["exposed_at"]],
             owner, "태어난 계절과 평소의 모습",
         )
@@ -164,8 +164,10 @@ def natal(result, owner, gender):
     )
     if hidden[1:]:
         other_role = hidden[1]["ten_god"]
-        text += (f" 이 자리의 {hidden_text(hidden[1:])}에서는 "
-                 f"{with_particle(ROLE_MEANING[other_role], '을', '를')} 함께 살핍니다.")
+        text += f" 여기에는 {hidden_text(hidden[1:])}도 들어 있습니다."
+        everyday = f" 가까운 사람에게서 {with_particle(ROLE_MEANING[other_role], '을', '를')} 함께 기대할 수도 있습니다."
+    else:
+        everyday = f" “{GOD_QUESTIONS[role]}” 하고 물어보면 가까운 사람에게 바라는 점을 구체적으로 이야기할 수 있습니다."
     tradition = PARTNER_ROLES.get(gender) if isinstance(gender, str) else None
     markers = []
     if tradition:
@@ -180,7 +182,7 @@ def natal(result, owner, gender):
         else:
             text += f" 확인된 글자에는 전통적으로 배우자성을 뜻하는 {with_particle(category, '이', '가')} 드러나지 않습니다."
     palace_entry = paragraph(
-        text + f" “{GOD_QUESTIONS[role]}” 하고 물어보면 가까운 사람에게 바라는 점을 구체적으로 이야기할 수 있습니다.",
+        text + everyday,
         [day_id, f"{owner}.coverage", *(p["id"] for p in hidden),
                *(ref for _, ref, _ in markers)],
         owner, "가까운 관계에 바라는 것",
