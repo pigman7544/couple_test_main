@@ -1,20 +1,18 @@
 .saju-term {
-  color: #744c70;
-  font-weight: 400;
-  text-decoration: underline dotted;
-  text-underline-offset: .23em;
+  font-weight: 600;
+  text-decoration: none;
 }
 
 button.saju-term {
   display: inline;
-  padding: 0 .12em;
+  padding: 0;
   margin: 0;
   border: 0;
   border-radius: .12em;
-  background: #744c7010;
+  background: transparent;
   font: inherit;
-  font-weight: 400;
-  color: #744c70;
+  font-weight: 600;
+  color: inherit;
   cursor: pointer;
 }
 
