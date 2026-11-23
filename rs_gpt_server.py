@@ -1,12 +1,15 @@
 """Run the comparison in its own process, independently of the product server."""
+import hmac
 import json
 import logging
 import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from rs_gpt import ROOT, PROFILES, ExperimentError, fixed_case, run_report
+from rs_gpt_budget import render_budget
 
 LOOPBACK = ("127.0.0.1", "localhost")
+RENDER_SERVICE_ID = "srv-dc23purl550s7381llg0"
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -28,9 +31,18 @@ class Handler(BaseHTTPRequestHandler):
         self.write_response(status, json.dumps(body, ensure_ascii=False).encode(), "application/json")
 
     def live_enabled(self):
-        return (self.server.server_address[0] in LOOPBACK
-                and os.environ.get("RS_GPT_LIVE") == "1"
-                and bool(os.environ.get("OPENAI_API_KEY")))
+        if os.environ.get("RS_GPT_LIVE") != "1" or not os.environ.get("OPENAI_API_KEY"):
+            return False
+        if os.environ.get("RENDER") != "true":
+            return self.server.server_address[0] in LOOPBACK
+        return (os.environ.get("RENDER_SERVICE_ID") == RENDER_SERVICE_ID
+                and bool(os.environ.get("RS_GPT_BUDGET_DSN"))
+                and len(os.environ.get("RS_GPT_ADMIN_TOKEN", "")) >= 32)
+
+    def admin_authorized(self):
+        secret = os.environ.get("RS_GPT_ADMIN_TOKEN", "")
+        actual = self.headers.get("Authorization", "").encode("utf-8")
+        return len(secret) >= 32 and hmac.compare_digest(actual, f"Bearer {secret}".encode())
 
     def do_GET(self):
         if self.path in ("/", "/rs-gpt"):
@@ -40,7 +52,12 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/api/rs-gpt":
             facts, baseline = fixed_case()
             self.json_response(200, {**facts, "baseline": baseline,
-                                     "profiles": PROFILES, "live_enabled": self.live_enabled()})
+                                     "profiles": PROFILES, "live_enabled": (
+                                         self.live_enabled() and (
+                                             os.environ.get("RENDER") != "true"
+                                             or self.admin_authorized()
+                                         )
+                                     )})
         else:
             self.json_response(404, {"error": "페이지를 찾을 수 없습니다."})
 
@@ -57,7 +74,12 @@ class Handler(BaseHTTPRequestHandler):
             data = json.loads(self.rfile.read(size))
             if not isinstance(data, dict) or set(data) != {"profile", "mode"}:
                 raise ValueError
-            result = run_report(data["profile"], data["mode"], self.live_enabled())
+            enabled = self.live_enabled()
+            on_render = os.environ.get("RENDER") == "true"
+            if data["mode"] == "live" and on_render and not self.admin_authorized():
+                raise ExperimentError("forbidden", "관리자 인증이 필요합니다.", 403)
+            result = run_report(data["profile"], data["mode"], enabled,
+                                render_budget if on_render else None)
         except ExperimentError as exc:
             self.json_response(exc.status, {"error": str(exc), "code": exc.code,
                                             "metrics": getattr(exc, "metrics", None)})
@@ -76,3 +98,4 @@ if __name__ == "__main__":
     with ThreadingHTTPServer((host, port), Handler) as server:
         print(f"RS GPT review on {host}:{port}", flush=True)
         server.serve_forever()
+

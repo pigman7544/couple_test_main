@@ -24,11 +24,14 @@ class RsGptTests(unittest.TestCase):
         cls.server.server_close()
         cls.thread.join()
 
-    def post(self, mode, profile="sol-61"):
+    def post(self, mode, profile="sol-61", token=None):
+        headers = {"Content-Type": "application/json"}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
         return urlopen(Request(
             self.origin + "/api/rs-gpt",
             json.dumps({"mode": mode, "profile": profile}).encode(),
-            {"Content-Type": "application/json"},
+            headers,
         ), timeout=5)
 
     def test_fixed_calculation(self):
@@ -62,6 +65,30 @@ class RsGptTests(unittest.TestCase):
             with self.assertRaises(HTTPError) as error:
                 self.post("live")
             self.assertEqual(error.exception.code, 503)
+        provider.assert_not_called()
+
+    @patch("rs_gpt_server.render_budget")
+    @patch("rs_gpt.urlopen")
+    def test_render_identity_admin_and_failed_budget_block_upstream(self, provider, budget):
+        token = "test-admin-token-" * 3
+        config = {"RENDER": "true", "RENDER_SERVICE_ID": "srv-dc23purl550s7381llg0",
+                  "RS_GPT_LIVE": "1", "OPENAI_API_KEY": "mock-transport-key",
+                  "RS_GPT_ADMIN_TOKEN": token, "RS_GPT_BUDGET_DSN": "test-only"}
+        budget.side_effect = ExperimentError("budget_store", "unavailable", 503)
+        with patch.dict("os.environ", config):
+            for supplied in (None, "incorrect"):
+                with self.assertRaises(HTTPError) as error:
+                    self.post("live", token=supplied)
+                self.assertEqual(error.exception.code, 403)
+            with patch.dict("os.environ", {"RENDER_SERVICE_ID": "wrong-service"}):
+                with self.assertRaises(HTTPError) as error:
+                    self.post("live", token=token)
+                self.assertEqual(error.exception.code, 503)
+            budget.assert_not_called()
+            with self.assertRaises(HTTPError) as error:
+                self.post("live", token=token)
+            self.assertEqual(json.load(error.exception)["code"], "budget_store")
+        budget.assert_called_once_with(2_155_000)
         provider.assert_not_called()
 
     @patch("rs_gpt.urlopen")
@@ -103,3 +130,4 @@ class RsGptTests(unittest.TestCase):
                 run_report("sol-61", "live", live_enabled=True)
         self.assertEqual(error.exception.code, "incomplete")
         self.assertIsInstance(error.exception.metrics["latency_ms"], int)
+

@@ -5,6 +5,7 @@ import os
 import re
 import threading
 import time
+from contextlib import nullcontext
 from functools import lru_cache
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -18,6 +19,8 @@ PROFILES = {
     "sol-61": {"model": "gpt-6.1-sol", "effort": "low", "rates": (2, 0.10, 10)},
     "sol-62": {"model": "gpt-6.2-sol", "effort": "medium", "rates": (2, 0.10, 10)},
 }
+MAX_OUTPUT_TOKENS = 5500
+MAX_REQUEST_BYTES = 32_768
 INSTRUCTIONS = """연연 궁합 리포트 1~3장을 존댓말 한국어 산문으로 집필하세요.
 각 장은 그 장의 가장 중요한 해석으로 시작한 뒤, 계산된 글자와 자리, 방향을 짚고
 처음 읽는 사람도 이해할 수 있는 관계의 말로 풀어 주세요. 매 문단을 같은 형식으로
@@ -173,25 +176,33 @@ def usage_metrics(data, profile):
             "output_tokens": output_tokens, "estimated_usd": round(usd, 8)}
 
 
-def request_openai(payload, profile, key):
+def request_openai(payload, profile, key, budget=None):
     body = {
         "model": profile["model"], "reasoning": {"effort": profile["effort"]},
-        "service_tier": "default", "store": False, "max_output_tokens": 5500,
+        "service_tier": "default", "store": False, "max_output_tokens": MAX_OUTPUT_TOKENS,
         "instructions": INSTRUCTIONS, "input": json.dumps(payload, ensure_ascii=False),
         "text": {"format": {"type": "json_schema", "name": "rs_report", "strict": True,
                             "schema": SCHEMA}},
     }
-    request = Request("https://api.openai.com/v1/responses",
-                      json.dumps(body, ensure_ascii=False).encode("utf-8"),
+    raw = json.dumps(body, ensure_ascii=False).encode("utf-8")
+    if len(raw) > MAX_REQUEST_BYTES:
+        raise ExperimentError("input_limit", "계산 근거가 요청 한도를 초과했습니다.")
+    # Reserve the full documented model context for input, independently of tokenization.
+    # The configured profiles share Standard rates. Prices are USD per million tokens.
+    input_rate, _, output_rate = profile["rates"]
+    reservation = 1_050_000 * input_rate + MAX_OUTPUT_TOKENS * output_rate
+    request = Request("https://api.openai.com/v1/responses", raw,
                       {"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
     try:
-        with urlopen(request, timeout=90) as response:
+        with budget(reservation) if budget else nullcontext(), urlopen(request, timeout=90) as response:
             return json.loads(response.read(1_048_577))
     except HTTPError as exc:
         if exc.code == 429:
             raise ExperimentError("rate_limit", "OpenAI 요청 한도나 프로젝트 예산을 확인해 주세요.", 429) from None
         if exc.code in (401, 403):
             raise ExperimentError("auth", "서버의 OpenAI 키와 모델 권한을 확인해 주세요.") from None
+        if exc.code == 404:
+            raise ExperimentError("model_unavailable", "이 프로젝트에서 모델을 사용할 수 없습니다.") from None
         raise ExperimentError("provider", f"OpenAI 요청에 실패했습니다. 응답 상태 {exc.code}.") from None
     except (TimeoutError, URLError, OSError):
         raise ExperimentError("network", "OpenAI 연결이 지연되거나 끊겼습니다.", 504) from None
@@ -213,7 +224,7 @@ def extract_report(response):
         raise ExperimentError("invalid_response", "모델 원고의 형식을 읽을 수 없습니다.") from None
 
 
-def run_report(profile_id, mode, live_enabled=False):
+def run_report(profile_id, mode, live_enabled=False, budget=None):
     if not isinstance(profile_id, str) or profile_id not in PROFILES or mode not in ("mock", "live"):
         raise ExperimentError("input", "모델 설정과 실행 방식을 선택해 주세요.", 400)
     payload, _ = fixed_case()
@@ -228,18 +239,20 @@ def run_report(profile_id, mode, live_enabled=False):
         else:
             key = os.environ.get("OPENAI_API_KEY")
             if not live_enabled or not key:
-                raise ExperimentError("disabled", "로컬 서버에서 OpenAI 키와 실호출 설정을 확인해 주세요.", 503)
+                raise ExperimentError("disabled", "이 서버에서 실호출을 사용할 수 없습니다.", 503)
             acquired = LIVE_SLOT.acquire(blocking=False)
             if not acquired:
                 raise ExperimentError("busy", "다른 원고를 작성 중입니다. 잠시 뒤 다시 시도해 주세요.", 429)
             started = time.perf_counter()
             try:
-                response = request_openai(payload, profile, key)
+                response = request_openai(payload, profile, key, budget)
             finally:
                 metrics["latency_ms"] = round((time.perf_counter() - started) * 1000)
             if not isinstance(response, dict):
                 raise ExperimentError("invalid_response", "OpenAI의 응답을 읽을 수 없습니다.")
             metrics["usage"] = usage_metrics(response.get("usage"), profile)
+            if isinstance(response.get("model"), str):
+                metrics["response_model"] = response["model"]
             manuscript = extract_report(response)
         audit = validate(manuscript, payload["facts"])
         return {**manuscript, "audit": audit, "mode": mode, "profile": profile_id,
