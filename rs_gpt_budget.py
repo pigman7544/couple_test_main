@@ -66,10 +66,13 @@ def connect_render_ledger():
             or config.get("hostaddr") or config.get("service")
             or config.get("user") != RUNTIME_ROLE):
         raise ExperimentError("budget_store", "Neon 직접 연결 설정을 확인해 주세요.", 503)
+    # The bundled libpq may use a different OpenSSL trust path on Render.
+    ca_bundle = Path("/etc/ssl/certs/ca-certificates.crt")
+    root_cert = str(ca_bundle) if ca_bundle.is_file() else "system"
     return psycopg.connect(
         host=host, hostaddr="", dbname=config.get("dbname", "neondb"),
         user=RUNTIME_ROLE, password=config.get("password", ""), port=5432,
-        sslmode="verify-full", sslrootcert="system", channel_binding="require",
+        sslmode="verify-full", sslrootcert=root_cert, channel_binding="require",
         connect_timeout=5, options="-c statement_timeout=5000",
     )
 
