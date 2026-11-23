@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>연연 · RS 원고 비교</title>
+<style>
+:root{color-scheme:light;--paper:#f7f4ee;--ink:#292520;--muted:#65594f;--line:#ded5c9;--red:#823a34}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,sans-serif}
+main{max-width:1450px;margin:auto;padding:clamp(20px,4vw,64px)}
+header{border-bottom:1px solid var(--line);padding-bottom:22px}
+h1,h2,h3{font-family:"Noto Serif KR","Batang",serif}
+h1{font-size:clamp(32px,5vw,54px);margin:12px 0;color:var(--red)}
+p{line-height:1.8;overflow-wrap:anywhere}
+header p{margin:4px 0}
+label,summary,button{font-weight:650}
+button,select{font:inherit;padding:8px 10px;border-radius:5px;border:1px solid #807165;background:white;color:var(--ink)}
+button{cursor:pointer}
+button.primary{background:var(--red);color:white;border-color:var(--red)}
+button:disabled{opacity:.55;cursor:default}
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:20px 0}
+.comparison{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+article{border:1px solid var(--line);background:#fffdf8;border-radius:9px;padding:20px;min-width:0}
+article h2{margin-top:0;font-size:1.2rem}
+article h3{color:var(--red);border-top:1px solid var(--line);padding-top:16px}
+article p{margin:12px 0}
+.meta,small{color:var(--muted)}
+small{display:block;overflow-wrap:anywhere}
+details{margin:14px 0}
+pre{white-space:pre-wrap;overflow-wrap:anywhere}
+[role=status]{color:var(--muted)}
+@media(max-width:900px){.comparison{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>연연 RS 원고 비교</h1>
+<p>고정 명식 · 첫째 남 1992-03-18 · 둘째 여 1992-04-30 · 양력 · 두 사람 모두 출생시각 미상</p>
+<p id="scope" class="meta"></p>
+</header>
+<div class="toolbar">
+<label for="mode">실행 방식</label>
+<select id="mode"><option value="mock">목업</option><option id="live" value="live" disabled>OpenAI 실호출</option></select>
+<button id="compare" class="primary" disabled>두 설정 비교</button>
+<button id="download" disabled>전문 비교 내려받기</button>
+</div>
+<p id="status" role="status">기준 원고를 불러오는 중입니다.</p>
+<details><summary>계산된 명식과 근거</summary><pre id="facts"></pre></details>
+<section class="comparison" aria-label="원고 비교">
+<article id="baseline"></article><article id="slot-a"></article><article id="slot-b"></article>
+</section>
+</main>
+<script>
+const byId = id => document.getElementById(id);
+const endpoint = '/api/rs-gpt';
+const scope = byId('scope'), status = byId('status'), compare = byId('compare');
+const download = byId('download'), mode = byId('mode');
+let baseline = [], profiles = {}, results = [];
+
+function append(parent, tag, value, className) {
+  const node = document.createElement(tag);
+  node.textContent = value;
+  if (className) node.className = className;
+  parent.append(node);
+  return node;
+}
+
+function measurement(metrics) {
+  if (!metrics) return '';
+  const u = metrics.usage;
+  const parts = [];
+  if (metrics.latency_ms !== null) parts.push(`OpenAI 응답 ${metrics.latency_ms} ms`);
+  if (u) parts.push(`입력 ${u.input_tokens} (캐시 ${u.cached_input_tokens}) · 출력 ${u.output_tokens} 토큰`,
+                    `표준 요율 추정 비용 USD ${u.estimated_usd.toFixed(8)}`);
+  return parts.join(' · ');
+}
+
+function render(node, title, meta, chapters = []) {
+  node.replaceChildren();
+  append(node, 'h2', title);
+  if (meta) append(node, 'p', meta, 'meta');
+  chapters.forEach((chapter, index) => {
+    append(node, 'h3', `${index + 1}장. ${chapter.title}`);
+    chapter.paragraphs.forEach(paragraph => {
+      if (paragraph.heading) append(node, 'h4', paragraph.heading);
+      append(node, 'p', paragraph.text);
+      if (paragraph.evidence_ids?.length) append(node, 'small', paragraph.evidence_ids.join(' · '));
+    });
+  });
+}
+
+function label(id) {
+  return `${profiles[id].model} · ${profiles[id].effort}`;
+}
+
+function resultMeta(result) {
+  if (result.error) return [result.error, measurement(result.metrics)].filter(Boolean).join(' · ');
+  if (result.mode === 'mock') return `작성 예시 목업 · 토큰·비용·지연시간 미측정 · ${result.audit.checks}`;
+  return ['OpenAI 실호출', measurement(result.metrics) || '계측값 없음', result.audit.checks].join(' · ');
+}
+
+async function generate(id, selectedMode) {
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({profile: id, mode: selectedMode}),
+    });
+    const result = await response.json();
+    if (!response.ok && !result.error) throw Error();
+    return result;
+  } catch {
+    return {error: '응답을 받지 못했습니다. 다시 시도해 주세요.'};
+  }
+}
+
+compare.addEventListener('click', async () => {
+  const selectedMode = mode.value;
+  compare.disabled = mode.disabled = download.disabled = true;
+  status.textContent = '두 설정의 원고를 불러오는 중입니다.';
+  results = [];
+  const slots = [byId('slot-a'), byId('slot-b')];
+  const ids = Object.keys(profiles);
+  ids.forEach((id, index) => render(slots[index], label(id), '대기 중'));
+  for (const [index, id] of ids.entries()) {
+    const result = await generate(id, selectedMode);
+    results.push({id, result});
+    render(slots[index], label(id), resultMeta(result), result.chapters);
+  }
+  const successes = results.filter(({result}) => !result.error).length;
+  status.textContent = `${successes}/${ids.length}개 원고를 표시했습니다.`;
+  compare.disabled = mode.disabled = download.disabled = false;
+});
+
+download.addEventListener('click', () => {
+  const lines = ['# 연연 RS 원고 비교', '', '고정 명식 · 양력 · 두 사람 출생시각 미상', ''];
+  const documents = [{title: 'PR #37 기준 원고', chapters: baseline},
+    ...results.map(({id, result}) => ({title: label(id), chapters: result.chapters, meta: resultMeta(result)}))];
+  for (const doc of documents) {
+    lines.push(`## ${doc.title}`, '', doc.meta || '', '');
+    (doc.chapters || []).forEach((chapter, index) => {
+      lines.push(`### ${index + 1}장. ${chapter.title}`, '');
+      for (const p of chapter.paragraphs) {
+        if (p.heading) lines.push(`#### ${p.heading}`, '');
+        lines.push(p.text, '', `근거 · ${p.evidence_ids.join(' · ')}`, '');
+      }
+    });
+  }
+  const url = URL.createObjectURL(new Blob([lines.join('\n')], {type: 'text/markdown;charset=utf-8'}));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'rs-gpt-comparison.md';
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+
+(async () => {
+  try {
+    const response = await fetch(endpoint);
+    if (!response.ok) throw Error();
+    const data = await response.json();
+    baseline = data.baseline;
+    profiles = data.profiles;
+    byId('facts').textContent = JSON.stringify({명식: data.charts, 근거: data.facts}, null, 2);
+    byId('live').disabled = !data.live_enabled;
+    scope.textContent = data.live_enabled
+      ? '실호출을 선택하면 OpenAI로 계산 근거를 전송합니다.'
+      : '목업 모드 · 집필 예시를 보여 주며 OpenAI를 호출하지 않습니다.';
+    render(byId('baseline'), 'PR #37 기준 원고', '기존 편집 엔진', baseline);
+    Object.keys(profiles).forEach((id, index) =>
+      render(byId(index ? 'slot-b' : 'slot-a'), label(id), '비교 실행을 기다리고 있습니다.'));
+    compare.disabled = download.disabled = false;
+    status.textContent = '두 설정으로 작성한 원고를 나란히 읽을 수 있습니다.';
+  } catch {
+    status.textContent = '기준 원고를 불러오지 못했습니다. 페이지를 새로고침해 주세요.';
+  }
+})();
+</script>
+</body>
+</html>
