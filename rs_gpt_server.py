@@ -9,12 +9,13 @@ from datetime import date
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from rs_gpt import ROOT, PROFILES, ExperimentError, birth_payload, fixed_case, run_report
-from rs_gpt_budget import init_local_budget, local_budget, render_budget
+from rs_gpt_budget import init_local_budget, local_budget, render_budget, verify_render_ledger
 
 LOOPBACK = ("127.0.0.1", "localhost")
 RENDER_SERVICE_ID = "srv-dc23purl550s7381llg0"
 ADMIN_PATH = "/rs-gpt/admin"
 ADMIN_API = "/api/rs-gpt/admin"
+LEDGER_API = "/api/rs-gpt/admin/ledger"
 
 
 def parse_birth(data):
@@ -85,7 +86,20 @@ class Handler(BaseHTTPRequestHandler):
             if not self.admin_authorized():
                 self.json_response(403, {"error": "관리자 인증이 필요합니다."})
             else:
-                self.json_response(200, {"live_enabled": self.live_enabled()})
+                self.json_response(200, {
+                    "live_enabled": self.live_enabled(),
+                    "ledger_check": os.environ.get("RENDER_SERVICE_ID") == RENDER_SERVICE_ID,
+                })
+        elif self.path == LEDGER_API:
+            if not self.admin_authorized():
+                self.json_response(403, {"error": "관리자 인증이 필요합니다."})
+            elif os.environ.get("RENDER_SERVICE_ID") != RENDER_SERVICE_ID:
+                self.json_response(404, {"error": "페이지를 찾을 수 없습니다."})
+            else:
+                try:
+                    self.json_response(200, verify_render_ledger())
+                except ExperimentError as exc:
+                    self.json_response(exc.status, {"error": str(exc), "code": exc.code})
         elif self.path == "/health":
             self.write_response(200, b"OK", "text/plain")
         elif self.path == "/api/rs-gpt":

@@ -28,7 +28,11 @@ python rs_gpt_server.py
 
 ## Render
 
-실험 서비스 `srv-dc23purl550s7381llg0`에만 연결합니다. 무료 Render 웹 서비스의 로컬 파일은 재시작과 배포 후 보존되지 않으므로 SQLite 방식은 내 PC의 주소에서만 허용합니다. Render 실시간 집필을 사용하려면 이미 확보한 영속 PostgreSQL 원장의 연결 문자열을 `RS_GPT_BUDGET_DSN`으로, 별도 관리자 토큰과 API 키를 각각 `RS_GPT_ADMIN_TOKEN`, `OPENAI_API_KEY`로 등록하고 `RS_GPT_LIVE=1`을 설정합니다. 원장이 준비될 때까지 실시간 호출을 차단합니다.
+1. 기존 Neon 프로젝트 `restless-morning-28089490`의 기본 브랜치와 기존 데이터베이스를 선택합니다. Neon SQL Editor에서 데이터베이스 소유자로 `rs_gpt_init_neon.sql`을 한 번 실행합니다. 기존 원장이 발견되면 기록을 보존하도록 초기화가 중단됩니다.
+2. Neon의 Roles에서 `rs_gpt_runtime`의 **Reset password**를 사용해 Neon이 비밀번호를 생성하게 합니다. **Connect**에서 같은 브랜치와 데이터베이스, 역할 `rs_gpt_runtime`을 고르고 **Connection pooling**을 끕니다.
+3. Render 실험 서비스 `srv-dc23purl550s7381llg0`의 **Environment**에 직접 연결 주소를 `RS_GPT_BUDGET_DSN`으로 저장합니다. `RS_GPT_ADMIN_TOKEN`과 `OPENAI_API_KEY`는 같은 곳에 등록합니다. 기존 값이 준비된 경우 그대로 사용합니다. `RS_GPT_LIVE=0`을 유지합니다. 이 서비스에서 PR #39의 원장 변경 커밋을 지정해 배포합니다. 서비스의 기본 배포 브랜치와 PR #39의 브랜치가 다릅니다.
+4. 관리자 화면에서 인증하고 **호출 원장 확인**을 눌러 권한, 읽기·쓰기, 두 직접 연결 사이의 세션 잠금을 검사합니다. 이 검사에서 쓴 행은 롤백됩니다. 재시작 후 원장 보존 검증은 유효한 기존 예약이나 UTC 이번 달보다 이른 검증용 예약으로 수행합니다. 같은 원장 집계가 재시작 전후 유지되는지 확인합니다. 빈 원장의 집계만 비교하면 기록 보존을 검증할 수 없습니다.
+5. 검증을 통과하면 실험 서비스에서 `RS_GPT_LIVE=1`을 적용합니다. 관리자 화면에서 고정 검토 명식으로 한 번 생성하고 응답 모델, 1~3장, 사용 토큰, 응답 시간, 비용 추정치를 확인합니다.
 
 ```sh
 python -m unittest test_v67 test_compatibility_v14 test_rs_preview test_rs_gpt

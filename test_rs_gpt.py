@@ -139,10 +139,28 @@ class RsGptTests(unittest.TestCase):
         self.assertTrue(body["text"]["format"]["strict"])
         self.assertNotIn("1992", body["input"])
         self.assertEqual(body["model"], "gpt-6.2-sol")
+        self.assertEqual(body["max_output_tokens"], 5500)
         self.assertIsNone(report["charts"]["a"]["pillars"]["hour"])
         self.assertIsNone(report["charts"]["b"]["pillars"]["hour"])
         self.assertEqual(report["metrics"]["usage"]["estimated_usd"], 0.00605)
         self.assertIsInstance(report["metrics"]["latency_ms"], int)
+
+    @patch("rs_gpt_server.verify_render_ledger", return_value={
+        "reservations": 1, "reserved_micro_usd": 343_000,
+    })
+    def test_ledger_check_requires_admin_and_works_with_live_disabled(self, verify):
+        address = self.origin + "/api/rs-gpt/admin/ledger"
+        config = {"RENDER_SERVICE_ID": "srv-dc23purl550s7381llg0",
+                  "RS_GPT_ADMIN_TOKEN": self.token, "RS_GPT_LIVE": "0"}
+        with patch.dict("os.environ", config):
+            with self.assertRaises(HTTPError) as error:
+                urlopen(address, timeout=5)
+            self.assertEqual(error.exception.code, 403)
+            verify.assert_not_called()
+            request = Request(address, headers={"Authorization": f"Bearer {self.token}"})
+            with urlopen(request, timeout=5) as response:
+                self.assertEqual(json.load(response), verify.return_value)
+        verify.assert_called_once_with()
 
     def test_admin_mixed_birth_times(self):
         config = {"RS_GPT_LIVE": "1", "OPENAI_API_KEY": "mock-transport-key",
