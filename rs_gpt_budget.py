@@ -1,6 +1,7 @@
 """Persistent admission control for the Render experiment."""
 from contextlib import closing, contextmanager
 from datetime import datetime, timezone
+import logging
 import os
 from pathlib import Path
 import re
@@ -14,6 +15,7 @@ MONTHLY_CALLS = 3
 COOLDOWN_SECONDS = 300
 LOCK_ID = 376118
 RUNTIME_ROLE = "rs_gpt_runtime"
+LOGGER = logging.getLogger(__name__)
 
 
 def check_budget(count, spent, elapsed, reservation):
@@ -75,14 +77,19 @@ def connect_render_ledger():
 def verify_render_ledger():
     import psycopg
 
+    stage = "connect"
     try:
         with connect_render_ledger() as db:
+            stage = "lock"
             if not db.execute("SELECT pg_try_advisory_lock(%s)", (LOCK_ID,)).fetchone()[0]:
                 raise ExperimentError("busy", "다른 원고를 작성 중입니다.", 429)
             db.commit()
+            stage = "second_connection"
             with connect_render_ledger() as other:
+                stage = "lock_isolation"
                 if other.execute("SELECT pg_try_advisory_lock(%s)", (LOCK_ID,)).fetchone()[0]:
                     raise ExperimentError("budget_store", "원장 잠금을 확인할 수 없습니다.", 503)
+            stage = "role_privileges"
             with db.transaction(force_rollback=True):
                 can_modify = db.execute("""
                     SELECT has_schema_privilege('rs_gpt_ledger', 'CREATE')
@@ -91,16 +98,21 @@ def verify_render_ledger():
                 """).fetchone()[0]
                 if can_modify:
                     raise ExperimentError("budget_store", "원장 접속 권한을 확인해 주세요.", 503)
+                stage = "select"
                 count, reserved = db.execute("""
                     SELECT COUNT(*), COALESCE(SUM(micro_usd), 0)
                     FROM rs_gpt_ledger.reservations
                 """).fetchone()
+                stage = "insert"
                 db.execute("""
                     INSERT INTO rs_gpt_ledger.reservations (reserved_at, micro_usd)
                     VALUES (clock_timestamp(), 1)
                 """)
+                stage = "rollback"
             return {"reservations": count, "reserved_micro_usd": reserved}
-    except psycopg.Error:
+    except psycopg.Error as error:
+        LOGGER.warning("RS GPT ledger check failed: stage=%s error=%s sqlstate=%s",
+                       stage, type(error).__name__, error.sqlstate or "none")
         raise ExperimentError("budget_store", "호출 원장을 확인할 수 없습니다.", 503) from None
 
 
