@@ -11,6 +11,11 @@ from rs_gpt_server import Handler
 
 
 class RsGptTests(unittest.TestCase):
+    def setUp(self):
+        local = patch.dict("os.environ", {"RENDER": "false"})
+        local.start()
+        self.addCleanup(local.stop)
+
     @classmethod
     def setUpClass(cls):
         cls.server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
