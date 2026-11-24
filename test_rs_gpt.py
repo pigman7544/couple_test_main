@@ -11,7 +11,7 @@ from unittest.mock import patch
 from rs_gpt import ROOT, ExperimentError, PROFILES, fixed_case, run_report, validate
 from rs_gpt_budget import init_local_budget, local_budget
 from matcher import DB
-from rs_gpt_server import Handler
+from rs_gpt_server import DIAGNOSTIC_API, GroundingDiagnostic, Handler
 
 
 class RsGptTests(unittest.TestCase):
@@ -288,8 +288,10 @@ class RsGptTests(unittest.TestCase):
         with self.assertRaises(ExperimentError):
             validate(manuscript, facts, {**names, "a": "다른이름"}, couple)
         manuscript["chapters"][1]["paragraphs"][0]["text"] += " 일지에는 육충과 상형이 함께 나타납니다."
-        with self.assertRaises(ExperimentError):
+        with self.assertRaises(ExperimentError) as error:
             validate(manuscript, facts, names, couple)
+        self.assertEqual(error.exception.diagnostic["category"], "expression")
+        self.assertEqual(error.exception.diagnostic["rule"], "technical_term_density")
 
     def test_missing_ledger_does_not_reset_allowance(self):
         with TemporaryDirectory() as folder:
@@ -310,6 +312,67 @@ class RsGptTests(unittest.TestCase):
             with self.assertRaises(ExperimentError) as error:
                 validate(sample, facts["facts"])
             self.assertEqual(error.exception.code, "grounding")
+            self.assertEqual(error.exception.diagnostic["category"], "evidence")
+            self.assertEqual(error.exception.diagnostic["rule"],
+                             "invalid_evidence_ids" if ref == "a.hour.stem" else "uncited_technical_term")
+
+    @patch("rs_gpt.request_openai")
+    def test_failed_manuscript_is_only_available_to_admin(self, provider):
+        sample = json.loads((ROOT / "rs_gpt_mock.json").read_text(encoding="utf-8"))["sol-62"]
+        sample["chapters"][0]["title"] = "1장. 처음 만난 두 사람"
+        sample["chapters"][0]["paragraphs"][0] = {
+            "text": "민준님의 일간과 연주에는 육충이 있습니다. <script>원고표식</script>",
+            "evidence_ids": ["a.day.stem"],
+        }
+        original = json.dumps(sample, ensure_ascii=False, indent=2)
+        provider.return_value = {"status": "completed", "output": [{"type": "message",
+                                 "content": [{"type": "output_text", "text": original}]}]}
+        config = {"RS_GPT_LIVE": "1", "OPENAI_API_KEY": "mock-transport-key",
+                  "RS_GPT_ADMIN_TOKEN": self.token, "RS_GPT_LOCAL_LEDGER": "test-only"}
+        address = self.origin + DIAGNOSTIC_API
+        authorized = Request(address, headers={"Authorization": f"Bearer {self.token}"})
+        diagnostic = GroundingDiagnostic()
+        with patch.dict("os.environ", config), patch("rs_gpt_server.GROUNDING_DIAGNOSTIC", diagnostic):
+            with self.assertLogs("rs_gpt", "INFO") as logs, self.assertRaises(HTTPError) as error:
+                self.post_admin(self.token)
+            self.addCleanup(diagnostic.timer.cancel)
+            self.assertEqual(error.exception.code, 502)
+            self.assertEqual(set(json.load(error.exception)), {"error", "code", "metrics"})
+            log = "\n".join(logs.output)
+            self.assertIn("uncited_technical_term", log)
+            for private in ("민준", "1992-03-18", "원고표식", "육충", "a.day.stem"):
+                self.assertNotIn(private, log)
+            for headers in ({}, {"Authorization": "Bearer incorrect"}):
+                with self.assertRaises(HTTPError) as denied:
+                    urlopen(Request(address, headers=headers), timeout=5)
+                self.assertEqual(denied.exception.code, 403)
+                self.assertNotIn("original", json.load(denied.exception))
+            with patch.dict("os.environ", {"RS_GPT_LIVE": "0"}):
+                with urlopen(authorized, timeout=5) as response:
+                    self.assertEqual(response.headers["Cache-Control"], "no-store")
+                    self.assertEqual(response.headers.get_content_type(), "application/json")
+                    report = json.load(response)
+            self.assertEqual(report["original"], original)
+            self.assertEqual(report["failure"]["excerpt"], "민준님의 일간과 연주에는 육충이 있습니다")
+            self.assertEqual(report["failure"]["category"], "evidence")
+            self.assertEqual(report["failure"]["evidence_ids"], ["a.day.stem"])
+            self.assertIn("a.day.stem", report["reference"]["facts"])
+            self.assertNotIn("1992-03-18", json.dumps(report))
+            with patch("rs_gpt_server.time.monotonic", return_value=diagnostic.deadline):
+                with self.assertRaises(HTTPError) as expired:
+                    urlopen(authorized, timeout=5)
+                self.assertEqual(expired.exception.code, 404)
+        provider.assert_called_once()
+
+    def test_diagnostic_timer_deletes_without_a_read(self):
+        diagnostic = GroundingDiagnostic()
+        with patch("rs_gpt_server.DIAGNOSTIC_TTL", 0.02):
+            diagnostic.capture({"original": "first"})
+            diagnostic.capture({"original": "last"})
+            timer = diagnostic.timer
+        if timer is not None:
+            timer.join(timeout=1)
+        self.assertIsNone(diagnostic.record)
 
     @patch("rs_gpt.request_openai", return_value={"status": "incomplete"})
     def test_reports_incomplete_without_returning_prose(self, request):

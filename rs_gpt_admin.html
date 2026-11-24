@@ -52,6 +52,8 @@ th,td{border:1px solid var(--line);padding:.35rem;overflow-wrap:anywhere}
 <button id="generate">리포트 생성</button>
 </form>
 <button type="button" id="ledger" hidden>호출 원장 확인</button>
+<button type="button" id="diagnostic" hidden>최근 검증 실패 원고 확인</button>
+<section id="diagnostic-reading" aria-label="관리자 검증 진단"></section>
 <p id="status" role="status" aria-live="polite"></p>
 <section id="reading" aria-label="생성된 리포트"></section>
 </main>
@@ -99,6 +101,7 @@ login.addEventListener('submit', async event => {
     login.hidden = true;
     form.hidden = false;
     byId('ledger').hidden = !data.ledger_check;
+    byId('diagnostic').hidden = false;
     liveEnabled = data.live_enabled;
     generate.disabled = !liveEnabled;
     status.textContent = data.live_enabled ? '두 사람의 정보를 입력해 주세요.' : '실시간 집필 설정이 준비되지 않았습니다.';
@@ -133,6 +136,44 @@ function append(parent, tag, value) {
   item.textContent = value;
   parent.append(item);
 }
+const diagnosticReading = byId('diagnostic-reading');
+let diagnosticExpiry;
+function clearDiagnostic() {
+  clearTimeout(diagnosticExpiry);
+  diagnosticReading.replaceChildren();
+}
+window.addEventListener('pagehide', clearDiagnostic);
+byId('diagnostic').addEventListener('click', async event => {
+  const button = event.currentTarget;
+  button.disabled = true;
+  clearDiagnostic();
+  const started = performance.now();
+  try {
+    const data = await call(token, null, endpoint + '/diagnostic');
+    const remaining = data.remaining_ms - (performance.now() - started);
+    if (remaining <= 0) throw new Error('검증 실패 원고의 보관 시간이 끝났습니다.');
+    const categories = {structure: '원고 형식', expression: '문체·표현', evidence: '근거 대조'};
+    append(diagnosticReading, 'h2', '검증 실패 · 관리자 전용');
+    append(diagnosticReading, 'p', categories[data.failure.category]);
+    if (data.failure.category === 'evidence') {
+      append(diagnosticReading, 'p', '실패 문장과 계산 근거를 대조해 실제 사실 오류인지 확인해 주세요.');
+    }
+    append(diagnosticReading, 'pre', JSON.stringify(data.failure, null, 2));
+    const original = document.createElement('details');
+    append(original, 'summary', '원고 1~3장 원문');
+    append(original, 'pre', data.original);
+    diagnosticReading.append(original);
+    const reference = document.createElement('details');
+    append(reference, 'summary', '계산 명식·십성·합충형해 및 선정 작품');
+    append(reference, 'pre', JSON.stringify(data.reference, null, 2));
+    diagnosticReading.append(reference);
+    diagnosticExpiry = setTimeout(clearDiagnostic, remaining);
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
 function showCharts(section, data) {
   const columns = ['hour', 'day', 'month', 'year'];
   for (const id of ['a', 'b']) {

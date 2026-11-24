@@ -5,6 +5,8 @@ import logging
 import os
 import re
 import sys
+import threading
+import time
 from datetime import date
 from unicodedata import category, normalize
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -18,6 +20,8 @@ RENDER_SERVICE_ID = "srv-dc23purl550s7381llg0"
 ADMIN_PATH = "/rs-gpt/admin"
 ADMIN_API = "/api/rs-gpt/admin"
 LEDGER_API = "/api/rs-gpt/admin/ledger"
+DIAGNOSTIC_API = "/api/rs-gpt/admin/diagnostic"
+DIAGNOSTIC_TTL = 600
 # Identity is explicit so a filename alone cannot approve a card for a work.
 VERIFIED_ART = {
     ("c01", "춘향전", "춘향·이몽룡"): {
@@ -28,6 +32,42 @@ VERIFIED_ART = {
     },
 }
 ART_PATHS = {path for variants in VERIFIED_ART.values() for path in variants.values()}
+
+
+class GroundingDiagnostic:
+    """Hold at most one failed report in process memory, without writing to disk."""
+
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.record = None
+        self.timer = None
+        self.deadline = 0
+
+    def capture(self, record):
+        with self.lock:
+            if self.timer:
+                self.timer.cancel()
+            self.record = record
+            self.deadline = time.monotonic() + DIAGNOSTIC_TTL
+            self.timer = threading.Timer(DIAGNOSTIC_TTL, self.expire)
+            self.timer.daemon = True
+            self.timer.start()
+
+    def expire(self):
+        with self.lock:
+            if self.timer is threading.current_thread():
+                self.record = self.timer = None
+
+    def read(self):
+        with self.lock:
+            remaining = self.deadline - time.monotonic()
+            if remaining <= 0:
+                self.record = None
+            if self.record is not None:
+                return {**self.record, "remaining_ms": int(remaining * 1000)}
+
+
+GROUNDING_DIAGNOSTIC = GroundingDiagnostic()
 
 
 def admin_token():
@@ -131,6 +171,13 @@ class Handler(BaseHTTPRequestHandler):
                     self.json_response(200, verify_render_ledger())
                 except ExperimentError as exc:
                     self.json_response(exc.status, {"error": str(exc), "code": exc.code})
+        elif self.path == DIAGNOSTIC_API:
+            if not self.admin_authorized():
+                self.json_response(403, {"error": "관리자 인증이 필요합니다."})
+            elif (record := GROUNDING_DIAGNOSTIC.read()) is None:
+                self.json_response(404, {"error": "보관 중인 검증 실패 원고가 없습니다."})
+            else:
+                self.json_response(200, record)
         elif self.path == "/health":
             self.write_response(200, b"OK", "text/plain")
         elif self.path == "/api/rs-gpt":
@@ -178,7 +225,8 @@ class Handler(BaseHTTPRequestHandler):
                     budget = render_budget if os.environ.get("RENDER") == "true" else local_budget
                     payload["couple"] = {**payload["couple"],
                                          "story_beats": [beat["summary"] for beat in couple["story_beats"]]}
-                    result.update(run_report("sol-62", "live", True, budget, payload))
+                    result.update(run_report("sol-62", "live", True, budget, payload,
+                                             on_grounding_failure=GROUNDING_DIAGNOSTIC.capture))
             else:
                 if set(data) != {"profile", "mode"}:
                     raise ValueError

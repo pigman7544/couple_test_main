@@ -74,6 +74,12 @@ class ExperimentError(Exception):
         self.code, self.status = code, status
 
 
+class GroundingError(ExperimentError):
+    def __init__(self, category, rule, **details):
+        super().__init__("grounding", "원고의 형식 또는 명리 근거 검사를 통과하지 못했습니다.")
+        self.diagnostic = {"category": category, "rule": rule, **details}
+
+
 @lru_cache(maxsize=1)
 def fixed_case():
     genders = {"a": "male", "b": "female"}
@@ -154,60 +160,73 @@ def evidence_payload(result, genders):
 
 def validate(manuscript, facts, names=None, couple=None):
     """Check output structure, citations, and selected explicit technical terms."""
-    invalid = ExperimentError("grounding", "원고의 형식 또는 명리 근거 검사를 통과하지 못했습니다.")
     if not isinstance(manuscript, dict) or set(manuscript) != {"chapters"}:
-        raise invalid
+        raise GroundingError("structure", "report_fields")
     chapters = manuscript["chapters"]
     if not isinstance(chapters, list) or len(chapters) != 3:
-        raise invalid
+        raise GroundingError("structure", "chapter_count", expected=3)
     seen = set()
     lengths = []
-    for chapter in chapters:
+    for index, chapter in enumerate(chapters, 1):
+        position = {"chapter": index}
         if not isinstance(chapter, dict) or set(chapter) != {"title", "paragraphs"}:
-            raise invalid
+            raise GroundingError("structure", "chapter_fields", **position)
         title, paragraphs = chapter["title"], chapter["paragraphs"]
         if not isinstance(title, str) or not 1 <= len(title.strip()) <= 100:
-            raise invalid
+            raise GroundingError("structure", "title_length", minimum=1, maximum=100, **position)
         if names:
             chapter["title"] = CHAPTER_PREFIX.sub("", title.strip())
             if not chapter["title"] or FORBIDDEN_ADDRESS.search(chapter["title"]):
-                raise invalid
+                raise GroundingError("expression", "title_address_or_empty", excerpt=title, **position)
         if not isinstance(paragraphs, list) or not 2 <= len(paragraphs) <= (32 if names else 6):
-            raise invalid
+            raise GroundingError("structure", "paragraph_count", minimum=2,
+                                 maximum=32 if names else 6, **position)
         lengths.append(0)
-        for paragraph in paragraphs:
+        for number, paragraph in enumerate(paragraphs, 1):
+            position = {"chapter": index, "paragraph": number}
             if not isinstance(paragraph, dict) or set(paragraph) != {"text", "evidence_ids"}:
-                raise invalid
+                raise GroundingError("structure", "paragraph_fields", **position)
             prose, refs = paragraph["text"], paragraph["evidence_ids"]
             if not isinstance(prose, str) or not 30 <= len(prose.strip()) <= 1800:
-                raise invalid
-            if names and FORBIDDEN_ADDRESS.search(prose):
-                raise invalid
-            if names and any(len(EDITORIAL_TERMS.findall(sentence)) > 2
-                             for sentence in SENTENCE_END.split(prose)):
-                raise invalid
+                raise GroundingError("structure", "paragraph_length", minimum=30, maximum=1800,
+                                     excerpt=prose, **position)
             lengths[-1] += len(prose)
             normalized = " ".join(prose.split())
             if normalized in seen:
-                raise invalid
+                raise GroundingError("expression", "duplicate_paragraph", excerpt=prose, **position)
             seen.add(normalized)
             if not isinstance(refs, list) or not 1 <= len(refs) <= 12 or any(
                 not isinstance(ref, str) or ref not in facts for ref in refs
             ):
-                raise invalid
+                raise GroundingError("evidence", "invalid_evidence_ids", evidence_ids=refs, **position)
             cited = json.dumps([facts[ref] for ref in refs], ensure_ascii=False)
-            if any(term not in cited for term in EXPLICIT_TERMS.findall(prose)):
-                raise invalid
+            unsupported = sorted({term for term in EXPLICIT_TERMS.findall(prose) if term not in cited})
+            if unsupported:
+                term = min(unsupported, key=lambda value: prose.index(value))
+                sentence = next(part for part in SENTENCE_END.split(prose) if term in part)
+                raise GroundingError("evidence", "uncited_technical_term", excerpt=sentence.strip(),
+                                     terms=unsupported, evidence_ids=refs, **position)
+            if names:
+                for sentence in SENTENCE_END.split(prose):
+                    if FORBIDDEN_ADDRESS.search(sentence):
+                        raise GroundingError("expression", "forbidden_address", excerpt=sentence.strip(),
+                                             evidence_ids=refs, **position)
+                    terms = EDITORIAL_TERMS.findall(sentence)
+                    if len(terms) > 2:
+                        raise GroundingError("expression", "technical_term_density", excerpt=sentence.strip(),
+                                             terms=terms, maximum=2, evidence_ids=refs, **position)
     if names:
         chapter_one = " ".join(p["text"] for p in chapters[0]["paragraphs"])
-        if lengths[1] <= max(lengths[0], lengths[2]) or any(
-            f"{name}님" not in chapter_one for name in names.values()
-        ):
-            raise invalid
+        if lengths[1] <= max(lengths[0], lengths[2]):
+            raise GroundingError("expression", "chapter_two_not_longest", chapter=2, lengths=lengths)
+        missing = [f"{name}님" for name in names.values() if f"{name}님" not in chapter_one]
+        if missing:
+            raise GroundingError("expression", "chapter_one_missing_names", chapter=1, expected=missing)
     if couple:
         story = " ".join(p["text"] for p in chapters[2]["paragraphs"])
         if couple["work"] not in story or couple["name"] not in story:
-            raise invalid
+            raise GroundingError("evidence", "selected_couple_missing", chapter=3,
+                                 expected=[couple["work"], couple["name"]])
     return {"paragraphs": len(seen), "checks": "형식·근거 ID·일부 명리 용어 통과"}
 
 
@@ -270,13 +289,13 @@ def extract_report(response):
     if any(part.get("type") == "refusal" for part in content):
         raise ExperimentError("refused", "모델이 원고 생성을 거절했습니다.")
     try:
-        return json.loads("".join(part["text"] for part in content
-                                  if part.get("type") == "output_text"))
+        original = "".join(part["text"] for part in content if part.get("type") == "output_text")
+        return json.loads(original), original
     except (ValueError, KeyError, TypeError):
         raise ExperimentError("invalid_response", "모델 원고의 형식을 읽을 수 없습니다.") from None
 
 
-def run_report(profile_id, mode, live_enabled=False, budget=None, payload=None):
+def run_report(profile_id, mode, live_enabled=False, budget=None, payload=None, on_grounding_failure=None):
     if not isinstance(profile_id, str) or profile_id not in PROFILES or mode not in ("mock", "live"):
         raise ExperimentError("input", "모델 설정과 실행 방식을 선택해 주세요.", 400)
     if payload is None:
@@ -284,6 +303,7 @@ def run_report(profile_id, mode, live_enabled=False, budget=None, payload=None):
     profile = PROFILES[profile_id]
     metrics = {"latency_ms": None, "usage": None}
     status = "ok"
+    grounding_rule = None
     acquired = False
     try:
         if mode == "mock":
@@ -306,8 +326,18 @@ def run_report(profile_id, mode, live_enabled=False, budget=None, payload=None):
             metrics["usage"] = usage_metrics(response.get("usage"), profile)
             if isinstance(response.get("model"), str):
                 metrics["response_model"] = response["model"]
-            manuscript = extract_report(response)
-        audit = validate(manuscript, payload["facts"], payload.get("names"), payload.get("couple"))
+            manuscript, original = extract_report(response)
+        try:
+            audit = validate(manuscript, payload["facts"], payload.get("names"), payload.get("couple"))
+        except GroundingError as exc:
+            grounding_rule = exc.diagnostic["rule"]
+            if mode == "live" and on_grounding_failure is not None:
+                on_grounding_failure({
+                    "original": original, "failure": exc.diagnostic,
+                    "reference": {key: payload[key] for key in ("charts", "facts", "couple")
+                                  if key in payload},
+                })
+            raise
         return {**manuscript, "audit": audit, "mode": mode, "profile": profile_id,
                 "model": profile["model"], "effort": profile["effort"], "metrics": metrics}
     except ExperimentError as exc:
@@ -321,4 +351,5 @@ def run_report(profile_id, mode, live_enabled=False, budget=None, payload=None):
         if acquired:
             LIVE_SLOT.release()
         LOG.info("%s", json.dumps({"event": "rs_report", "profile": profile_id,
-                                   "mode": mode, "status": status, **metrics}))
+                                   "mode": mode, "status": status, **metrics,
+                                   **({"grounding_rule": grounding_rule} if grounding_rule else {})}))
