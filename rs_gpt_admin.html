@@ -125,7 +125,8 @@ function show(data) {
     usage ? '추정 비용 $' + usage.estimated_usd : ''].filter(Boolean).join(' / '));
   for (const [index, chapter] of data.chapters.entries()) {
     const section = document.createElement('article');
-    append(section, 'h2', `${index + 1}장. ${chapter.title}`);
+    const title = chapter.title.trim().replace(/^(?:[1-3]\s*장\s*\.\s*)+/u, '');
+    append(section, 'h2', `${index + 1}장. ${title}`);
     for (const paragraph of chapter.paragraphs) {
       append(section, 'p', paragraph.text);
       append(section, 'small', paragraph.evidence_ids.join(' · '));
