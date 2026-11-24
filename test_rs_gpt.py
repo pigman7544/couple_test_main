@@ -268,7 +268,7 @@ class RsGptTests(unittest.TestCase):
     def test_personalized_chapters_check_term_density_and_selected_work(self):
         names = {"a": "민준", "b": "서연"}
         couple = {"work": "춘향전", "name": "춘향·이몽룡"}
-        facts = {"pair": {"kind": "육충", "other": "상형"}}
+        facts = {"pair": {"kind": "육충"}, "shape": {"kind": "상형"}}
         paragraphs = [
             ["민준님은 새로운 생각을 곧바로 이야기하는 편으로 읽을 수 있어요.",
              "서연님은 충분히 생각할 시간을 가질 때 마음이 놓일 수 있어요."],
@@ -279,7 +279,7 @@ class RsGptTests(unittest.TestCase):
         ]
         manuscript = {"chapters": [
             {"title": "우리 둘의 이야기", "paragraphs": [
-                {"text": line, "evidence_ids": ["pair"]} for line in chapter
+                {"text": line, "evidence_ids": ["pair", "shape"]} for line in chapter
             ]} for chapter in paragraphs
         ]}
         self.assertEqual(validate(manuscript, facts, names, couple)["paragraphs"], 6)
@@ -316,6 +316,42 @@ class RsGptTests(unittest.TestCase):
             self.assertEqual(error.exception.diagnostic["rule"],
                              "invalid_evidence_ids" if ref == "a.hour.stem" else "uncited_technical_term")
 
+    def test_grounding_variants_and_wrong_attributions(self):
+        payload, _ = fixed_case()
+        facts = payload["facts"]
+        cases = [
+            ("둘째의 연간은 임수이며 칠살로 읽습니다.", "b.year.stem", None),
+            ("둘째의 연간은 임(壬)이며 칠살(편관)로 읽습니다.", "b.year.stem", None),
+            ("둘째의 연간은 壬입니다. 이 자리의 십성은 편 관입니다.", "b.year.stem", None),
+            ("첫째의 일지와 둘째의 연지입니다. 이 두 자리에는 육 합이 있습니다.",
+             "pair.육합.a.day.b.year", None),
+            ("두 사람의 말투와는 상관이 없습니다. 생활 속에서 찾아볼 만한 차이입니다.",
+             "a.day.stem", None),
+            ("첫째의 연간은 칠살에 해당합니다.", "b.year.stem", "scoped_fact_mismatch"),
+            ("둘째의 월간은 칠살에 해당합니다.", "b.year.stem", "scoped_fact_mismatch"),
+            ("둘째의 연간은 병화입니다.", "b.year.stem", "pillar_symbol_mismatch"),
+            ("둘째의 연간은 임(丙)입니다.", "b.year.stem", "pillar_symbol_mismatch"),
+            ("둘째의 배우자궁은 사(巳)입니다.", "a.palace", "pillar_symbol_mismatch"),
+            ("첫째의 시주는 계사입니다.", "a.day.stem", "unresolved_pillar_claim"),
+            ("둘째의 일지와 첫째의 연지입니다. 이 두 자리에는 육합이 있습니다.",
+             "pair.육합.a.day.b.year", "scoped_fact_mismatch"),
+            ("둘째에게 첫째의 일간은 정재입니다.", "pair.a.reads.b", "scoped_fact_mismatch"),
+        ]
+        for claim, ref, rule in cases:
+            with self.subTest(claim=claim):
+                sample = json.loads((ROOT / "rs_gpt_mock.json").read_text(encoding="utf-8"))["sol-61"]
+                first, second = sample["chapters"][0]["paragraphs"]
+                first.update(text=claim + " 가까운 관계를 읽을 때 참고하는 자리입니다.",
+                             evidence_ids=["a.day.stem"])
+                second.update(text="이 문단의 근거는 앞 문장에서 살핀 기둥과 관련이 있습니다.",
+                              evidence_ids=[ref])
+                if rule:
+                    with self.assertRaises(ExperimentError) as error:
+                        validate(sample, facts)
+                    self.assertEqual(error.exception.diagnostic["rule"], rule)
+                else:
+                    self.assertEqual(validate(sample, facts)["paragraphs"], 7)
+
     @patch("rs_gpt.request_openai")
     def test_failed_manuscript_is_only_available_to_admin(self, provider):
         sample = json.loads((ROOT / "rs_gpt_mock.json").read_text(encoding="utf-8"))["sol-62"]
@@ -339,7 +375,7 @@ class RsGptTests(unittest.TestCase):
             self.assertEqual(error.exception.code, 502)
             self.assertEqual(set(json.load(error.exception)), {"error", "code", "metrics"})
             log = "\n".join(logs.output)
-            self.assertIn("uncited_technical_term", log)
+            self.assertIn("scoped_fact_mismatch", log)
             for private in ("민준", "1992-03-18", "원고표식", "육충", "a.day.stem"):
                 self.assertNotIn(private, log)
             for headers in ({}, {"Authorization": "Bearer incorrect"}):

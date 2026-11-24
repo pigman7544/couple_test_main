@@ -30,7 +30,7 @@ names는 인물 데이터입니다. 이름 뒤에 님을 붙이고 일반 호칭
 title에는 장 번호를 넣지 마세요. 1장은 a의 성격 문단부터 시작하고 뒤이어 b를 설명하세요.
 2장은 가장 길게 쓰세요. 3장에 맞춤 조언과 couple에 지정된 작품 속 커플 소개를 포함하세요.
 3장에는 couple.work와 couple.name을 입력 그대로 표기하세요. 작품 속 사건은 couple.story_beats를 따르고, 선정 작품이나 커플을 바꾸지 마세요.
-각 문단에 제공된 명리 근거 ID를 넣고 본문에는 ID를 표시하지 마세요.
+각 문단에 제공된 명리 근거 ID를 넣고 본문에는 ID를 표시하지 마세요. 사실을 말할 때 누구의 어느 기둥인지 분명하게 쓰세요.
 명리학 근거와 해석을 구분하고 확정되지 않은 기둥을 사용하지 마세요.
 title과 각 paragraph.text는 일반 텍스트입니다.
 
@@ -54,16 +54,25 @@ SCHEMA = {
     }}},
     "required": ["chapters"], "additionalProperties": False,
 }
-EXPLICIT_TERMS = re.compile(
-    r"비견|겁재|식신|편재|정재|편관|정관(?=\(|[은는이가을의에]|\s|[.,])|편인|정인|"
-    r"천간합|육합|삼합|육충|상형|삼형|자형|육해"
+TEN_GODS = "비견 겁재 식신 상관 편재 정재 편관 정관 편인 정인".split()
+RELATIONS = "천간합 육합 삼합 육충 상형 삼형 자형 육해".split()
+TERM_ALIASES = {
+    "칠살": "편관", "편관(칠살)": "편관", "칠살(편관)": "편관", "충": "육충", "해": "육해",
+    **{term: term for term in TEN_GODS + RELATIONS},
+}
+# Require a Korean word boundary at the start and a particle or punctuation at the end.
+TERM_END = r"(?=$|[^가-힣]|(?:으로|이라고|이라는|이다|입니다|이라|이며|이고|처럼|에서|합니다|한다|하며|하고|하는|된다|됩니다|[은는이가을를과와의에로도])(?=$|[^가-힣]))"
+TECHNICAL_TERM = re.compile(
+    r"(?<![가-힣])(?:편관\s*\(\s*칠살\s*\)|칠살\s*\(\s*편관\s*\)|"
+    + "|".join(r"\s*".join(term) for term in TERM_ALIASES if "(" not in term and len(term) > 1)
+    + ")" + TERM_END
 )
-EDITORIAL_TERMS = re.compile(
-    EXPLICIT_TERMS.pattern
-    + r"|상관|배우자궁|지장간|일간|[시일월연][지간주]|천간(?!합)|지지|십성|오행|병화|을목|병신합|무계합"
-    + r"|(?<![가-힣])(?:합|충|형|해)(?=$|[은는이가을를과와의]|[\s.,·])"
-)
-SENTENCE_END = re.compile(r"[.!?。！？]+")
+EDITORIAL_TERMS = re.compile(r"배우자궁|지장간|일간|[시일월연년][지간주]|천간(?!합)|지지|십성|오행")
+SENTENCE_END = re.compile(r"[.!?。！？;；\n]+")
+PILLAR_NAMES = {"연": "year", "년": "year", "월": "month", "일": "day", "시": "hour"}
+STEM_NAMES = dict(zip(STEM_ELEMENTS, "갑 을 병 정 무 기 경 신 임 계".split()))
+STEM_KOREAN_ELEMENTS = dict(zip(("wood", "fire", "earth", "metal", "water"), "목화토금수"))
+BRANCH_NAMES = dict(zip("子丑寅卯辰巳午未申酉戌亥", "자 축 인 묘 진 사 오 미 신 유 술 해".split()))
 LIVE_SLOT = threading.BoundedSemaphore(1)
 LOG = logging.getLogger("rs_gpt")
 
@@ -158,6 +167,105 @@ def evidence_payload(result, genders):
     return {"charts": charts, "facts": facts}
 
 
+def check_claims(prose, refs, chapter_refs, facts, people, position):
+    """Match recognizable claims against typed facts and their named locations."""
+    person = "|".join(re.escape(label) for label in sorted(people, key=len, reverse=True))
+    owner_pattern = rf"(?P<person>{person})(?:의|은|는|이|가)?\s*"
+    anchor_pattern = re.compile(owner_pattern + r"(?:(?P<pillar>[연년월일시])\s*(?P<layer>[간지주])|배우자궁)")
+    owners = re.compile(owner_pattern)
+    cited = [facts[ref] for ref in chapter_refs]
+    previous_anchors = []
+    previous_people = set()
+
+    def reject(rule, sentence, term):
+        raise GroundingError("evidence", rule, excerpt=sentence.strip(), terms=[term],
+                             evidence_ids=refs, **position)
+
+    for sentence in filter(str.strip, SENTENCE_END.split(prose)):
+        matches = list(anchor_pattern.finditer(sentence))
+        locations = [(people[m["person"]], PILLAR_NAMES[m["pillar"]], m["layer"])
+                     if m["pillar"] else (people[m["person"]], "day", "지") for m in matches]
+        mentioned = {people[m["person"]] for m in owners.finditer(sentence)}
+        for index, (owner, pillar, layer) in enumerate(locations):
+            tail = sentence[matches[index].end():matches[index + 1].start() if index + 1 < len(matches) else None]
+            placements = [f for f in facts.values() if f.get("person") == owner and f.get("pillar") == pillar]
+            stem = next((f["symbol"] for f in placements if f.get("layer") == "stem"), None)
+            branch = next((f["branch"] for f in placements if f.get("layer") == "hidden"), None)
+            if stem is None:
+                reject("unresolved_pillar_claim", sentence, matches[index][0])
+            stem_forms = {stem, STEM_NAMES[stem],
+                          STEM_NAMES[stem] + STEM_KOREAN_ELEMENTS[STEM_ELEMENTS[stem]]}
+            branch_forms = {branch, BRANCH_NAMES.get(branch)}
+            pillar_forms = {stem + branch, STEM_NAMES[stem] + BRANCH_NAMES[branch]} if branch else set()
+            expected = {"간": stem_forms, "지": branch_forms,
+                        "주": stem_forms | branch_forms | pillar_forms}[layer]
+            readings = "".join(STEM_NAMES.values()) + "".join(BRANCH_NAMES.values())
+            value = re.match(
+                rf"\s*(?:(?:은|는|이|가)\s*|[:：]\s*)?(?:[‘“\(])?"
+                rf"([{''.join(STEM_NAMES)}{''.join(BRANCH_NAMES)}]{{1,2}}|"
+                rf"[{readings}](?:[목화토금수{readings}])?{TERM_END})", tail
+            )
+            if value:
+                hanja = re.match(r"\s*\(([甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]{1,2})\)", tail[value.end():])
+                if value[1] not in expected or (hanja and hanja[1] not in expected):
+                    reject("pillar_symbol_mismatch", sentence, value[0] + (hanja[0] if hanja else ""))
+
+        terms = list(TECHNICAL_TERM.finditer(sentence))
+        if locations or previous_anchors:
+            terms += list(re.finditer(r"(?<![가-힣])(?:충|해)" + TERM_END, sentence))
+        for match in sorted(terms, key=lambda m: m.start()):
+            term = TERM_ALIASES[re.sub(r"\s+", "", match[0])]
+            if term == "상관" and re.match(r"(?:이\s*)?\s*(?:없|있|없이|계수|관계)", sentence[match.end():].strip()):
+                continue
+            if term in RELATIONS:
+                anchors = locations or (previous_anchors if not mentioned else [])
+                participants = mentioned or (previous_people if anchors else set())
+                candidates = [fact for fact in cited if fact.get("kind") == term]
+                matching = [
+                    fact for fact in candidates if all(
+                        any(source["person"] == owner and source["pillar"] == pillar
+                            and (layer == "주" or fact.get("layer") == {"간": "stem", "지": "branch"}[layer])
+                            for source in fact.get("sources", ()))
+                        for owner, pillar, layer in anchors
+                    ) and participants <=
+                    {source["person"] for source in fact.get("sources", ())}
+                ]
+            else:
+                nearest = next((loc for loc, anchor in zip(reversed(locations), reversed(matches))
+                                if anchor.end() <= match.start()), None)
+                prefix = sentence[:match.start()]
+                perspective = re.search(owner_pattern + r"(?:에게|기준(?:으로)?|입장에서)", prefix)
+                if perspective:
+                    viewer = people[perspective["person"]]
+                    other = "b" if viewer == "a" else "a"
+                    matching = [facts[ref] for ref in chapter_refs if ref == f"pair.{viewer}.reads.{other}"
+                                and facts[ref].get("ten_god") == term]
+                else:
+                    if nearest is None and not mentioned and len(previous_anchors) == 1:
+                        nearest = previous_anchors[0]
+                    prior_people = list(owners.finditer(prefix))
+                    scoped = ({nearest[0]} if nearest else {people[prior_people[-1]["person"]]}
+                              if prior_people else mentioned or previous_people)
+                    matching = [
+                        fact for fact in cited
+                        if (fact.get("ten_god") == term or fact.get("cross_ten_god") == term)
+                        and (not scoped or fact.get("person", fact.get("perspective")) in scoped)
+                        and (nearest is None or (
+                            fact.get("pillar") == nearest[1] and
+                            (nearest[2] == "주" or fact.get("layer") ==
+                             {"간": "stem", "지": "hidden"}[nearest[2]])
+                            and (nearest[2] != "지" or fact.get("tier") == "본기"
+                                 or "지장간" in sentence)
+                        ))
+                    ]
+            if not matching:
+                scoped_claim = locations or mentioned or previous_anchors
+                reject("scoped_fact_mismatch" if scoped_claim else "uncited_technical_term",
+                       sentence, match[0])
+        previous_anchors = locations
+        previous_people = mentioned or (previous_people if not locations else set())
+
+
 def validate(manuscript, facts, names=None, couple=None):
     """Check output structure, citations, and selected explicit technical terms."""
     if not isinstance(manuscript, dict) or set(manuscript) != {"chapters"}:
@@ -167,6 +275,10 @@ def validate(manuscript, facts, names=None, couple=None):
         raise GroundingError("structure", "chapter_count", expected=3)
     seen = set()
     lengths = []
+    editorial_failure = None
+    people = {"첫째": "a", "둘째": "b"}
+    people.update({f"{name}님": owner for owner, name in (names or {}).items()
+                   if list(names.values()).count(name) == 1})
     for index, chapter in enumerate(chapters, 1):
         position = {"chapter": index}
         if not isinstance(chapter, dict) or set(chapter) != {"title", "paragraphs"}:
@@ -182,6 +294,11 @@ def validate(manuscript, facts, names=None, couple=None):
             raise GroundingError("structure", "paragraph_count", minimum=2,
                                  maximum=32 if names else 6, **position)
         lengths.append(0)
+        chapter_refs = list(dict.fromkeys(
+            ref for paragraph in paragraphs if isinstance(paragraph, dict)
+            and isinstance(paragraph.get("evidence_ids"), list)
+            for ref in paragraph["evidence_ids"] if isinstance(ref, str) and ref in facts
+        ))
         for number, paragraph in enumerate(paragraphs, 1):
             position = {"chapter": index, "paragraph": number}
             if not isinstance(paragraph, dict) or set(paragraph) != {"text", "evidence_ids"}:
@@ -199,21 +316,15 @@ def validate(manuscript, facts, names=None, couple=None):
                 not isinstance(ref, str) or ref not in facts for ref in refs
             ):
                 raise GroundingError("evidence", "invalid_evidence_ids", evidence_ids=refs, **position)
-            cited = json.dumps([facts[ref] for ref in refs], ensure_ascii=False)
-            unsupported = sorted({term for term in EXPLICIT_TERMS.findall(prose) if term not in cited})
-            if unsupported:
-                term = min(unsupported, key=lambda value: prose.index(value))
-                sentence = next(part for part in SENTENCE_END.split(prose) if term in part)
-                raise GroundingError("evidence", "uncited_technical_term", excerpt=sentence.strip(),
-                                     terms=unsupported, evidence_ids=refs, **position)
+            check_claims(prose, refs, chapter_refs, facts, people, position)
             if names:
                 for sentence in SENTENCE_END.split(prose):
                     if FORBIDDEN_ADDRESS.search(sentence):
                         raise GroundingError("expression", "forbidden_address", excerpt=sentence.strip(),
                                              evidence_ids=refs, **position)
-                    terms = EDITORIAL_TERMS.findall(sentence)
-                    if len(terms) > 2:
-                        raise GroundingError("expression", "technical_term_density", excerpt=sentence.strip(),
+                    terms = EDITORIAL_TERMS.findall(sentence) + TECHNICAL_TERM.findall(sentence)
+                    if len(terms) > 2 and editorial_failure is None:
+                        editorial_failure = GroundingError("expression", "technical_term_density", excerpt=sentence.strip(),
                                              terms=terms, maximum=2, evidence_ids=refs, **position)
     if names:
         chapter_one = " ".join(p["text"] for p in chapters[0]["paragraphs"])
@@ -225,9 +336,11 @@ def validate(manuscript, facts, names=None, couple=None):
     if couple:
         story = " ".join(p["text"] for p in chapters[2]["paragraphs"])
         if couple["work"] not in story or couple["name"] not in story:
-            raise GroundingError("evidence", "selected_couple_missing", chapter=3,
+            raise GroundingError("expression", "selected_couple_missing", chapter=3,
                                  expected=[couple["work"], couple["name"]])
-    return {"paragraphs": len(seen), "checks": "형식·근거 ID·일부 명리 용어 통과"}
+    if editorial_failure is not None:
+        raise editorial_failure
+    return {"paragraphs": len(seen), "checks": "형식·근거 ID·일부 명리 주장 통과"}
 
 
 def usage_metrics(data, profile):
