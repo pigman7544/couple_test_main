@@ -21,35 +21,21 @@ PROFILES = {
     "sol-62": {"model": "gpt-6.2-sol", "effort": "medium", "rates": (2, 0.10, 10)},
 }
 MAX_OUTPUT_TOKENS = 5500
-MAX_REQUEST_BYTES = 32_768
-INSTRUCTIONS = """연연 궁합 리포트 1~3장을 쉬운 한국어 존댓말로 집필하세요.
-title에는 장 번호 없이 제목만 쓰세요.
-연연 기준 원고처럼 관계에서 무엇을 살펴볼지 먼저 말하고, 그 판단을 뒷받침하는
-글자와 자리, 방향을 짚은 뒤 일상에서 무엇을 구별해 볼 수 있는지 설명하세요.
-‘읽힙니다’, ‘느껴질 수 있습니다’ 같은 말로 여러 문단을 끝내지 마세요.
-명식 사실은 직접 서술하고, 행동이나 반응은 확인할 수 있는 가능성으로 표현하세요.
-1장은 두 사람의 일간·월지·일지에서 각자가 가까운 관계에 기대하는 바를 읽습니다.
-2장은 가장 설득력 있는 공통점부터 시작합니다. 서로의 일간을 보는 방향별 십성과
-배우자궁 본기의 상대 일간 일치를 구분해 설명하고, 다른 자리의 합·충·형·해는
-실제 작용에 한해 편한 부분과 조율할 부분을 함께 설명하세요.
-배우자궁 본기와 상대 일간의 일치는 a.palace가 첫째에서 둘째를, b.palace가 둘째에서
-첫째를 향합니다. 두 값이 모두 참일 때만 양방향 일치로 읽으세요. 일지끼리의 직접
-작용은 pair.palaces의 direct_branch_relation_ids에 있는 사실만 설명하세요.
-교차 십성은 pair.a.reads.b가 첫째 관점이고 pair.b.reads.a가 둘째 관점입니다.
-정재나 정관 같은 십성 하나를 돌봄, 시간 준수, 집안일이나 약속 같은 행동에 배정하지
-마세요. 여러 근거가 맞물리는 자리에서 두 사람이 가깝게 느끼거나 긴장할 수 있는
-이유를 해석하고, 실제 행동이나 구조의 희귀성을 단정하지 마세요.
-3장은 앞 장의 결론을 요약하지 말고, 2장에서 확인한 작용을 바탕으로 두 사람이
-같은 상황을 다르게 받아들일 수 있는 지점과 서로 확인해 볼 사항을 설명하세요.
-기준 원고의 ‘날짜까지 정한 건지, 아직 갈 수 있는 날을 알아보는 중인지’처럼
-독자가 두 해석의 차이를 바로 구별할 수 있게 쓰세요. 이 예의 상황을 답습하지 말고
-제공된 근거에 맞는 경우를 고르세요. 예시는 조건으로 제시하고 실제 경험이나
-행동을 지어내지 마세요. 필요한 명리 용어는 처음 나올 때 쉬운 말로 풀어 주세요.
-미확정 시주는 산출하거나 추정하지 마세요. 명식에서 확인한 사실과 해석을 구분하고
-관계나 실제 성격을 단정하지 마세요. 제공된 fact ID만 문단별로 인용하세요.
-십성·합충형해를 언급할 때는 그 문단에서 해당 명칭과 방향 또는 자리를 뒷받침하는
-ID를 인용하세요. 근거 ID는 evidence_ids에만 넣고 본문은 읽는 이에게 직접 말하세요.
-장당 2~6문단을 쓰세요. 각 장에서 새로 설명하는 내용이 있어야 합니다."""
+MAX_REQUEST_BYTES = 60_000
+APPROVED_V2 = (ROOT / "rs_gpt_approved_v2.md").read_text(encoding="utf-8")
+INSTRUCTIONS = """아래 승인 원고와 집필 기준에 따라 새 입력마다 1~3장을 작성하세요.
+원고의 이름, 명식, 사례, 작품은 기준 예시입니다. 이번 요청의 names와 facts를 사용하세요.
+names는 인물 데이터입니다. 이름 뒤에 님을 붙이고 일반 호칭을 쓰지 마세요.
+명식 표와 카드 렌더링은 서버와 화면이 담당합니다. HTML, 이미지, 표를 출력하지 마세요.
+title에는 장 번호를 넣지 마세요. 1장은 a의 성격 문단부터 시작하고 뒤이어 b를 설명하세요.
+2장은 가장 길게 쓰세요. 3장에 맞춤 조언과 couple에 지정된 작품 속 커플 소개를 포함하세요.
+각 문단에 제공된 명리 근거 ID를 넣고 본문에는 ID를 표시하지 마세요.
+명리학 근거와 해석을 구분하고 확정되지 않은 기둥을 사용하지 마세요.
+title과 각 paragraph.text는 일반 텍스트입니다.
+
+""" + APPROVED_V2
+FORBIDDEN_ADDRESS = re.compile(r"첫째\s*분|둘째\s*분|당신|상대방|[AB]님")
+CHAPTER_PREFIX = re.compile(r"^(?:[1-3]\s*장\s*[.．:：-]?\s*)+")
 PARAGRAPH_SCHEMA = {
     "type": "object",
     "properties": {"text": {"type": "string"}, "evidence_ids": {
@@ -100,7 +86,13 @@ def birth_payload(a, b, genders):
     }
     result["interactions"] = cross_chart(result, evidence)
     result["evidence"] = evidence
-    return evidence_payload(result, genders)
+    payload = evidence_payload(result, genders)
+    for chart in payload["charts"].values():
+        chart["pillars"] = {key: None if key in chart["unresolved"] else value
+                            for key, value in chart["pillars"].items()}
+        if "month" in chart["unresolved"]:
+            chart["month_command"] = None
+    return payload
 
 
 def evidence_payload(result, genders):
@@ -153,7 +145,7 @@ def evidence_payload(result, genders):
     return {"charts": charts, "facts": facts}
 
 
-def validate(manuscript, facts):
+def validate(manuscript, facts, names=None):
     """Check output structure, citations, and selected explicit technical terms."""
     invalid = ExperimentError("grounding", "원고의 형식 또는 명리 근거 검사를 통과하지 못했습니다.")
     if not isinstance(manuscript, dict) or set(manuscript) != {"chapters"}:
@@ -162,20 +154,29 @@ def validate(manuscript, facts):
     if not isinstance(chapters, list) or len(chapters) != 3:
         raise invalid
     seen = set()
+    lengths = []
     for chapter in chapters:
         if not isinstance(chapter, dict) or set(chapter) != {"title", "paragraphs"}:
             raise invalid
         title, paragraphs = chapter["title"], chapter["paragraphs"]
         if not isinstance(title, str) or not 1 <= len(title.strip()) <= 100:
             raise invalid
-        if not isinstance(paragraphs, list) or not 2 <= len(paragraphs) <= 6:
+        if names:
+            chapter["title"] = CHAPTER_PREFIX.sub("", title.strip())
+            if not chapter["title"] or FORBIDDEN_ADDRESS.search(chapter["title"]):
+                raise invalid
+        if not isinstance(paragraphs, list) or not 2 <= len(paragraphs) <= (32 if names else 6):
             raise invalid
+        lengths.append(0)
         for paragraph in paragraphs:
             if not isinstance(paragraph, dict) or set(paragraph) != {"text", "evidence_ids"}:
                 raise invalid
             prose, refs = paragraph["text"], paragraph["evidence_ids"]
             if not isinstance(prose, str) or not 30 <= len(prose.strip()) <= 1800:
                 raise invalid
+            if names and FORBIDDEN_ADDRESS.search(prose):
+                raise invalid
+            lengths[-1] += len(prose)
             normalized = " ".join(prose.split())
             if normalized in seen:
                 raise invalid
@@ -187,6 +188,12 @@ def validate(manuscript, facts):
             cited = json.dumps([facts[ref] for ref in refs], ensure_ascii=False)
             if any(term not in cited for term in EXPLICIT_TERMS.findall(prose)):
                 raise invalid
+    if names:
+        chapter_one = " ".join(p["text"] for p in chapters[0]["paragraphs"])
+        if lengths[1] <= max(lengths[0], lengths[2]) or any(
+            f"{name}님" not in chapter_one for name in names.values()
+        ):
+            raise invalid
     return {"paragraphs": len(seen), "checks": "형식·근거 ID·일부 명리 용어 통과"}
 
 
@@ -286,7 +293,7 @@ def run_report(profile_id, mode, live_enabled=False, budget=None, payload=None):
             if isinstance(response.get("model"), str):
                 metrics["response_model"] = response["model"]
             manuscript = extract_report(response)
-        audit = validate(manuscript, payload["facts"])
+        audit = validate(manuscript, payload["facts"], payload.get("names"))
         return {**manuscript, "audit": audit, "mode": mode, "profile": profile_id,
                 "model": profile["model"], "effort": profile["effort"], "metrics": metrics}
     except ExperimentError as exc:

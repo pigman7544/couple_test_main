@@ -59,6 +59,9 @@ const scope = byId('scope'), status = byId('status'), compare = byId('compare');
 const download = byId('download'), mode = byId('mode');
 let baseline = [], profiles = {}, results = [];
 
+function chapterTitle(chapter) {
+  return chapter.title.trim().replace(/^(?:[1-3]\s*장\s*[.．:：-]?\s*)+/u, '');
+}
 function append(parent, tag, value, className) {
   const node = document.createElement(tag);
   node.textContent = value;
@@ -82,7 +85,7 @@ function render(node, title, meta, chapters = []) {
   append(node, 'h2', title);
   if (meta) append(node, 'p', meta, 'meta');
   chapters.forEach((chapter, index) => {
-    append(node, 'h3', `${index + 1}장. ${chapter.title}`);
+    append(node, 'h3', `${index + 1}장. ${chapterTitle(chapter)}`);
     chapter.paragraphs.forEach(paragraph => {
       if (paragraph.heading) append(node, 'h4', paragraph.heading);
       append(node, 'p', paragraph.text);
@@ -140,7 +143,7 @@ download.addEventListener('click', () => {
   for (const doc of documents) {
     lines.push(`## ${doc.title}`, '', doc.meta || '', '');
     (doc.chapters || []).forEach((chapter, index) => {
-      lines.push(`### ${index + 1}장. ${chapter.title}`, '');
+      lines.push(`### ${index + 1}장. ${chapterTitle(chapter)}`, '');
       for (const p of chapter.paragraphs) {
         if (p.heading) lines.push(`#### ${p.heading}`, '');
         lines.push(p.text, '', `근거 · ${p.evidence_ids.join(' · ')}`, '');

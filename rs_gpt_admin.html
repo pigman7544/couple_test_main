@@ -21,6 +21,17 @@ button:disabled{opacity:.55;cursor:default}
 fieldset{min-width:0;border:1px solid var(--line)}
 pre,small{white-space:pre-wrap;overflow-wrap:anywhere}
 summary{cursor:pointer}
+table{border-collapse:collapse;width:100%;text-align:center;margin:1rem 0}
+th,td{border:1px solid var(--line);padding:.35rem;overflow-wrap:anywhere}
+.couple-preview{background:#fff;color:#3d3040}
+.couple-preview h2{font:700 clamp(1.65rem,5vw,2.65rem)/1.3 system-ui,sans-serif;color:inherit;margin:.5em 0}
+.couple-preview img,.couple-cards img{display:block;width:100%;height:auto;border-radius:1rem}
+.couple-preview img{box-shadow:0 12px 30px #78546026}
+.report-link{display:block;border:1px solid #edd8e1;border-radius:1rem;margin-top:1.5rem;padding:1rem;text-align:center;color:#70405e}
+.couple-cards{border-top:1px solid #e5d8df;margin-top:2rem;padding-top:1rem}
+.card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(8px,4vw,26px)}
+.card-grid figure{margin:0;text-align:center}
+.card-grid a{display:inline-block;padding:.5rem;color:#70405e}
 [hidden]{display:none!important}
 @media(max-width:520px){.people{grid-template-columns:1fr}}
 </style>
@@ -37,6 +48,7 @@ summary{cursor:pointer}
 <div class="people" id="people"></div>
 <p>양력 생년월일을 입력해 주세요. 출생시간을 모르면 비워 두세요.</p>
 <button type="button" id="preset">고정 검토 명식 입력</button>
+<button type="button" id="preview">명식 확인 · 무료 미리보기</button>
 <button id="generate">리포트 생성</button>
 </form>
 <button type="button" id="ledger" hidden>호출 원장 확인</button>
@@ -49,9 +61,11 @@ const endpoint = '/api/rs-gpt/admin';
 const login = byId('login'), form = byId('report'), status = byId('status');
 const reading = byId('reading'), generate = byId('generate');
 let token = '';
+let liveEnabled = false;
 for (const [id, label] of [['a', '첫째'], ['b', '둘째']]) {
   const fields = document.createElement('fieldset');
   fields.innerHTML = `<legend>${label}</legend>
+    <label>이름<input id="${id}-name" maxlength="32" required></label>
     <label>생년월일<input type="date" id="${id}-date" min="1000-01-01" max="2050-12-31" required></label>
     <label>출생시간<input type="time" id="${id}-time"></label>
     <label>성별<select id="${id}-gender"><option value="">응답하지 않음</option>
@@ -85,7 +99,8 @@ login.addEventListener('submit', async event => {
     login.hidden = true;
     form.hidden = false;
     byId('ledger').hidden = !data.ledger_check;
-    generate.disabled = !data.live_enabled;
+    liveEnabled = data.live_enabled;
+    generate.disabled = !liveEnabled;
     status.textContent = data.live_enabled ? '두 사람의 정보를 입력해 주세요.' : '실시간 집필 설정이 준비되지 않았습니다.';
   } catch (error) {
     status.textContent = error.message;
@@ -107,6 +122,7 @@ byId('ledger').addEventListener('click', async event => {
 });
 byId('preset').addEventListener('click', () => {
   for (const [id, date, gender] of [['a', '1992-03-18', 'male'], ['b', '1992-04-30', 'female']]) {
+    byId(id + '-name').value = id === 'a' ? '민준' : '서연';
     byId(id + '-date').value = date;
     byId(id + '-time').value = '';
     byId(id + '-gender').value = gender;
@@ -117,20 +133,99 @@ function append(parent, tag, value) {
   item.textContent = value;
   parent.append(item);
 }
+function showCharts(section, data) {
+  const columns = ['hour', 'day', 'month', 'year'];
+  for (const id of ['a', 'b']) {
+    const chart = data.charts[id];
+    const table = document.createElement('table');
+    append(table, 'caption', data.names[id] + '님의 사주팔자');
+    const header = table.createTHead().insertRow();
+    for (const label of ['구분', '시주', '일주', '월주', '연주']) append(header, 'th', label);
+    const body = table.createTBody();
+    for (const [index, label] of ['천간', '지지'].entries()) {
+      const row = body.insertRow();
+      append(row, 'th', label);
+      for (const pillar of columns) {
+        const symbols = chart.pillars[pillar];
+        append(row, 'td', chart.unresolved.includes(pillar) ? '미상' : symbols?.[index] || '미상');
+      }
+    }
+    section.append(table);
+  }
+}
+function cardImage(path, label) {
+  const img = document.createElement('img');
+  img.src = path;
+  img.alt = label;
+  return img;
+}
+function showCouplePreview(data) {
+  const section = document.createElement('article');
+  section.className = 'couple-preview';
+  append(section, 'small', '緣硏 · 연연　 OUR TWO STORIES ♡');
+  append(section, 'p', '우리 둘의 이야기 · 무료 미리보기');
+  append(section, 'h2', `두 사람의 관계는 ${data.couple.name}을 닮았어요.`);
+  if (data.art) section.append(cardImage(data.art.title, data.couple.name + ' 공유용 카드'));
+  else append(section, 'p', '일러스트 준비 중');
+  append(section, 'p', data.couple.work);
+  const link = document.createElement('a');
+  link.className = 'report-link';
+  link.href = liveEnabled ? '#generate' : '#status';
+  link.textContent = liveEnabled ? '전체 리포트 보기' : '전체 리포트 · 실시간 집필 비활성화';
+  section.append(link);
+  reading.append(section);
+}
+function showCoupleCards(section, data) {
+  const cards = document.createElement('div');
+  cards.className = 'couple-cards';
+  append(cards, 'h3', '우리 둘의 커플 카드 ♡');
+  append(cards, 'p', data.couple.name);
+  if (!data.art) {
+    append(cards, 'p', '일러스트 준비 중');
+  } else {
+    const grid = document.createElement('div');
+    grid.className = 'card-grid';
+    for (const [key, label] of [['title', '글자 있는 카드 · 공유용'], ['plain', '글자 없는 카드 · 프로필용']]) {
+      const figure = document.createElement('figure');
+      figure.append(cardImage(data.art[key], data.couple.name + ' ' + label));
+      append(figure, 'figcaption', label);
+      const save = document.createElement('a');
+      save.href = data.art[key];
+      save.download = '';
+      save.textContent = '이미지 저장';
+      figure.append(save);
+      grid.append(figure);
+    }
+    cards.append(grid);
+  }
+  section.append(cards);
+}
 function show(data) {
-  const metrics = data.metrics, usage = metrics.usage;
-  append(reading, 'p', [metrics.response_model || data.model,
-    metrics.latency_ms === null ? '' : (metrics.latency_ms / 1000).toFixed(2) + '초',
-    usage ? `입력 ${usage.input_tokens} · 캐시 입력 ${usage.cached_input_tokens} · 출력 ${usage.output_tokens} 토큰` : '',
-    usage ? '추정 비용 $' + usage.estimated_usd : ''].filter(Boolean).join(' / '));
+  const metrics = data.metrics, usage = metrics?.usage;
+  if (metrics) {
+    append(reading, 'p', [metrics.response_model || data.model,
+      metrics.latency_ms === null ? '' : (metrics.latency_ms / 1000).toFixed(2) + '초',
+      usage ? `입력 ${usage.input_tokens} · 캐시 입력 ${usage.cached_input_tokens} · 출력 ${usage.output_tokens} 토큰` : '',
+      usage ? '추정 비용 $' + usage.estimated_usd : ''].filter(Boolean).join(' / '));
+  }
+  if (!data.chapters) {
+    showCouplePreview(data);
+    const section = document.createElement('article');
+    showCharts(section, data);
+    if (!liveEnabled) showCoupleCards(section, data);
+    reading.append(section);
+    return;
+  }
   for (const [index, chapter] of data.chapters.entries()) {
     const section = document.createElement('article');
     const title = chapter.title.trim().replace(/^(?:[1-3]\s*장\s*\.\s*)+/u, '');
     append(section, 'h2', `${index + 1}장. ${title}`);
+    if (index === 0) showCharts(section, data);
     for (const paragraph of chapter.paragraphs) {
       append(section, 'p', paragraph.text);
       append(section, 'small', paragraph.evidence_ids.join(' · '));
     }
+    if (index === 2) showCoupleCards(section, data);
     reading.append(section);
   }
   const details = document.createElement('details');
@@ -138,22 +233,30 @@ function show(data) {
   append(details, 'pre', JSON.stringify({명식: data.charts, 근거: data.facts}, null, 2));
   reading.append(details);
 }
-form.addEventListener('submit', async event => {
-  event.preventDefault();
+const preview = byId('preview');
+async function readReport(mode) {
+  if (!form.reportValidity()) return;
+  preview.disabled = true;
   generate.disabled = true;
   reading.replaceChildren();
-  status.textContent = 'OpenAI가 원고를 작성하고 있습니다.';
+  status.textContent = mode === 'live' ? 'OpenAI가 원고를 작성하고 있습니다.' : '명식을 계산하고 있습니다.';
   const body = Object.fromEntries(['a', 'b'].map(id => [id, Object.fromEntries(
-    ['date', 'time', 'gender'].map(field => [field, byId(id + '-' + field).value])
+    ['name', 'date', 'time', 'gender'].map(field => [field, byId(id + '-' + field).value])
   )]));
   try {
-    show(await call(token, body));
-    status.textContent = '원고 작성이 완료됐습니다.';
+    show(await call(token, {...body, mode}));
+    status.textContent = mode === 'live' ? '원고 작성이 완료됐습니다.' : '명식 계산이 완료됐습니다.';
   } catch (error) {
     status.textContent = error.message;
   } finally {
-    generate.disabled = false;
+    generate.disabled = !liveEnabled;
+    preview.disabled = false;
   }
+}
+preview.addEventListener('click', () => readReport('preview'));
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  if (liveEnabled) readReport('live');
 });
 </script>
 </body>

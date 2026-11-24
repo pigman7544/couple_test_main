@@ -16,8 +16,8 @@ from rs_gpt_server import Handler
 class RsGptTests(unittest.TestCase):
     token = "test-admin-token-" * 3
     births = {
-        "a": {"date": "1992-03-18", "time": "", "gender": "male"},
-        "b": {"date": "1992-04-30", "time": "", "gender": "female"},
+        "a": {"name": "민준", "date": "1992-03-18", "time": "", "gender": "male"},
+        "b": {"name": "서연", "date": "1992-04-30", "time": "", "gender": "female"},
     }
     def setUp(self):
         local = patch.dict("os.environ", {"RENDER": "false"})
@@ -111,8 +111,11 @@ class RsGptTests(unittest.TestCase):
         budget.assert_called_once_with(343_000)
         provider.assert_not_called()
 
+    @patch("rs_gpt.validate")
     @patch("rs_gpt.urlopen")
-    def test_responses_api_mock_transport_through_http(self, provider):
+    def test_responses_api_mock_transport_through_http(self, provider, validator):
+        # The legacy comparison sample is only used to test API transport.
+        validator.side_effect = lambda manuscript, facts, names: validate(manuscript, facts)
         sample = json.loads((ROOT / "rs_gpt_mock.json").read_text(encoding="utf-8"))["sol-61"]
         provider.return_value.__enter__.return_value.read.return_value = json.dumps({
             "status": "completed", "output": [{"type": "message", "content": [
@@ -138,6 +141,8 @@ class RsGptTests(unittest.TestCase):
         self.assertFalse(body["store"])
         self.assertTrue(body["text"]["format"]["strict"])
         self.assertNotIn("1992", body["input"])
+        self.assertEqual(json.loads(body["input"])["names"], {"a": "민준", "b": "서연"})
+        self.assertIn((ROOT / "rs_gpt_approved_v2.md").read_text(encoding="utf-8"), body["instructions"])
         self.assertEqual(body["model"], "gpt-6.2-sol")
         self.assertEqual(body["max_output_tokens"], 5500)
         self.assertIsNone(report["charts"]["a"]["pillars"]["hour"])
@@ -188,6 +193,37 @@ class RsGptTests(unittest.TestCase):
             with self.assertRaises(HTTPError) as error:
                 self.post_admin(self.token, births)
             self.assertEqual(error.exception.code, 400)
+
+    @patch("rs_gpt.urlopen")
+    def test_admin_preview_with_live_disabled_validates_names(self, provider):
+        config = {"RS_GPT_ADMIN_TOKEN": self.token, "RS_GPT_LIVE": "0"}
+        data = {"mode": "preview", "a": {"name": "민준", "date": "1992-03-18"},
+                "b": {"name": "서연", "date": "1992-04-30", "time": "09:17"}}
+        with patch.dict("os.environ", config):
+            with self.post_admin(self.token, data) as response:
+                result = json.load(response)
+            self.assertEqual(result["names"], {"a": "민준", "b": "서연"})
+            self.assertIsNone(result["charts"]["a"]["pillars"]["hour"])
+            self.assertIsNotNone(result["charts"]["b"]["pillars"]["hour"])
+            self.assertNotIn("chapters", result)
+            example = result
+            data["a"] = {"name": "지우", "date": "1985-01-11", "time": "16:00"}
+            data["b"] = {"name": "하늘", "date": "1992-04-30", "time": "01:00"}
+            with self.post_admin(self.token, data) as response:
+                different = json.load(response)
+            self.assertEqual(different["names"], {"a": "지우", "b": "하늘"})
+            self.assertNotEqual(different["charts"]["a"], example["charts"]["a"])
+            self.assertNotEqual(different["facts"]["a.day.stem"], example["facts"]["a.day.stem"])
+            self.assertEqual(different["couple"]["id"], "c06")
+            for variant in ("title", "plain"):
+                with urlopen(self.origin + different["art"][variant], timeout=5) as response:
+                    self.assertEqual(response.headers.get_content_type(), "image/png")
+                    self.assertTrue(response.read().startswith(b"\x89PNG\r\n\x1a\n"))
+            data["a"]["name"] = "<img>"
+            with self.assertRaises(HTTPError) as error:
+                self.post_admin(self.token, data)
+            self.assertEqual(error.exception.code, 400)
+        provider.assert_not_called()
 
     def test_missing_ledger_does_not_reset_allowance(self):
         with TemporaryDirectory() as folder:

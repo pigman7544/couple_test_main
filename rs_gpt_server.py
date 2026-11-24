@@ -6,10 +6,12 @@ import os
 import re
 import sys
 from datetime import date
+from unicodedata import category, normalize
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from rs_gpt import ROOT, PROFILES, ExperimentError, birth_payload, fixed_case, run_report
 from rs_gpt_budget import init_local_budget, local_budget, render_budget, verify_render_ledger
+from server import ART_PATHS, match_inputs
 
 LOOPBACK = ("127.0.0.1", "localhost")
 RENDER_SERVICE_ID = "srv-dc23purl550s7381llg0"
@@ -24,11 +26,11 @@ def admin_token():
 
 
 def parse_birth(data):
-    if not isinstance(data, dict) or set(data) != {"date", "time", "gender"}:
+    if not isinstance(data, dict) or "date" not in data or set(data) - {"date", "time", "gender"}:
         raise ValueError
-    birthday, clock, gender = data["date"], data["time"], data["gender"]
+    birthday, clock, gender = data["date"], data.get("time"), data.get("gender")
     if (not isinstance(birthday, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", birthday)
-            or gender not in ("", "male", "female")):
+            or gender not in (None, "", "male", "female", "other")):
         raise ValueError
     birthday = date.fromisoformat(birthday)
     if not 1000 <= birthday.year <= 2050:
@@ -43,6 +45,18 @@ def parse_birth(data):
                 hour=hour, minute=minute), gender
 
 
+def parse_person(data):
+    if not isinstance(data, dict) or not isinstance(data.get("name"), str):
+        raise ValueError
+    name = normalize("NFC", data["name"]).strip()
+    if not 1 <= len(name) <= 32 or not any(char.isalpha() for char in name) or any(
+        category(char)[0] not in "LM" and char not in " -·'’" for char in name
+    ):
+        raise ValueError
+    birth, gender = parse_birth({key: value for key, value in data.items() if key != "name"})
+    return birth, gender, name
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         # Do not record client IP, request URL, or user agent.
@@ -50,7 +64,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def write_response(self, status, raw, content_type):
         self.send_response(status)
-        self.send_header("Content-Type", f"{content_type}; charset=utf-8")
+        self.send_header("Content-Type", content_type if content_type == "image/png"
+                         else f"{content_type}; charset=utf-8")
         self.send_header("Content-Length", str(len(raw)))
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Robots-Tag", "noindex, nofollow")
@@ -59,7 +74,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Content-Security-Policy",
                          "default-src 'none'; script-src 'unsafe-inline'; "
-                         "style-src 'unsafe-inline'; connect-src 'self'; form-action 'none'")
+                         "style-src 'unsafe-inline'; img-src 'self'; connect-src 'self'; form-action 'none'")
         self.end_headers()
         self.wfile.write(raw)
 
@@ -86,6 +101,8 @@ class Handler(BaseHTTPRequestHandler):
             self.write_response(200, (ROOT / "rs_gpt.html").read_bytes(), "text/html")
         elif self.path == ADMIN_PATH:
             self.write_response(200, (ROOT / "rs_gpt_admin.html").read_bytes(), "text/html")
+        elif self.path in ART_PATHS and (asset := ROOT / self.path.lstrip("/")).is_file():
+            self.write_response(200, asset.read_bytes(), "image/png")
         elif self.path == ADMIN_API:
             if not self.admin_authorized():
                 self.json_response(403, {"error": "관리자 인증이 필요합니다."})
@@ -123,22 +140,30 @@ class Handler(BaseHTTPRequestHandler):
             if self.headers.get_content_type() != "application/json":
                 raise ValueError
             size = int(self.headers.get("Content-Length", 0))
-            if not 0 < size <= 512:
+            if not 0 < size <= 1024:
                 raise ValueError
             data = json.loads(self.rfile.read(size))
             if not isinstance(data, dict):
                 raise ValueError
             if self.path == ADMIN_API:
-                if set(data) != {"a", "b"}:
+                if set(data) - {"a", "b", "mode"} or not {"a", "b"} <= set(data):
                     raise ValueError
-                if not self.live_enabled():
+                mode = data.get("mode", "live")
+                if mode not in ("live", "preview"):
+                    raise ValueError
+                if mode == "live" and not self.live_enabled():
                     raise ExperimentError("disabled", "실시간 집필 설정이 준비되지 않았습니다.", 503)
-                a, gender_a = parse_birth(data["a"])
-                b, gender_b = parse_birth(data["b"])
+                a, gender_a, name_a = parse_person(data["a"])
+                b, gender_b, name_b = parse_person(data["b"])
                 payload = birth_payload(a, b, {"a": gender_a, "b": gender_b})
-                budget = render_budget if os.environ.get("RENDER") == "true" else local_budget
-                result = run_report("sol-62", "live", True, budget, payload)
-                result.update(payload)
+                payload["names"] = {"a": name_a, "b": name_b}
+                _, _, _, _, _, ranked, art = match_inputs(data)
+                couple = ranked[0][2]
+                payload["couple"] = {key: couple[key] for key in ("id", "name", "work")}
+                result = {**payload, "art": art}
+                if mode == "live":
+                    budget = render_budget if os.environ.get("RENDER") == "true" else local_budget
+                    result.update(run_report("sol-62", "live", True, budget, payload))
             else:
                 if set(data) != {"profile", "mode"}:
                     raise ValueError
