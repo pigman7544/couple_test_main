@@ -11,13 +11,23 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from rs_gpt import ROOT, PROFILES, ExperimentError, birth_payload, fixed_case, run_report
 from rs_gpt_budget import init_local_budget, local_budget, render_budget, verify_render_ledger
-from server import ART_PATHS, match_inputs
+from server import match_inputs
 
 LOOPBACK = ("127.0.0.1", "localhost")
 RENDER_SERVICE_ID = "srv-dc23purl550s7381llg0"
 ADMIN_PATH = "/rs-gpt/admin"
 ADMIN_API = "/api/rs-gpt/admin"
 LEDGER_API = "/api/rs-gpt/admin/ledger"
+# Identity is explicit so a filename alone cannot approve a card for a work.
+VERIFIED_ART = {
+    ("c01", "춘향전", "춘향·이몽룡"): {
+        "title": "/assets/c01_title.png", "plain": "/assets/c01_plain.png",
+    },
+    ("c06", "백사전", "백소정·허선"): {
+        "title": "/assets/baek_heo_title.png", "plain": "/assets/baek_heo_plain.png",
+    },
+}
+ART_PATHS = {path for variants in VERIFIED_ART.values() for path in variants.values()}
 
 
 def admin_token():
@@ -157,12 +167,17 @@ class Handler(BaseHTTPRequestHandler):
                 b, gender_b, name_b = parse_person(data["b"])
                 payload = birth_payload(a, b, {"a": gender_a, "b": gender_b})
                 payload["names"] = {"a": name_a, "b": name_b}
-                _, _, _, _, _, ranked, art = match_inputs(data)
+                _, _, _, _, _, ranked, _ = match_inputs(data)
                 couple = ranked[0][2]
                 payload["couple"] = {key: couple[key] for key in ("id", "name", "work")}
+                art = VERIFIED_ART.get((couple["id"], couple["work"], couple["name"]))
+                if art and not all((ROOT / path.lstrip("/")).is_file() for path in art.values()):
+                    art = None
                 result = {**payload, "art": art}
                 if mode == "live":
                     budget = render_budget if os.environ.get("RENDER") == "true" else local_budget
+                    payload["couple"] = {**payload["couple"],
+                                         "story_beats": [beat["summary"] for beat in couple["story_beats"]]}
                     result.update(run_report("sol-62", "live", True, budget, payload))
             else:
                 if set(data) != {"profile", "mode"}:

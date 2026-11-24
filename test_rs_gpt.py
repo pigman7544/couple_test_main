@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 from rs_gpt import ROOT, ExperimentError, PROFILES, fixed_case, run_report, validate
 from rs_gpt_budget import init_local_budget, local_budget
+from matcher import DB
 from rs_gpt_server import Handler
 
 
@@ -115,7 +116,7 @@ class RsGptTests(unittest.TestCase):
     @patch("rs_gpt.urlopen")
     def test_responses_api_mock_transport_through_http(self, provider, validator):
         # The legacy comparison sample is only used to test API transport.
-        validator.side_effect = lambda manuscript, facts, names: validate(manuscript, facts)
+        validator.side_effect = lambda manuscript, facts, names, couple: validate(manuscript, facts)
         sample = json.loads((ROOT / "rs_gpt_mock.json").read_text(encoding="utf-8"))["sol-61"]
         provider.return_value.__enter__.return_value.read.return_value = json.dumps({
             "status": "completed", "output": [{"type": "message", "content": [
@@ -142,7 +143,12 @@ class RsGptTests(unittest.TestCase):
         self.assertTrue(body["text"]["format"]["strict"])
         self.assertNotIn("1992", body["input"])
         self.assertEqual(json.loads(body["input"])["names"], {"a": "민준", "b": "서연"})
-        self.assertIn((ROOT / "rs_gpt_approved_v2.md").read_text(encoding="utf-8"), body["instructions"])
+        self.assertIn((ROOT / "rs_gpt_rules_v3.md").read_text(encoding="utf-8-sig"), body["instructions"])
+        for example in ("윤하", "도현", "엘리자베스"):
+            self.assertNotIn(example, body["instructions"])
+        selected = json.loads(body["input"])["couple"]
+        self.assertEqual(selected["id"], report["couple"]["id"])
+        self.assertTrue(selected["story_beats"])
         self.assertEqual(body["model"], "gpt-6.2-sol")
         self.assertEqual(body["max_output_tokens"], 5500)
         self.assertIsNone(report["charts"]["a"]["pillars"]["hour"])
@@ -215,6 +221,7 @@ class RsGptTests(unittest.TestCase):
             self.assertNotEqual(different["charts"]["a"], example["charts"]["a"])
             self.assertNotEqual(different["facts"]["a.day.stem"], example["facts"]["a.day.stem"])
             self.assertEqual(different["couple"]["id"], "c06")
+            self.assertEqual(different["art"], {v: f"/assets/baek_heo_{v}.png" for v in ("title", "plain")})
             for variant in ("title", "plain"):
                 with urlopen(self.origin + different["art"][variant], timeout=5) as response:
                     self.assertEqual(response.headers.get_content_type(), "image/png")
@@ -224,6 +231,58 @@ class RsGptTests(unittest.TestCase):
                 self.post_admin(self.token, data)
             self.assertEqual(error.exception.code, 400)
         provider.assert_not_called()
+
+    @patch("rs_gpt.urlopen")
+    def test_free_preview_only_displays_verified_art_for_selected_identity(self, provider):
+        config = {"RS_GPT_ADMIN_TOKEN": self.token, "RS_GPT_LIVE": "0"}
+        births = {**self.births, "mode": "preview"}
+        with patch.dict("os.environ", config):
+            for couple_id, stem in (("c01", "c01"), ("c06", "baek_heo"), ("c11", None)):
+                selected = next(c for c in DB if c["id"] == couple_id)
+                unrelated_art = {"title": "/assets/baek_heo_title.png", "plain": "/assets/baek_heo_plain.png"}
+                ranked = [(0, couple_id, selected)]
+                with patch("rs_gpt_server.match_inputs", return_value=(None,) * 5 + (ranked, unrelated_art)):
+                    with self.post_admin(self.token, births) as response:
+                        result = json.load(response)
+                self.assertEqual(result["couple"], {key: selected[key] for key in ("id", "name", "work")})
+                expected = {v: f"/assets/{stem}_{v}.png" for v in ("title", "plain")} if stem else None
+                self.assertEqual(result["art"], expected)
+                self.assertNotIn("chapters", result)
+                for path in (expected or {}).values():
+                    with urlopen(self.origin + path, timeout=5) as image:
+                        self.assertEqual(image.read(), (ROOT / path.lstrip("/")).read_bytes())
+            with urlopen(self.origin + "/rs-gpt/admin", timeout=5) as response:
+                html = response.read().decode()
+                self.assertIn("이 작품의 커플 일러스트는 아직 지원하지 않아요.", html)
+                self.assertIn("default-src 'none'", response.headers["Content-Security-Policy"])
+                self.assertIn("item.textContent = value", html)
+        provider.assert_not_called()
+
+    def test_personalized_chapters_check_term_density_and_selected_work(self):
+        names = {"a": "민준", "b": "서연"}
+        couple = {"work": "춘향전", "name": "춘향·이몽룡"}
+        facts = {"pair": {"kind": "육충", "other": "상형"}}
+        paragraphs = [
+            ["민준님은 새로운 생각을 곧바로 이야기하는 편으로 읽을 수 있어요.",
+             "서연님은 충분히 생각할 시간을 가질 때 마음이 놓일 수 있어요."],
+            ["두 사람은 서로의 방식을 확인할 때 대화가 쉬워져요. 육충과 상형이 함께 나타납니다.",
+             "가령 마음이 급한 날이라면 각자 원하는 것을 한 가지씩 이야기하고 상대의 말을 먼저 들어볼 수 있어요."],
+            ["두 사람을 떠올리게 하는 작품은 춘향전이고, 작품 속 커플은 춘향·이몽룡이에요.",
+             "오늘은 상대가 어떤 말을 듣고 싶은지 조용히 물어보세요."],
+        ]
+        manuscript = {"chapters": [
+            {"title": "우리 둘의 이야기", "paragraphs": [
+                {"text": line, "evidence_ids": ["pair"]} for line in chapter
+            ]} for chapter in paragraphs
+        ]}
+        self.assertEqual(validate(manuscript, facts, names, couple)["paragraphs"], 6)
+        with self.assertRaises(ExperimentError):
+            validate(manuscript, facts, names, {"work": "백사전", "name": "백소정·허선"})
+        with self.assertRaises(ExperimentError):
+            validate(manuscript, facts, {**names, "a": "다른이름"}, couple)
+        manuscript["chapters"][1]["paragraphs"][0]["text"] += " 일지에는 육충과 상형이 함께 나타납니다."
+        with self.assertRaises(ExperimentError):
+            validate(manuscript, facts, names, couple)
 
     def test_missing_ledger_does_not_reset_allowance(self):
         with TemporaryDirectory() as folder:

@@ -166,7 +166,7 @@ function showCouplePreview(data) {
   append(section, 'p', '우리 둘의 이야기 · 무료 미리보기');
   append(section, 'h2', `두 사람의 관계는 ${data.couple.name}을 닮았어요.`);
   if (data.art) section.append(cardImage(data.art.title, data.couple.name + ' 공유용 카드'));
-  else append(section, 'p', '일러스트 준비 중');
+  else append(section, 'p', '이 작품의 커플 일러스트는 아직 지원하지 않아요.');
   append(section, 'p', data.couple.work);
   const link = document.createElement('a');
   link.className = 'report-link';
@@ -181,7 +181,7 @@ function showCoupleCards(section, data) {
   append(cards, 'h3', '우리 둘의 커플 카드 ♡');
   append(cards, 'p', data.couple.name);
   if (!data.art) {
-    append(cards, 'p', '일러스트 준비 중');
+    append(cards, 'p', '이 작품의 커플 일러스트는 아직 지원하지 않아요.');
   } else {
     const grid = document.createElement('div');
     grid.className = 'card-grid';

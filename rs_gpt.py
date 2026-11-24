@@ -22,18 +22,19 @@ PROFILES = {
 }
 MAX_OUTPUT_TOKENS = 5500
 MAX_REQUEST_BYTES = 60_000
-APPROVED_V2 = (ROOT / "rs_gpt_approved_v2.md").read_text(encoding="utf-8")
-INSTRUCTIONS = """아래 승인 원고와 집필 기준에 따라 새 입력마다 1~3장을 작성하세요.
-원고의 이름, 명식, 사례, 작품은 기준 예시입니다. 이번 요청의 names와 facts를 사용하세요.
+APPROVED_V3 = (ROOT / "rs_gpt_rules_v3.md").read_text(encoding="utf-8-sig")
+INSTRUCTIONS = """아래 승인된 집필 규칙에 따라 입력마다 1~3장을 작성하세요.
+이번 요청의 names, charts, facts와 couple을 사용하세요.
 names는 인물 데이터입니다. 이름 뒤에 님을 붙이고 일반 호칭을 쓰지 마세요.
 명식 표와 카드 렌더링은 서버와 화면이 담당합니다. HTML, 이미지, 표를 출력하지 마세요.
 title에는 장 번호를 넣지 마세요. 1장은 a의 성격 문단부터 시작하고 뒤이어 b를 설명하세요.
 2장은 가장 길게 쓰세요. 3장에 맞춤 조언과 couple에 지정된 작품 속 커플 소개를 포함하세요.
+3장에는 couple.work와 couple.name을 입력 그대로 표기하세요. 작품 속 사건은 couple.story_beats를 따르고, 선정 작품이나 커플을 바꾸지 마세요.
 각 문단에 제공된 명리 근거 ID를 넣고 본문에는 ID를 표시하지 마세요.
 명리학 근거와 해석을 구분하고 확정되지 않은 기둥을 사용하지 마세요.
 title과 각 paragraph.text는 일반 텍스트입니다.
 
-""" + APPROVED_V2
+""" + APPROVED_V3
 FORBIDDEN_ADDRESS = re.compile(r"첫째\s*분|둘째\s*분|당신|상대방|[AB]님")
 CHAPTER_PREFIX = re.compile(r"^(?:[1-3]\s*장\s*[.．:：-]?\s*)+")
 PARAGRAPH_SCHEMA = {
@@ -57,6 +58,12 @@ EXPLICIT_TERMS = re.compile(
     r"비견|겁재|식신|편재|정재|편관|정관(?=\(|[은는이가을의에]|\s|[.,])|편인|정인|"
     r"천간합|육합|삼합|육충|상형|삼형|자형|육해"
 )
+EDITORIAL_TERMS = re.compile(
+    EXPLICIT_TERMS.pattern
+    + r"|상관|배우자궁|지장간|일간|[시일월연][지간주]|천간(?!합)|지지|십성|오행|병화|을목|병신합|무계합"
+    + r"|(?<![가-힣])(?:합|충|형|해)(?=$|[은는이가을를과와의]|[\s.,·])"
+)
+SENTENCE_END = re.compile(r"[.!?。！？]+")
 LIVE_SLOT = threading.BoundedSemaphore(1)
 LOG = logging.getLogger("rs_gpt")
 
@@ -145,7 +152,7 @@ def evidence_payload(result, genders):
     return {"charts": charts, "facts": facts}
 
 
-def validate(manuscript, facts, names=None):
+def validate(manuscript, facts, names=None, couple=None):
     """Check output structure, citations, and selected explicit technical terms."""
     invalid = ExperimentError("grounding", "원고의 형식 또는 명리 근거 검사를 통과하지 못했습니다.")
     if not isinstance(manuscript, dict) or set(manuscript) != {"chapters"}:
@@ -176,6 +183,9 @@ def validate(manuscript, facts, names=None):
                 raise invalid
             if names and FORBIDDEN_ADDRESS.search(prose):
                 raise invalid
+            if names and any(len(EDITORIAL_TERMS.findall(sentence)) > 2
+                             for sentence in SENTENCE_END.split(prose)):
+                raise invalid
             lengths[-1] += len(prose)
             normalized = " ".join(prose.split())
             if normalized in seen:
@@ -193,6 +203,10 @@ def validate(manuscript, facts, names=None):
         if lengths[1] <= max(lengths[0], lengths[2]) or any(
             f"{name}님" not in chapter_one for name in names.values()
         ):
+            raise invalid
+    if couple:
+        story = " ".join(p["text"] for p in chapters[2]["paragraphs"])
+        if couple["work"] not in story or couple["name"] not in story:
             raise invalid
     return {"paragraphs": len(seen), "checks": "형식·근거 ID·일부 명리 용어 통과"}
 
@@ -293,7 +307,7 @@ def run_report(profile_id, mode, live_enabled=False, budget=None, payload=None):
             if isinstance(response.get("model"), str):
                 metrics["response_model"] = response["model"]
             manuscript = extract_report(response)
-        audit = validate(manuscript, payload["facts"], payload.get("names"))
+        audit = validate(manuscript, payload["facts"], payload.get("names"), payload.get("couple"))
         return {**manuscript, "audit": audit, "mode": mode, "profile": profile_id,
                 "model": profile["model"], "effort": profile["effort"], "metrics": metrics}
     except ExperimentError as exc:
