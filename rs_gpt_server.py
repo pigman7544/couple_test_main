@@ -132,15 +132,21 @@ class Handler(BaseHTTPRequestHandler):
     def json_response(self, status, body):
         self.write_response(status, json.dumps(body, ensure_ascii=False).encode(), "application/json")
 
-    def live_enabled(self):
-        if (os.environ.get("RS_GPT_LIVE") != "1" or not os.environ.get("OPENAI_API_KEY")
-                or len(admin_token()) < 32):
-            return False
-        if os.environ.get("RENDER") != "true":
-            return (self.server.server_address[0] in LOOPBACK
-                    and bool(os.environ.get("RS_GPT_LOCAL_LEDGER")))
-        return (os.environ.get("RENDER_SERVICE_ID") == RENDER_SERVICE_ID
-                and bool(os.environ.get("RS_GPT_BUDGET_DSN")))
+    def live_blockers(self):
+        blockers = []
+        if os.environ.get("RS_GPT_LIVE") != "1":
+            blockers.append("live_off")
+        if not os.environ.get("OPENAI_API_KEY", "").strip():
+            blockers.append("provider_key_missing")
+        if os.environ.get("RENDER") == "true":
+            if os.environ.get("RENDER_SERVICE_ID") != RENDER_SERVICE_ID:
+                blockers.append("wrong_render_service")
+            if not os.environ.get("RS_GPT_BUDGET_DSN", "").strip():
+                blockers.append("render_ledger_missing")
+        elif (self.server.server_address[0] not in LOOPBACK
+              or not os.environ.get("RS_GPT_LOCAL_LEDGER")):
+            blockers.append("local_ledger_required")
+        return blockers
 
     def admin_authorized(self):
         secret = admin_token()
@@ -158,8 +164,10 @@ class Handler(BaseHTTPRequestHandler):
             if not self.admin_authorized():
                 self.json_response(403, {"error": "관리자 인증이 필요합니다."})
             else:
+                blockers = self.live_blockers()
                 self.json_response(200, {
-                    "live_enabled": self.live_enabled(),
+                    "live_enabled": not blockers,
+                    "live_blockers": blockers,
                     "ledger_check": os.environ.get("RENDER_SERVICE_ID") == RENDER_SERVICE_ID,
                 })
         elif self.path == LEDGER_API:
@@ -209,7 +217,7 @@ class Handler(BaseHTTPRequestHandler):
                 mode = data.get("mode", "live")
                 if mode not in ("live", "preview"):
                     raise ValueError
-                if mode == "live" and not self.live_enabled():
+                if mode == "live" and self.live_blockers():
                     raise ExperimentError("disabled", "실시간 집필 설정이 준비되지 않았습니다.", 503)
                 a, gender_a, name_a = parse_person(data["a"])
                 b, gender_b, name_b = parse_person(data["b"])

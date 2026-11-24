@@ -49,7 +49,7 @@ th,td{border:1px solid var(--line);padding:.35rem;overflow-wrap:anywhere}
 <p>양력 생년월일을 입력해 주세요. 출생시간을 모르면 비워 두세요.</p>
 <button type="button" id="preset">고정 검토 명식 입력</button>
 <button type="button" id="preview">명식 확인 · 무료 미리보기</button>
-<button id="generate">리포트 생성</button>
+<button id="generate" disabled>리포트 생성</button>
 </form>
 <button type="button" id="ledger" hidden>호출 원장 확인</button>
 <button type="button" id="diagnostic" hidden>최근 검증 실패 원고 확인</button>
@@ -64,6 +64,13 @@ const login = byId('login'), form = byId('report'), status = byId('status');
 const reading = byId('reading'), generate = byId('generate');
 let token = '';
 let liveEnabled = false;
+const liveBlockerMessages = {
+  live_off: '실시간 집필이 꺼져 있습니다.',
+  provider_key_missing: 'OpenAI API 키가 설정되지 않았습니다.',
+  wrong_render_service: '지정된 Render 실험 서버에서만 집필할 수 있습니다.',
+  render_ledger_missing: 'Render 호출 원장 연결 설정이 없습니다.',
+  local_ledger_required: '로컬 실험에는 루프백 주소와 호출 원장이 필요합니다.',
+};
 for (const [id, label] of [['a', '첫째'], ['b', '둘째']]) {
   const fields = document.createElement('fieldset');
   fields.innerHTML = `<legend>${label}</legend>
@@ -102,9 +109,12 @@ login.addEventListener('submit', async event => {
     form.hidden = false;
     byId('ledger').hidden = !data.ledger_check;
     byId('diagnostic').hidden = false;
-    liveEnabled = data.live_enabled;
+    liveEnabled = data.live_enabled === true;
     generate.disabled = !liveEnabled;
-    status.textContent = data.live_enabled ? '두 사람의 정보를 입력해 주세요.' : '실시간 집필 설정이 준비되지 않았습니다.';
+    const blockers = Array.isArray(data.live_blockers) ? data.live_blockers : [];
+    status.textContent = liveEnabled ? '두 사람의 정보를 입력해 주세요.' :
+      blockers.map(code => liveBlockerMessages[code]).filter(Boolean).join(' ') ||
+      '실시간 집필 설정이 준비되지 않았습니다.';
   } catch (error) {
     status.textContent = error.message;
   } finally {

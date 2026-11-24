@@ -227,6 +227,38 @@ class RsGptTests(unittest.TestCase):
                 urlopen(address, timeout=5)
             self.assertEqual(error.exception.code, 403)
 
+    @patch("rs_gpt_server.run_report")
+    @patch("rs_gpt_server.verify_render_ledger")
+    def test_admin_readiness_reports_config_blockers_without_generation(self, ledger, report):
+        address = self.origin + "/api/rs-gpt/admin"
+        request = Request(address, headers={"Authorization": f"Bearer {self.token}"})
+        config = {"RENDER": "true", "RENDER_SERVICE_ID": "srv-dc23purl550s7381llg0",
+                  "RS_GPT_ADMIN_TOKEN": self.token, "RS_GPT_LIVE": "1",
+                  "OPENAI_API_KEY": "test-key", "RS_GPT_BUDGET_DSN": "test-dsn"}
+        for changes, blockers in (
+            ({}, []),
+            ({"RS_GPT_LIVE": "0"}, ["live_off"]),
+            ({"OPENAI_API_KEY": " "}, ["provider_key_missing"]),
+            ({"RS_GPT_BUDGET_DSN": ""}, ["render_ledger_missing"]),
+            ({"RENDER_SERVICE_ID": "another-service"}, ["wrong_render_service"]),
+        ):
+            with self.subTest(changes=changes), patch.dict("os.environ", {**config, **changes}, clear=True):
+                with urlopen(request, timeout=5) as response:
+                    body = json.load(response)
+                    self.assertEqual(response.headers["Cache-Control"], "no-store")
+                    self.assertEqual(body["live_enabled"], not blockers)
+                    self.assertEqual(body["live_blockers"], blockers)
+                with self.assertRaises(HTTPError) as error:
+                    urlopen(address, timeout=5)
+                self.assertEqual(error.exception.code, 403)
+                self.assertNotIn("live_blockers", json.load(error.exception))
+                if blockers:
+                    with self.assertRaises(HTTPError) as error:
+                        self.post_admin(self.token)
+                    self.assertEqual(error.exception.code, 503)
+        ledger.assert_not_called()
+        report.assert_not_called()
+
     def test_admin_mixed_birth_times(self):
         config = {"RS_GPT_LIVE": "1", "OPENAI_API_KEY": "mock-transport-key",
                   "RS_GPT_ADMIN_TOKEN": self.token, "RS_GPT_LOCAL_LEDGER": "test-only"}
