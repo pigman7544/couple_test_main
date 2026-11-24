@@ -144,6 +144,13 @@ class RsGptTests(unittest.TestCase):
         self.assertNotIn("1992", body["input"])
         self.assertEqual(json.loads(body["input"])["names"], {"a": "민준", "b": "서연"})
         self.assertIn((ROOT / "rs_gpt_rules_v3.md").read_text(encoding="utf-8-sig"), body["instructions"])
+        chapter_three_rules = body["instructions"].split("## 3장 작품 커플 소개", 1)[1]
+        expected_order = ("첫 문장", "couple.story_beats", "실제 명식", "기억에 남는 한 문장")
+        positions = [chapter_three_rules.index(rule) for rule in expected_order]
+        self.assertEqual(positions, sorted(positions))
+        for rule in ("막연한 칭찬", "이번 입력에 맞춰 새로 쓴다", "최대 2개"):
+            self.assertIn(rule, chapter_three_rules)
+        self.assertNotIn("서로를 아끼는 방식은 다르지만", body["instructions"])
         for example in ("윤하", "도현", "엘리자베스"):
             self.assertNotIn(example, body["instructions"])
         selected = json.loads(body["input"])["couple"]
