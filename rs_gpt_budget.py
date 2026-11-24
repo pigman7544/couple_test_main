@@ -12,16 +12,43 @@ from rs_gpt import ExperimentError
 
 MONTHLY_MICRO_USD = 7_000_000
 MONTHLY_CALLS = 3
+RENDER_SERVICE_ID = "srv-dc23purl550s7381llg0"
 COOLDOWN_SECONDS = 300
 LOCK_ID = 376118
 RUNTIME_ROLE = "rs_gpt_runtime"
 LOGGER = logging.getLogger(__name__)
 
 
+def monthly_call_limit():
+    if (os.environ.get("RENDER") == "true"
+            and os.environ.get("RENDER_SERVICE_ID") == RENDER_SERVICE_ID
+            and os.environ.get("RS_GPT_MONTHLY_CALLS") == "5"):
+        return 5
+    return MONTHLY_CALLS
+
+
+def month_start(now):
+    # Keep the existing UTC rollover, which is 09:00 in Korea.
+    return now.astimezone(timezone.utc).replace(
+        day=1, hour=0, minute=0, second=0, microsecond=0)
+
+
+def render_usage(db):
+    now = db.execute("SELECT clock_timestamp()").fetchone()[0]
+    month = month_start(now)
+    count, spent, last = db.execute("""
+        SELECT COUNT(*) FILTER (WHERE reserved_at >= %s),
+               COALESCE(SUM(micro_usd) FILTER (WHERE reserved_at >= %s), 0),
+               MAX(reserved_at)
+        FROM rs_gpt_ledger.reservations
+    """, (month, month)).fetchone()
+    return now, count, spent, last
+
+
 def check_budget(count, spent, elapsed, reservation):
     if elapsed < COOLDOWN_SECONDS:
         raise ExperimentError("cooldown", "실험 요청 간격은 최소 5분입니다.", 429)
-    if count >= MONTHLY_CALLS or spent + reservation > MONTHLY_MICRO_USD:
+    if count >= monthly_call_limit() or spent + reservation > MONTHLY_MICRO_USD:
         raise ExperimentError("budget", "이달 실험 호출 한도에 도달했습니다.", 429)
 
 
@@ -42,8 +69,7 @@ def local_budget(reservation):
             db.execute("PRAGMA synchronous=FULL")
             db.execute("BEGIN IMMEDIATE")
             now = int(time.time())
-            month = int(datetime.fromtimestamp(now, timezone.utc).replace(
-                day=1, hour=0, minute=0, second=0).timestamp())
+            month = int(month_start(datetime.fromtimestamp(now, timezone.utc)).timestamp())
             count, spent = db.execute(
                 "SELECT COUNT(*), COALESCE(SUM(micro_usd), 0) FROM reservations "
                 "WHERE reserved_at >= ?", (month,)).fetchone()
@@ -106,13 +132,23 @@ def verify_render_ledger():
                     SELECT COUNT(*), COALESCE(SUM(micro_usd), 0)
                     FROM rs_gpt_ledger.reservations
                 """).fetchone()
+                _, month_count, month_reserved, _ = render_usage(db)
                 stage = "insert"
                 db.execute("""
                     INSERT INTO rs_gpt_ledger.reservations (reserved_at, micro_usd)
                     VALUES (clock_timestamp(), 1)
                 """)
                 stage = "rollback"
-            return {"reservations": count, "reserved_micro_usd": reserved}
+            limit = monthly_call_limit()
+            return {
+                "reservations": count,
+                "reserved_micro_usd": reserved,
+                "monthly_reservations": month_count,
+                "monthly_reserved_micro_usd": month_reserved,
+                "monthly_call_limit": limit,
+                "monthly_calls_remaining": max(0, limit - month_count),
+                "monthly_budget_micro_usd": MONTHLY_MICRO_USD,
+            }
     except psycopg.Error as error:
         LOGGER.warning("RS GPT ledger check failed: stage=%s error=%s sqlstate=%s",
                        stage, type(error).__name__, error.sqlstate or "none")
@@ -127,14 +163,7 @@ def render_budget(reservation):
         with connect_render_ledger() as db:
             if not db.execute("SELECT pg_try_advisory_lock(%s)", (LOCK_ID,)).fetchone()[0]:
                 raise ExperimentError("busy", "다른 원고를 작성 중입니다.", 429)
-            now = db.execute("SELECT clock_timestamp()").fetchone()[0].astimezone(timezone.utc)
-            month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-            count, spent, last = db.execute("""
-                SELECT COUNT(*) FILTER (WHERE reserved_at >= %s),
-                       COALESCE(SUM(micro_usd) FILTER (WHERE reserved_at >= %s), 0),
-                       MAX(reserved_at)
-                FROM rs_gpt_ledger.reservations
-            """, (month, month)).fetchone()
+            now, count, spent, last = render_usage(db)
             check_budget(count, spent, (now - last).total_seconds() if last else float("inf"),
                          reservation)
             db.execute(

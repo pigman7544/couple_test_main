@@ -1,6 +1,7 @@
 import json
 import threading
 import unittest
+from datetime import datetime, timedelta, timezone
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -9,9 +10,43 @@ from urllib.request import Request, urlopen
 from unittest.mock import patch
 
 from rs_gpt import ROOT, ExperimentError, PROFILES, fixed_case, run_report, validate
-from rs_gpt_budget import init_local_budget, local_budget
+from rs_gpt_budget import (
+    MONTHLY_MICRO_USD, RENDER_SERVICE_ID, check_budget, init_local_budget,
+    local_budget, month_start, monthly_call_limit,
+)
 from matcher import DB
 from rs_gpt_server import DIAGNOSTIC_API, GroundingDiagnostic, Handler
+
+
+class RsGptBudgetTests(unittest.TestCase):
+    def test_target_override_preserves_default_and_separate_spend_cap(self):
+        with patch.dict("os.environ", {
+            "RENDER": "true", "RENDER_SERVICE_ID": "other",
+            "RS_GPT_MONTHLY_CALLS": "5",
+        }):
+            self.assertEqual(monthly_call_limit(), 3)
+            with self.assertRaisesRegex(ExperimentError, "한도"):
+                check_budget(3, 1_029_000, 300, 343_000)
+            with patch.dict("os.environ", {"RENDER_SERVICE_ID": RENDER_SERVICE_ID}):
+                self.assertEqual(monthly_call_limit() - 3, 2)
+                check_budget(3, 1_029_000, 300, 343_000)
+                check_budget(4, 1_372_000, 300, 343_000)
+                with self.assertRaisesRegex(ExperimentError, "한도"):
+                    check_budget(5, 1_715_000, 300, 343_000)
+                check_budget(0, MONTHLY_MICRO_USD - 343_000, 300, 343_000)
+                with self.assertRaisesRegex(ExperimentError, "한도"):
+                    check_budget(0, MONTHLY_MICRO_USD - 342_999, 300, 343_000)
+                with self.assertRaisesRegex(ExperimentError, "5분"):
+                    check_budget(3, 1_029_000, 299, 343_000)
+                with patch.dict("os.environ", {"RS_GPT_MONTHLY_CALLS": "invalid"}):
+                    self.assertEqual(monthly_call_limit(), 3)
+
+    def test_existing_month_boundary_in_korea(self):
+        kst = timezone(timedelta(hours=9))
+        rollover = datetime(2026, 12, 1, 9, tzinfo=kst)
+        self.assertEqual(month_start(rollover - timedelta(microseconds=1)),
+                         datetime(2026, 11, 1, tzinfo=timezone.utc))
+        self.assertEqual(month_start(rollover), rollover)
 
 
 class RsGptTests(unittest.TestCase):

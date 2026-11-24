@@ -116,7 +116,7 @@ byId('ledger').addEventListener('click', async event => {
   button.disabled = true;
   try {
     const data = await call(token, null, endpoint + '/ledger');
-    status.textContent = `원장 연결·권한·동시 실행 잠금 확인 완료. 기록 ${data.reservations}건 · 누적 예약액 $${(data.reserved_micro_usd / 1e6).toFixed(6)}`;
+    status.textContent = `원장 연결·권한·동시 실행 잠금 확인 완료. 이번 달 ${data.monthly_reservations}/${data.monthly_call_limit}회 · 남은 횟수 ${data.monthly_calls_remaining}회 · 월 예약액 $${(data.monthly_reserved_micro_usd / 1e6).toFixed(6)} / $${(data.monthly_budget_micro_usd / 1e6).toFixed(2)}`;
   } catch (error) {
     status.textContent = error.message;
   } finally {

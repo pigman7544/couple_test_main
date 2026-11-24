@@ -12,11 +12,12 @@ from unicodedata import category, normalize
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from rs_gpt import ROOT, PROFILES, ExperimentError, birth_payload, fixed_case, run_report
-from rs_gpt_budget import init_local_budget, local_budget, render_budget, verify_render_ledger
+from rs_gpt_budget import (
+    RENDER_SERVICE_ID, init_local_budget, local_budget, render_budget, verify_render_ledger,
+)
 from server import match_inputs
 
 LOOPBACK = ("127.0.0.1", "localhost")
-RENDER_SERVICE_ID = "srv-dc23purl550s7381llg0"
 ADMIN_PATH = "/rs-gpt/admin"
 ADMIN_API = "/api/rs-gpt/admin"
 LEDGER_API = "/api/rs-gpt/admin/ledger"
