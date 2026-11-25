@@ -180,7 +180,7 @@ class RsGptTests(unittest.TestCase):
         self.assertEqual(json.loads(body["input"])["names"], {"a": "민준", "b": "서연"})
         self.assertIn((ROOT / "rs_gpt_rules_v3.md").read_text(encoding="utf-8-sig"), body["instructions"])
         chapter_three_rules = body["instructions"].split("## 3장 작품 커플 소개", 1)[1]
-        for rule in ("2~4문장", "couple.story_beats", "한 사건"):
+        for rule in ("2~3문장", "couple.story_beats", "한 사건"):
             self.assertIn(rule, chapter_three_rules)
         paragraph_schema = body["text"]["format"]["schema"]["properties"]["chapters"]["items"]["properties"]["paragraphs"]["items"]
         self.assertEqual(set(paragraph_schema["required"]),
@@ -334,33 +334,55 @@ class RsGptTests(unittest.TestCase):
                 self.assertIn("item.textContent = value", html)
         provider.assert_not_called()
 
-    def test_personalized_chapters_check_term_density_and_selected_work(self):
-        names = {"a": "민준", "b": "서연"}
-        couple = {"work": "춘향전", "name": "춘향·이몽룡"}
-        facts = {"pair": {"kind": "육충"}, "shape": {"kind": "상형"}}
-        paragraphs = [
-            ["민준님은 새로운 생각을 곧바로 이야기하는 편으로 읽을 수 있어요.",
-             "서연님은 충분히 생각할 시간을 가질 때 마음이 놓일 수 있어요."],
-            ["두 사람은 서로의 방식을 확인할 때 대화가 쉬워져요. 육충과 상형이 함께 나타납니다.",
-             "가령 마음이 급한 날이라면 각자 원하는 것을 한 가지씩 이야기하고 상대의 말을 먼저 들어볼 수 있어요."],
-            ["두 사람을 떠올리게 하는 작품은 춘향전이고, 작품 속 커플은 춘향·이몽룡이에요.",
-             "오늘은 상대가 어떤 말을 듣고 싶은지 조용히 물어보세요."],
-        ]
-        manuscript = {"chapters": [
-            {"title": "우리 둘의 이야기", "paragraphs": [
-                {"text": line, "evidence_ids": ["pair", "shape"]} for line in chapter
-            ]} for chapter in paragraphs
-        ]}
-        self.assertEqual(validate(manuscript, facts, names, couple)["paragraphs"], 6)
-        with self.assertRaises(ExperimentError):
+    def test_editorial_sample_meets_live_manuscript_rules(self):
+        sample = json.loads((ROOT / "rs_gpt_editorial_sample.json").read_text(encoding="utf-8"))
+        payload = birth_payload(
+            dict(year=1993, month=7, day=14, hour=10),
+            dict(year=1991, month=10, day=22, hour=None),
+            {"a": "female", "b": "male"},
+        )
+        facts = payload["facts"]
+        names, couple = sample["names"], sample["couple"]
+        manuscript = {"chapters": sample["chapters"]}
+        self.assertEqual(validate(manuscript, facts, names, couple)["paragraphs"], 18)
+        self.assertEqual(facts["pair.palaces"]["direct_branch_relation_ids"], [])
+        self.assertIsNone(payload["charts"]["b"]["pillars"]["hour"])
+        self.assertEqual({source["person"] for source in
+                          facts["b.삼형.b.year.b.month.b.day"]["sources"]}, {"b"})
+        with self.assertRaises(ExperimentError) as error:
             validate(manuscript, facts, names, {"work": "백사전", "name": "백소정·허선"})
+        self.assertEqual(error.exception.diagnostic["rule"], "selected_couple_missing")
         with self.assertRaises(ExperimentError):
             validate(manuscript, facts, {**names, "a": "다른이름"}, couple)
-        manuscript["chapters"][1]["paragraphs"][0]["text"] += " 일지에는 육충과 상형이 함께 나타납니다."
-        with self.assertRaises(ExperimentError) as error:
-            validate(manuscript, facts, names, couple)
-        self.assertEqual(error.exception.diagnostic["category"], "expression")
-        self.assertEqual(error.exception.diagnostic["rule"], "technical_term_density")
+
+    def test_editorial_guardrails_reject_shallow_or_unsupported_text(self):
+        sample = (ROOT / "rs_gpt_editorial_sample.json").read_text(encoding="utf-8")
+        facts = birth_payload(
+            dict(year=1993, month=7, day=14, hour=10),
+            dict(year=1991, month=10, day=22, hour=None),
+            {},
+        )["facts"]
+        for chapter, paragraph, find, replace, rule in (
+            (0, 0, None, None, "paragraph_count"),
+            (0, 0, ". 좋은 의도로", ". 한 문장을 늘려 봅니다. 좋은 의도로", "sentence_count"),
+            (1, 0, "두 일간은", "배우자궁의 지장간과 일간은", "technical_term_density"),
+            (1, 5, "丙辛合", "乙庚合", "symbolic_relation_mismatch"),
+            (1, 6, "巳酉丑 삼합", "申酉丑 삼합", "symbolic_relation_mismatch"),
+            (1, 1, "충이 없어요", "충이 있어요", "scoped_fact_mismatch"),
+            (2, 4, "기약해요.", "기약해요. 헤어지는 순간이에요. 서로를 기억하기로 해요.",
+             "selected_couple_length"),
+        ):
+            with self.subTest(rule=rule, chapter=chapter, paragraph=paragraph):
+                data = json.loads(sample)
+                paragraphs = data["chapters"][chapter]["paragraphs"]
+                if find is None:
+                    paragraphs.pop()
+                else:
+                    self.assertIn(find, paragraphs[paragraph]["text"])
+                    paragraphs[paragraph]["text"] = paragraphs[paragraph]["text"].replace(find, replace)
+                with self.assertRaises(ExperimentError) as error:
+                    validate({"chapters": data["chapters"]}, facts, data["names"], data["couple"])
+                self.assertEqual(error.exception.diagnostic["rule"], rule)
 
     def test_missing_ledger_does_not_reset_allowance(self):
         with TemporaryDirectory() as folder:
@@ -483,6 +505,8 @@ class RsGptTests(unittest.TestCase):
     def test_failed_manuscript_is_only_available_to_admin(self, provider):
         sample = json.loads((ROOT / "rs_gpt_mock.json").read_text(encoding="utf-8"))["sol-62"]
         sample["chapters"][0]["title"] = "1장. 처음 만난 두 사람"
+        # Reach the evidence error before checking the remainder of this diagnostic fixture.
+        sample["chapters"][0]["paragraphs"] += [{"text": "", "evidence_ids": []}] * 2
         sample["chapters"][0]["paragraphs"][0] = {
             "text": "민준님의 일간과 연주에는 육충이 있습니다. <script>원고표식</script>",
             "evidence_ids": ["a.day.stem"],

@@ -11,7 +11,7 @@ from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from compatibility_v11 import BRANCH_ELEMENTS, STEM_ELEMENTS, analyze_pair, ten_god
+from compatibility_v11 import BRANCH_ELEMENTS, RULES, STEM_ELEMENTS, analyze_pair, ten_god
 from compatibility_v12 import cross_chart, natal_context
 from rs_synthesis import PARTNER_ROLES, analyze_preview
 
@@ -22,6 +22,7 @@ PROFILES = {
 }
 MAX_OUTPUT_TOKENS = 5500
 MAX_REQUEST_BYTES = 60_000
+EDITORIAL_PARAGRAPHS = ((4, 6), (6, 9), (5, 6))
 APPROVED_V3 = (ROOT / "rs_gpt_rules_v3.md").read_text(encoding="utf-8-sig")
 INSTRUCTIONS = """아래 승인된 집필 규칙에 따라 입력마다 1~3장을 작성하세요.
 이번 요청의 names, charts, facts와 couple을 사용하세요.
@@ -74,6 +75,11 @@ TECHNICAL_TERM = re.compile(
 )
 EDITORIAL_TERMS = re.compile(r"배우자궁|지장간|일간|[시일월연년][지간주]|천간(?!합)|지지|십성|오행")
 SENTENCE_END = re.compile(r"[.!?。！？;；\n]+")
+SYMBOLIC_RELATION = re.compile(
+    r"([甲乙丙丁戊己庚辛壬癸]{2})\s*(合)|"
+    r"([子丑寅卯辰巳午未申酉戌亥]{2,3})\s*(삼합|삼형|육합|육충|육해|合|沖|冲|害)"
+)
+SYMBOLIC_KINDS = {"沖": "육충", "冲": "육충", "害": "육해"}
 PILLAR_NAMES = {"연": "year", "년": "year", "월": "month", "일": "day", "시": "hour"}
 STEM_NAMES = dict(zip(STEM_ELEMENTS, "갑 을 병 정 무 기 경 신 임 계".split()))
 STEM_KOREAN_ELEMENTS = dict(zip(("wood", "fire", "earth", "metal", "water"), "목화토금수"))
@@ -142,6 +148,20 @@ def evidence_payload(result, genders):
                for s in fact.get("sources", [fact])):
             continue
         facts[ref] = {k: v for k, v in fact.items() if k != "year_month_alternatives"}
+    for relation in result.get("relations", ()):
+        owner = relation["scope"]
+        if owner == "pair" or relation["kind"] not in {"삼형", "삼합", "육충", "천간합"}:
+            continue
+        sources = relation["sources"]
+        if any(pillar in scopes[person] for person, pillar, _ in sources):
+            continue
+        kind = relation["kind"]
+        key = ".".join(f"{person}.{pillar}" for person, pillar, _ in sources)
+        facts[f"{owner}.{kind}.{key}"] = {
+            "kind": kind, "layer": RULES[kind][0],
+            "sources": [{"person": person, "pillar": pillar, "symbol": symbol}
+                        for person, pillar, symbol in sources],
+        }
     charts = {}
     for owner, other in (("a", "b"), ("b", "a")):
         chart = result["charts"][owner]
@@ -205,6 +225,16 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
                              evidence_ids=refs, **position)
 
     for sentence in filter(str.strip, SENTENCE_END.split(prose)):
+        for notation in SYMBOLIC_RELATION.finditer(sentence):
+            stems, _, branches, label = notation.groups()
+            kind = "천간합" if stems else (
+                "삼합" if label == "合" and len(branches) == 3 else
+                "육합" if label == "合" else SYMBOLIC_KINDS.get(label, label)
+            )
+            if not any(facts[ref].get("kind") == kind
+                       and sorted(s["symbol"] for s in facts[ref].get("sources", ()))
+                       == sorted(stems or branches) for ref in refs):
+                reject("symbolic_relation_mismatch", sentence, notation[0])
         matches = list(anchor_pattern.finditer(sentence))
         locations = [(people[m["person"]], PILLAR_NAMES[m["pillar"]], m["layer"])
                      if m["pillar"] else (people[m["person"]], "day", "지") for m in matches]
@@ -256,6 +286,13 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
             if term in RELATIONS:
                 anchors = locations or (previous_anchors if not mentioned else [])
                 participants = mentioned or (previous_people if anchors else set())
+                if ("pair.palaces" in refs
+                        and set(anchors) == {("a", "day", "지"), ("b", "day", "지")}
+                        and re.match(r"\s*(?:이|가|은|는)?\s*없", sentence[match.end():])):
+                    if any(facts[ref]["kind"] == term
+                           for ref in facts["pair.palaces"]["direct_branch_relation_ids"]):
+                        reject("direct_palace_relation_present", sentence, match[0])
+                    continue
                 candidates = [fact for fact in cited if fact.get("kind") == term]
                 matching = [
                     fact for fact in candidates if all(
@@ -329,9 +366,10 @@ def validate(manuscript, facts, names=None, couple=None):
             chapter["title"] = CHAPTER_PREFIX.sub("", title.strip())
             if not chapter["title"] or FORBIDDEN_ADDRESS.search(chapter["title"]):
                 raise GroundingError("expression", "title_address_or_empty", excerpt=title, **position)
-        if not isinstance(paragraphs, list) or not 2 <= len(paragraphs) <= (32 if names else 6):
-            raise GroundingError("structure", "paragraph_count", minimum=2,
-                                 maximum=32 if names else 6, **position)
+        minimum, maximum = EDITORIAL_PARAGRAPHS[index - 1] if names else (2, 6)
+        if not isinstance(paragraphs, list) or not minimum <= len(paragraphs) <= maximum:
+            raise GroundingError("structure", "paragraph_count", minimum=minimum,
+                                 maximum=maximum, **position)
         lengths.append(0)
         chapter_refs = list(dict.fromkeys(
             ref for paragraph in paragraphs if isinstance(paragraph, dict)
@@ -365,6 +403,10 @@ def validate(manuscript, facts, names=None, couple=None):
                 raise GroundingError("evidence", "invalid_evidence_ids", evidence_ids=refs, **position)
             check_claims(prose, refs, chapter_refs, facts, people, position)
             if names:
+                sentences = [sentence for sentence in SENTENCE_END.split(prose) if sentence.strip()]
+                if not 2 <= len(sentences) <= 4 or "\n" in prose or "\r" in prose:
+                    raise GroundingError("structure", "sentence_count", minimum=2,
+                                         maximum=4, **position)
                 for sentence in SENTENCE_END.split(prose):
                     if FORBIDDEN_ADDRESS.search(sentence):
                         raise GroundingError("expression", "forbidden_address", excerpt=sentence.strip(),
@@ -380,11 +422,22 @@ def validate(manuscript, facts, names=None, couple=None):
         missing = [f"{name}님" for name in names.values() if f"{name}님" not in chapter_one]
         if missing:
             raise GroundingError("expression", "chapter_one_missing_names", chapter=1, expected=missing)
+        required = {"a.palace", "b.palace", "pair.palaces",
+                    "a.reads.b.palace", "b.reads.a.palace", "pair.a.reads.b", "pair.b.reads.a"}
+        covered = {ref for p in chapters[1]["paragraphs"] for ref in p["evidence_ids"]}
+        missing = sorted((required & facts.keys()) - covered)
+        if missing:
+            raise GroundingError("evidence", "chapter_two_missing_evidence", chapter=2,
+                                 evidence_ids=missing)
     if couple:
-        story = " ".join(p["text"] for p in chapters[2]["paragraphs"])
-        if couple["work"] not in story or couple["name"] not in story:
+        stories = [p["text"] for p in chapters[2]["paragraphs"]
+                   if couple["work"] in p["text"] and couple["name"] in p["text"]]
+        if not stories:
             raise GroundingError("expression", "selected_couple_missing", chapter=3,
                                  expected=[couple["work"], couple["name"]])
+        if names and (len(stories) != 1 or
+                      not 2 <= sum(bool(s.strip()) for s in SENTENCE_END.split(stories[0])) <= 3):
+            raise GroundingError("structure", "selected_couple_length", chapter=3)
     if editorial_failure is not None:
         raise editorial_failure
     return {"paragraphs": len(seen), "checks": "형식·근거 ID·일부 명리 주장 통과"}
