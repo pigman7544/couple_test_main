@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import re
+import subprocess
 import sys
 import threading
 import time
@@ -34,6 +35,22 @@ VERIFIED_ART = {
     },
 }
 ART_PATHS = {path for variants in VERIFIED_ART.values() for path in variants.values()}
+
+
+def review_commit():
+    commit = os.environ.get("RENDER_GIT_COMMIT", "")
+    if os.environ.get("RENDER") != "true":
+        try:
+            commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True,
+                stderr=subprocess.DEVNULL, timeout=2,
+            ).strip()
+        except (OSError, subprocess.SubprocessError):
+            pass
+    return commit if re.fullmatch(r"[0-9a-f]{40}", commit) else None
+
+
+REVIEW_COMMIT = review_commit()
 
 
 class GroundingDiagnostic:
@@ -167,6 +184,7 @@ class Handler(BaseHTTPRequestHandler):
             else:
                 blockers = self.live_blockers()
                 self.json_response(200, {
+                    "review_commit": REVIEW_COMMIT,
                     "live_enabled": not blockers,
                     "live_blockers": blockers,
                     "ledger_check": os.environ.get("RENDER_SERVICE_ID") == RENDER_SERVICE_ID,

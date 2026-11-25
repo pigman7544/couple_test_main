@@ -1,5 +1,20 @@
 # 우리 둘의 이야기 v6.7 — 연연(緣硏) 브랜드 테스트
 
+## RS GPT 관리자 검수 자료
+
+관리자 인증 후 **윤하·도현 검토 원고 보기**를 누르면 **전체 검수 원고 내보내기**에서 HTML 또는 JSON을 받을 수 있습니다. 사주 표, 1~3장 원고, 커플 카드 정보와 내보내기 버전·커밋을 포함합니다. HTML에는 카드 이미지도 포함되어 오프라인에서 열 수 있습니다. 이미 생성한 전체 원고에도 같은 메뉴가 표시됩니다.
+
+PC 1440px와 모바일 390px 관리자 화면 전체 및 두 원고 파일을 한 번에 다시 만들려면 저장소에서 아래 명령을 실행하세요. Python과 Node.js가 필요합니다. 필요하면 `PYTHON` 환경변수로 Python 실행 파일을 지정하세요.
+
+```sh
+python -m pip install -r requirements.txt
+npm install --no-save --no-package-lock playwright@1.58.2
+npx playwright install chromium
+node capture_rs_gpt_review.cjs ../rs-gpt-review-artifacts
+```
+
+스크립트는 로컬 서버에 일회용 토큰으로 정상 인증하고 가상 샘플만 엽니다. 외부 요청과 POST 요청을 차단하며 지정한 폴더에 PNG 2개, HTML, JSON을 저장합니다.
+
 - 분석 시스템 브랜드: 연연(緣硏). 서비스 이름은 우리 둘의 이야기.
 - 분석 시작 시 3단계 로딩 애니메이션(최소 약 2초) 표시. 실제 서버 분석 결과를 기다립니다.
 - 본문 강조 서식을 절제하고 소개 문구를 수정했습니다.

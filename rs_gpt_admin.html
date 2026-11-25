@@ -69,6 +69,12 @@ th,td{border:1px solid var(--line);padding:.35rem;overflow-wrap:anywhere}
 <button type="button" id="diagnostic" hidden>최근 검증 실패 원고 확인</button>
 <section id="diagnostic-reading" aria-label="관리자 검증 진단"></section>
 <p id="status" role="status" aria-live="polite"></p>
+<fieldset id="review-export" hidden>
+<legend>전체 검수 원고 내보내기</legend>
+<button type="button" data-format="html">HTML 다운로드</button>
+<button type="button" data-format="json">JSON 다운로드</button>
+<p id="export-status" role="status"></p>
+</fieldset>
 <section id="reading" aria-label="생성된 리포트"></section>
 </main>
 <script>
@@ -78,6 +84,9 @@ const login = byId('login'), form = byId('report'), status = byId('status');
 const reading = byId('reading'), generate = byId('generate');
 let token = '';
 let liveEnabled = false;
+let reviewCommit = null;
+let reviewReport = null;
+const reviewExport = byId('review-export');
 const liveBlockerMessages = {
   live_off: '실시간 집필이 꺼져 있습니다.',
   provider_key_missing: 'OpenAI API 키가 설정되지 않았습니다.',
@@ -118,6 +127,7 @@ login.addEventListener('submit', async event => {
     const value = byId('token').value.trim();
     const data = await call(value);
     token = value;
+    reviewCommit = data.review_commit;
     byId('token').value = '';
     login.hidden = true;
     form.hidden = false;
@@ -321,11 +331,86 @@ function show(data) {
     if (index === 2) showCoupleCards(section, data);
     reading.append(section);
   }
+  if (data.chapters.length === 3) {
+    reviewReport = {
+      metadata: {export_version: 1, commit: reviewCommit,
+        source: data.editorial_sample ? 'editorial_sample' : 'generated_report',
+        model: data.metrics?.response_model || data.model || null},
+      names: data.names, charts: data.charts, symbols: data.symbols,
+      chapters: data.chapters, couple: data.couple, art: data.art,
+    };
+    reviewExport.hidden = false;
+  }
   if (data.editorial_sample) return;
   const details = document.createElement('details');
   append(details, 'summary', '계산된 명식과 근거');
   append(details, 'pre', JSON.stringify({명식: data.charts, 근거: data.facts}, null, 2));
   reading.append(details);
+}
+function clearReview() {
+  reading.replaceChildren();
+  reviewReport = null;
+  reviewExport.hidden = true;
+  byId('export-status').textContent = '';
+}
+
+async function reviewHtml(report) {
+  const doc = document.implementation.createHTMLDocument('연연 전체 검수 원고');
+  doc.documentElement.lang = 'ko';
+  const charset = doc.createElement('meta');
+  charset.setAttribute('charset', 'utf-8');
+  doc.head.prepend(charset);
+  doc.head.append(document.querySelector('meta[name="viewport"]').cloneNode());
+  doc.head.append(document.querySelector('style').cloneNode(true));
+  const main = doc.createElement('main');
+  append(main, 'h1', '연연 전체 검수 원고');
+  const metadata = report.metadata;
+  append(main, 'p', [
+    metadata.source === 'editorial_sample' ? '윤하·도현 가상 사례 · 오프라인 샘플' : '생성 원고',
+    '내보내기 v' + metadata.export_version, '커밋 ' + (metadata.commit || '확인 불가'),
+    metadata.model,
+  ].filter(Boolean).join(' · '));
+  const articles = [...reading.querySelectorAll('.manuscript')].map(article => article.cloneNode(true));
+  main.append(...articles);
+  const liveImages = [...reading.querySelectorAll('.manuscript img')];
+  await Promise.all([...main.querySelectorAll('figure img')].map(async (image, index) => {
+    const original = liveImages[index];
+    await original.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = original.naturalWidth;
+    canvas.height = original.naturalHeight;
+    canvas.getContext('2d').drawImage(original, 0, 0);
+    image.src = canvas.toDataURL('image/png');
+    image.closest('figure').querySelector('a[download]').remove();
+  }));
+  doc.body.append(main);
+  return '<!doctype html>\n' + doc.documentElement.outerHTML;
+}
+
+for (const button of reviewExport.querySelectorAll('button')) {
+  button.addEventListener('click', async () => {
+    if (!reviewReport) return;
+    const report = reviewReport;
+    const format = button.dataset.format;
+    button.disabled = true;
+    byId('export-status').textContent = '';
+    try {
+      const content = format === 'html' ? await reviewHtml(report) : JSON.stringify(report, null, 2);
+      const type = format === 'html' ? 'text/html' : 'application/json';
+      const url = URL.createObjectURL(new Blob([content], {type: type + ';charset=utf-8'}));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'rs-gpt-review.' + format;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      if (reviewReport === report) {
+        byId('export-status').textContent = '원고 파일을 만들지 못했습니다. 카드가 표시된 뒤 다시 시도해 주세요.';
+      }
+    } finally {
+      button.disabled = false;
+    }
+  });
 }
 const preview = byId('preview');
 const editorialSample = byId('editorial-sample');
@@ -335,7 +420,7 @@ editorialSample.addEventListener('click', async () => {
   generate.disabled = true;
   try {
     const data = await call(token, null, endpoint + '/editorial-sample');
-    reading.replaceChildren();
+    clearReview();
     show(data);
     status.textContent = '가상 사례의 편집 기준 원고입니다. GPT를 호출하지 않았습니다.';
     reading.scrollIntoView({block: 'start'});
@@ -352,7 +437,7 @@ async function readReport(mode) {
   preview.disabled = true;
   editorialSample.disabled = true;
   generate.disabled = true;
-  reading.replaceChildren();
+  clearReview();
   status.textContent = mode === 'live' ? 'OpenAI가 원고를 작성하고 있습니다.' : '명식을 계산하고 있습니다.';
   const body = Object.fromEntries(['a', 'b'].map(id => [id, Object.fromEntries(
     ['name', 'date', 'time', 'gender'].map(field => [field, byId(id + '-' + field).value])
