@@ -11,7 +11,7 @@ from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from compatibility_v11 import STEM_ELEMENTS, analyze_pair, ten_god
+from compatibility_v11 import BRANCH_ELEMENTS, STEM_ELEMENTS, analyze_pair, ten_god
 from compatibility_v12 import cross_chart, natal_context
 from rs_synthesis import PARTNER_ROLES, analyze_preview
 
@@ -73,6 +73,18 @@ PILLAR_NAMES = {"연": "year", "년": "year", "월": "month", "일": "day", "시
 STEM_NAMES = dict(zip(STEM_ELEMENTS, "갑 을 병 정 무 기 경 신 임 계".split()))
 STEM_KOREAN_ELEMENTS = dict(zip(("wood", "fire", "earth", "metal", "water"), "목화토금수"))
 BRANCH_NAMES = dict(zip("子丑寅卯辰巳午未申酉戌亥", "자 축 인 묘 진 사 오 미 신 유 술 해".split()))
+CHART_SYMBOLS = {
+    symbol: {"reading": reading, "element": elements[symbol],
+             "element_name": STEM_KOREAN_ELEMENTS[elements[symbol]]}
+    for names, elements in ((STEM_NAMES, STEM_ELEMENTS), (BRANCH_NAMES, BRANCH_ELEMENTS))
+    for symbol, reading in names.items()
+}
+UNKNOWN_HOUR_NOTICE = re.compile(
+    r"\s*(?:은|는|이|가)?\s*(?:미상(?:입니다|이에요)|확인되지 (?:않았습니다|않았어요)|"
+    r"(?:미상이므로|확인되지 않았으므로),?\s*(?:이 해석은|이 설명은)\s*"
+    r"확인된 (?:연주\s*[·,]\s*월주\s*[·,]\s*일주|세 기둥)(?:를|을) 바탕으로 "
+    r"(?:합니다|한 해석입니다))\s*"
+)
 LIVE_SLOT = threading.BoundedSemaphore(1)
 LOG = logging.getLogger("rs_gpt")
 
@@ -186,13 +198,19 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
         locations = [(people[m["person"]], PILLAR_NAMES[m["pillar"]], m["layer"])
                      if m["pillar"] else (people[m["person"]], "day", "지") for m in matches]
         mentioned = {people[m["person"]] for m in owners.finditer(sentence)}
+        grounded_locations = []
         for index, (owner, pillar, layer) in enumerate(locations):
             tail = sentence[matches[index].end():matches[index + 1].start() if index + 1 < len(matches) else None]
             placements = [f for f in facts.values() if f.get("person") == owner and f.get("pillar") == pillar]
             stem = next((f["symbol"] for f in placements if f.get("layer") == "stem"), None)
             branch = next((f["branch"] for f in placements if f.get("layer") == "hidden"), None)
             if stem is None:
+                coverage = facts.get(f"{owner}.coverage", {}).get("unresolved_pillars", ())
+                if (pillar == "hour" and layer == "주" and pillar in coverage
+                        and UNKNOWN_HOUR_NOTICE.fullmatch(tail)):
+                    continue
                 reject("unresolved_pillar_claim", sentence, matches[index][0])
+            grounded_locations.append((owner, pillar, layer))
             stem_forms = {stem, STEM_NAMES[stem],
                           STEM_NAMES[stem] + STEM_KOREAN_ELEMENTS[STEM_ELEMENTS[stem]]}
             branch_forms = {branch, BRANCH_NAMES.get(branch)}
@@ -210,6 +228,7 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
                 if value[1] not in expected or (hanja and hanja[1] not in expected):
                     reject("pillar_symbol_mismatch", sentence, value[0] + (hanja[0] if hanja else ""))
 
+        locations = grounded_locations
         terms = list(TECHNICAL_TERM.finditer(sentence))
         if locations or previous_anchors:
             terms += list(re.finditer(r"(?<![가-힣])(?:충|해)" + TERM_END, sentence))

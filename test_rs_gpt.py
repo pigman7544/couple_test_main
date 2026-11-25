@@ -15,7 +15,7 @@ from rs_gpt_budget import (
     local_budget, month_start, monthly_call_limit,
 )
 from matcher import DB
-from rs_gpt_server import DIAGNOSTIC_API, GroundingDiagnostic, Handler
+from rs_gpt_server import DIAGNOSTIC_API, EDITORIAL_SAMPLE_API, GroundingDiagnostic, Handler
 
 
 class RsGptBudgetTests(unittest.TestCase):
@@ -400,6 +400,13 @@ class RsGptTests(unittest.TestCase):
             ("둘째의 연간은 임(丙)입니다.", "b.year.stem", "pillar_symbol_mismatch"),
             ("둘째의 배우자궁은 사(巳)입니다.", "a.palace", "pillar_symbol_mismatch"),
             ("첫째의 시주는 계사입니다.", "a.day.stem", "unresolved_pillar_claim"),
+            ("둘째의 시주는 확인되지 않았습니다.", "b.coverage", None),
+            ("둘째의 시주는 확인되지 않았으므로, 이 설명은 확인된 세 기둥을 바탕으로 한 해석입니다.",
+             "b.coverage", None),
+            ("둘째의 시주는 확인되지 않았으므로 추정한 시주는 계사입니다.",
+             "b.coverage", "unresolved_pillar_claim"),
+            ("둘째의 시주는 미상입니다. 둘째의 시지는 巳입니다.",
+             "b.coverage", "unresolved_pillar_claim"),
             ("둘째의 일지와 첫째의 연지입니다. 이 두 자리에는 육합이 있습니다.",
              "pair.육합.a.day.b.year", "scoped_fact_mismatch"),
             ("둘째에게 첫째의 일간은 정재입니다.", "pair.a.reads.b", "scoped_fact_mismatch"),
@@ -418,6 +425,27 @@ class RsGptTests(unittest.TestCase):
                     self.assertEqual(error.exception.diagnostic["rule"], rule)
                 else:
                     self.assertEqual(validate(sample, facts)["paragraphs"], 7)
+
+    @patch("rs_gpt_server.run_report")
+    def test_editorial_sample_requires_admin_and_stays_offline(self, report):
+        address = self.origin + EDITORIAL_SAMPLE_API
+        with patch.dict("os.environ", {"RS_GPT_ADMIN_TOKEN": self.token, "RS_GPT_LIVE": "0"}):
+            with self.assertRaises(HTTPError) as denied:
+                urlopen(address, timeout=5)
+            self.assertEqual(denied.exception.code, 403)
+            with urlopen(Request(address, headers={"Authorization": f"Bearer {self.token}"}),
+                         timeout=5) as response:
+                self.assertEqual(response.headers["Cache-Control"], "no-store")
+                sample = json.load(response)
+        report.assert_not_called()
+        self.assertEqual(sample["names"], {"a": "윤하", "b": "도현"})
+        self.assertEqual(sample["charts"]["a"]["pillars"]["hour"], "癸巳")
+        self.assertIsNone(sample["charts"]["b"]["pillars"]["hour"])
+        self.assertEqual(sample["symbols"]["丙"]["element_name"], "화")
+        self.assertEqual(len(sample["chapters"]), 3)
+        lengths = [sum(len(p.get("text", "")) for p in chapter["paragraphs"])
+                   for chapter in sample["chapters"]]
+        self.assertEqual(lengths[1], max(lengths))
 
     @patch("rs_gpt.request_openai")
     def test_failed_manuscript_is_only_available_to_admin(self, provider):

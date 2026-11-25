@@ -11,7 +11,7 @@ from datetime import date
 from unicodedata import category, normalize
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from rs_gpt import ROOT, PROFILES, ExperimentError, birth_payload, fixed_case, run_report
+from rs_gpt import CHART_SYMBOLS, ROOT, PROFILES, ExperimentError, birth_payload, fixed_case, run_report
 from rs_gpt_budget import (
     RENDER_SERVICE_ID, init_local_budget, local_budget, render_budget, verify_render_ledger,
 )
@@ -22,6 +22,7 @@ ADMIN_PATH = "/rs-gpt/admin"
 ADMIN_API = "/api/rs-gpt/admin"
 LEDGER_API = "/api/rs-gpt/admin/ledger"
 DIAGNOSTIC_API = "/api/rs-gpt/admin/diagnostic"
+EDITORIAL_SAMPLE_API = "/api/rs-gpt/admin/editorial-sample"
 DIAGNOSTIC_TTL = 600
 # Identity is explicit so a filename alone cannot approve a card for a work.
 VERIFIED_ART = {
@@ -180,6 +181,13 @@ class Handler(BaseHTTPRequestHandler):
                     self.json_response(200, verify_render_ledger())
                 except ExperimentError as exc:
                     self.json_response(exc.status, {"error": str(exc), "code": exc.code})
+        elif self.path == EDITORIAL_SAMPLE_API:
+            if not self.admin_authorized():
+                self.json_response(403, {"error": "관리자 인증이 필요합니다."})
+            else:
+                sample = json.loads((ROOT / "rs_gpt_editorial_sample.json").read_text(encoding="utf-8"))
+                self.json_response(200, {**sample, "symbols": CHART_SYMBOLS, "editorial_sample": True,
+                                         "art": VERIFIED_ART[("c01", "춘향전", "춘향·이몽룡")]})
         elif self.path == DIAGNOSTIC_API:
             if not self.admin_authorized():
                 self.json_response(403, {"error": "관리자 인증이 필요합니다."})
@@ -229,7 +237,7 @@ class Handler(BaseHTTPRequestHandler):
                 art = VERIFIED_ART.get((couple["id"], couple["work"], couple["name"]))
                 if art and not all((ROOT / path.lstrip("/")).is_file() for path in art.values()):
                     art = None
-                result = {**payload, "art": art}
+                result = {**payload, "art": art, "symbols": CHART_SYMBOLS}
                 if mode == "live":
                     budget = render_budget if os.environ.get("RENDER") == "true" else local_budget
                     payload["couple"] = {**payload["couple"],
