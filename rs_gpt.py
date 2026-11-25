@@ -32,17 +32,22 @@ title에는 장 번호를 넣지 마세요. 1장은 a의 성격 문단부터 시
 3장에는 couple.work와 couple.name을 입력 그대로 표기하세요. 작품 속 사건은 couple.story_beats를 따르고, 선정 작품이나 커플을 바꾸지 마세요.
 각 문단에 제공된 명리 근거 ID를 넣고 본문에는 ID를 표시하지 마세요. 사실을 말할 때 누구의 어느 기둥인지 분명하게 쓰세요.
 명리학 근거와 해석을 구분하고 확정되지 않은 기둥을 사용하지 마세요.
-title과 각 paragraph.text는 일반 텍스트입니다.
+각 문단은 같은 주제의 2~4문장입니다. 줄바꿈, 마크다운 없이 작성하세요.
+새 소주제의 첫 문단에만 짧은 heading을 넣고 나머지는 null로 두세요.
+장마다 핵심 문단 하나의 emphasize_lead를 true로 두세요. 나머지는 false입니다.
 
 """ + APPROVED_V3
 FORBIDDEN_ADDRESS = re.compile(r"첫째\s*분|둘째\s*분|당신|상대방|[AB]님")
 CHAPTER_PREFIX = re.compile(r"^(?:[1-3]\s*장\s*[.．:：-]?\s*)+")
 PARAGRAPH_SCHEMA = {
     "type": "object",
-    "properties": {"text": {"type": "string"}, "evidence_ids": {
+    "properties": {
+        "heading": {"type": ["string", "null"]},
+        "emphasize_lead": {"type": "boolean"},
+        "text": {"type": "string"}, "evidence_ids": {
         "type": "array", "items": {"type": "string"},
     }},
-    "required": ["text", "evidence_ids"], "additionalProperties": False,
+    "required": ["heading", "emphasize_lead", "text", "evidence_ids"], "additionalProperties": False,
 }
 SCHEMA = {
     "type": "object", "properties": {"chapters": {"type": "array", "items": {
@@ -80,7 +85,7 @@ CHART_SYMBOLS = {
     for symbol, reading in names.items()
 }
 UNKNOWN_HOUR_NOTICE = re.compile(
-    r"\s*(?:은|는|이|가)?\s*(?:미상(?:입니다|이에요)|확인되지 (?:않았습니다|않았어요)|"
+    r"\s*(?:은|는|이|가)?\s*(?:미상(?:입니다|이에요)?|확인되지 (?:않았습니다|않았어요)|"
     r"(?:미상이므로|확인되지 않았으므로),?\s*(?:이 해석은|이 설명은)\s*"
     r"확인된 (?:연주\s*[·,]\s*월주\s*[·,]\s*일주|세 기둥)(?:를|을) 바탕으로 "
     r"(?:합니다|한 해석입니다))\s*"
@@ -169,6 +174,12 @@ def evidence_payload(result, genders):
             "ten_god": palace["ten_god"], "matches_other_day_master": palace["stem"] == other_master,
             "source_ids": [palace["id"], f"{other}.day.stem"],
         }
+        facts[f"{other}.reads.{owner}.palace"] = {
+            "perspective": other, "person": owner, "pillar": "day",
+            "branch": chart["pillars"]["day"][1], "principal_stem": palace["stem"],
+            "ten_god": ten_god(other_master, palace["stem"]),
+            "source_ids": [palace["id"], f"{other}.day.stem"],
+        }
     facts["pair.palaces"] = {
         "source_ids": ["a.palace", "b.palace"],
         "direct_branch_relation_ids": [
@@ -210,13 +221,19 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
                         and UNKNOWN_HOUR_NOTICE.fullmatch(tail)):
                     continue
                 reject("unresolved_pillar_claim", sentence, matches[index][0])
-            grounded_locations.append((owner, pillar, layer))
+            grounded_locations.append((matches[index], (owner, pillar, layer)))
             stem_forms = {stem, STEM_NAMES[stem],
                           STEM_NAMES[stem] + STEM_KOREAN_ELEMENTS[STEM_ELEMENTS[stem]]}
             branch_forms = {branch, BRANCH_NAMES.get(branch)}
             pillar_forms = {stem + branch, STEM_NAMES[stem] + BRANCH_NAMES[branch]} if branch else set()
             expected = {"간": stem_forms, "지": branch_forms,
                         "주": stem_forms | branch_forms | pillar_forms}[layer]
+            principal = re.match(r"\s*(?:의\s*)?본기", tail) if layer == "지" else None
+            if principal:
+                main = next(f["symbol"] for f in placements if f.get("tier") == "본기")
+                expected = {main, STEM_NAMES[main],
+                            STEM_NAMES[main] + STEM_KOREAN_ELEMENTS[STEM_ELEMENTS[main]]}
+                tail = tail[principal.end():]
             readings = "".join(STEM_NAMES.values()) + "".join(BRANCH_NAMES.values())
             value = re.match(
                 rf"\s*(?:(?:은|는|이|가)\s*|[:：]\s*)?(?:[‘“\(])?"
@@ -228,7 +245,7 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
                 if value[1] not in expected or (hanja and hanja[1] not in expected):
                     reject("pillar_symbol_mismatch", sentence, value[0] + (hanja[0] if hanja else ""))
 
-        locations = grounded_locations
+        locations = [location for _, location in grounded_locations]
         terms = list(TECHNICAL_TERM.finditer(sentence))
         if locations or previous_anchors:
             terms += list(re.finditer(r"(?<![가-힣])(?:충|해)" + TERM_END, sentence))
@@ -250,15 +267,17 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
                     {source["person"] for source in fact.get("sources", ())}
                 ]
             else:
-                nearest = next((loc for loc, anchor in zip(reversed(locations), reversed(matches))
+                nearest = next((loc for anchor, loc in reversed(grounded_locations)
                                 if anchor.end() <= match.start()), None)
                 prefix = sentence[:match.start()]
                 perspective = re.search(owner_pattern + r"(?:에게|기준(?:으로)?|입장에서)", prefix)
                 if perspective:
                     viewer = people[perspective["person"]]
                     other = "b" if viewer == "a" else "a"
-                    matching = [facts[ref] for ref in chapter_refs if ref == f"pair.{viewer}.reads.{other}"
-                                and facts[ref].get("ten_god") == term]
+                    palace_claim = "본기" in prefix and nearest and nearest[:2] == (other, "day")
+                    ref = (f"{viewer}.reads.{other}.palace" if palace_claim
+                           else f"pair.{viewer}.reads.{other}")
+                    matching = [facts[ref]] if ref in chapter_refs and facts[ref].get("ten_god") == term else []
                 else:
                     if nearest is None and not mentioned and len(previous_anchors) == 1:
                         nearest = previous_anchors[0]
@@ -268,13 +287,14 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
                     matching = [
                         fact for fact in cited
                         if (fact.get("ten_god") == term or fact.get("cross_ten_god") == term)
+                        and not (fact.get("principal_stem") and fact.get("perspective"))
                         and (not scoped or fact.get("person", fact.get("perspective")) in scoped)
                         and (nearest is None or (
                             fact.get("pillar") == nearest[1] and
                             (nearest[2] == "주" or fact.get("layer") ==
                              {"간": "stem", "지": "hidden"}[nearest[2]])
                             and (nearest[2] != "지" or fact.get("tier") == "본기"
-                                 or "지장간" in sentence)
+                                 or ("지장간" in sentence and "본기" not in sentence))
                         ))
                     ]
             if not matching:
@@ -320,8 +340,16 @@ def validate(manuscript, facts, names=None, couple=None):
         ))
         for number, paragraph in enumerate(paragraphs, 1):
             position = {"chapter": index, "paragraph": number}
-            if not isinstance(paragraph, dict) or set(paragraph) != {"text", "evidence_ids"}:
+            if (not isinstance(paragraph, dict)
+                    or set(paragraph) - PARAGRAPH_SCHEMA["properties"].keys()
+                    or not {"text", "evidence_ids"} <= paragraph.keys()):
                 raise GroundingError("structure", "paragraph_fields", **position)
+            heading = paragraph.get("heading")
+            if ((heading is not None and (not isinstance(heading, str)
+                    or not 1 <= len(heading.strip()) <= 70 or "\n" in heading
+                    or FORBIDDEN_ADDRESS.search(heading)))
+                    or not isinstance(paragraph.get("emphasize_lead", False), bool)):
+                raise GroundingError("structure", "paragraph_presentation", **position)
             prose, refs = paragraph["text"], paragraph["evidence_ids"]
             if not isinstance(prose, str) or not 30 <= len(prose.strip()) <= 1800:
                 raise GroundingError("structure", "paragraph_length", minimum=30, maximum=1800,

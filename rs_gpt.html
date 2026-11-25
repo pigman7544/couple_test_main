@@ -88,7 +88,15 @@ function render(node, title, meta, chapters = []) {
     append(node, 'h3', `${index + 1}장. ${chapterTitle(chapter)}`);
     chapter.paragraphs.forEach(paragraph => {
       if (paragraph.heading) append(node, 'h4', paragraph.heading);
+      if (!paragraph.text) return;
       append(node, 'p', paragraph.text);
+      const lead = paragraph.emphasize_lead && paragraph.text.match(/^.+?[.!?。！？](?=\s|$)/u);
+      if (lead) {
+        const prose = node.lastElementChild;
+        prose.textContent = '';
+        append(prose, 'strong', lead[0]);
+        prose.append(paragraph.text.slice(lead[0].length));
+      }
       if (paragraph.evidence_ids?.length) append(node, 'small', paragraph.evidence_ids.join(' · '));
     });
   });

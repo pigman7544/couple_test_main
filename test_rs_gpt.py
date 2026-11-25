@@ -9,7 +9,7 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 from unittest.mock import patch
 
-from rs_gpt import ROOT, ExperimentError, PROFILES, fixed_case, run_report, validate
+from rs_gpt import ROOT, ExperimentError, PROFILES, birth_payload, check_claims, fixed_case, run_report, validate
 from rs_gpt_budget import (
     MONTHLY_MICRO_USD, RENDER_SERVICE_ID, check_budget, init_local_budget,
     local_budget, month_start, monthly_call_limit,
@@ -180,9 +180,11 @@ class RsGptTests(unittest.TestCase):
         self.assertEqual(json.loads(body["input"])["names"], {"a": "민준", "b": "서연"})
         self.assertIn((ROOT / "rs_gpt_rules_v3.md").read_text(encoding="utf-8-sig"), body["instructions"])
         chapter_three_rules = body["instructions"].split("## 3장 작품 커플 소개", 1)[1]
-        expected_order = ("첫 문장", "couple.story_beats", "실제 명식", "기억에 남는 한 문장")
-        positions = [chapter_three_rules.index(rule) for rule in expected_order]
-        self.assertEqual(positions, sorted(positions))
+        for rule in ("2~4문장", "couple.story_beats", "한 사건"):
+            self.assertIn(rule, chapter_three_rules)
+        paragraph_schema = body["text"]["format"]["schema"]["properties"]["chapters"]["items"]["properties"]["paragraphs"]["items"]
+        self.assertEqual(set(paragraph_schema["required"]),
+                         {"heading", "emphasize_lead", "text", "evidence_ids"})
         for rule in ("막연한 칭찬", "이번 입력에 맞춰 새로 쓴다", "최대 2개"):
             self.assertIn(rule, chapter_three_rules)
         self.assertNotIn("서로를 아끼는 방식은 다르지만", body["instructions"])
@@ -401,6 +403,8 @@ class RsGptTests(unittest.TestCase):
             ("둘째의 배우자궁은 사(巳)입니다.", "a.palace", "pillar_symbol_mismatch"),
             ("첫째의 시주는 계사입니다.", "a.day.stem", "unresolved_pillar_claim"),
             ("둘째의 시주는 확인되지 않았습니다.", "b.coverage", None),
+            ("둘째의 시주 미상. 확인된 세 기둥을 바탕으로 읽어요.", "b.coverage", None),
+            ("둘째의 시주는 미상이라 계사로 보았습니다.", "b.coverage", "unresolved_pillar_claim"),
             ("둘째의 시주는 확인되지 않았으므로, 이 설명은 확인된 세 기둥을 바탕으로 한 해석입니다.",
              "b.coverage", None),
             ("둘째의 시주는 확인되지 않았으므로 추정한 시주는 계사입니다.",
@@ -446,6 +450,34 @@ class RsGptTests(unittest.TestCase):
         lengths = [sum(len(p.get("text", "")) for p in chapter["paragraphs"])
                    for chapter in sample["chapters"]]
         self.assertEqual(lengths[1], max(lengths))
+        for chapter in sample["chapters"]:
+            self.assertEqual(sum(p["emphasize_lead"] for p in chapter["paragraphs"]), 1)
+            for paragraph in chapter["paragraphs"]:
+                self.assertIn(len(paragraph["text"].split(". ")), range(2, 5))
+
+    def test_palace_main_stems_are_read_from_both_day_masters(self):
+        payload = birth_payload(
+            dict(year=1993, month=7, day=14, hour=10),
+            dict(year=1991, month=10, day=22, hour=None),
+            {"a": "female", "b": "male"},
+        )
+        facts = payload["facts"]
+        people = {"윤하님": "a", "도현님": "b"}
+        for owner, viewer, branch, stem, cross in (
+            ("a", "b", "申", "庚", "정관"), ("b", "a", "丑", "己", "상관")
+        ):
+            palace = facts[f"{owner}.palace"]
+            self.assertEqual((palace["branch"], palace["principal_stem"], palace["ten_god"]),
+                             (branch, stem, "편재"))
+            cross_ref = f"{viewer}.reads.{owner}.palace"
+            self.assertEqual(facts[cross_ref]["ten_god"], cross)
+            names = {owner: name for name, owner in people.items()}
+            claim = f"{names[viewer]}에게 {names[owner]}의 일지 본기 {stem}은 {cross}입니다."
+            check_claims(claim, [cross_ref], [cross_ref], facts, people, {})
+            with self.assertRaises(ExperimentError):
+                check_claims(claim.replace(cross, "편재"), [cross_ref], [cross_ref], facts, people, {})
+            with self.assertRaises(ExperimentError):
+                check_claims(claim.replace(stem, "甲"), [cross_ref], [cross_ref], facts, people, {})
 
     @patch("rs_gpt.request_openai")
     def test_failed_manuscript_is_only_available_to_admin(self, provider):

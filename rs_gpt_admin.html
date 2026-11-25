@@ -41,6 +41,10 @@ th,td{border:1px solid var(--line);padding:.35rem;overflow-wrap:anywhere}
 .card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(8px,4vw,26px)}
 .card-grid figure{margin:0;text-align:center}
 .card-grid a{display:inline-block;padding:.5rem;color:#70405e}
+.manuscript h2{font-size:clamp(1.35rem,4vw,1.85rem);line-height:1.4;margin:.1rem 0 1.4rem;word-break:keep-all;overflow-wrap:anywhere}
+.manuscript .subheading{font-size:1.08rem;line-height:1.45;margin:1.65rem 0 .6rem;color:#69352f}
+.manuscript .prose{line-height:1.8;margin:0 0 .95rem;word-break:keep-all;overflow-wrap:anywhere}
+.manuscript .prose strong{color:#69352f}
 [hidden]{display:none!important}
 @media(max-width:520px){.people{grid-template-columns:1fr}}
 </style>
@@ -293,13 +297,26 @@ function show(data) {
   }
   for (const [index, chapter] of data.chapters.entries()) {
     const section = document.createElement('article');
+    section.className = 'manuscript';
     const title = chapter.title.trim().replace(/^(?:[1-3]\s*장\s*\.\s*)+/u, '');
     append(section, 'h2', `${index + 1}장. ${title}`);
     if (index === 0) showCharts(section, data);
     for (const paragraph of chapter.paragraphs) {
-      if (paragraph.heading) append(section, 'h3', paragraph.heading);
-      else append(section, 'p', paragraph.text);
-      if (paragraph.evidence_ids) append(section, 'small', paragraph.evidence_ids.join(' · '));
+      if (paragraph.heading) {
+        append(section, 'h3', paragraph.heading);
+        section.lastElementChild.className = 'subheading';
+      }
+      if (!paragraph.text) continue;
+      const prose = document.createElement('p');
+      prose.className = 'prose';
+      const lead = paragraph.emphasize_lead && paragraph.text.match(/^.+?[.!?。！？](?=\s|$)/u);
+      if (lead) {
+        append(prose, 'strong', lead[0]);
+        prose.append(paragraph.text.slice(lead[0].length));
+      } else {
+        prose.textContent = paragraph.text;
+      }
+      section.append(prose);
     }
     if (index === 2) showCoupleCards(section, data);
     reading.append(section);
