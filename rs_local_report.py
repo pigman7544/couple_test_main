@@ -50,6 +50,16 @@ STORY_DIMENSION = {
     "편재": "attraction", "정재": "security", "편관": "conflict", "정관": "security",
     "편인": "autonomy", "정인": "growth",
 }
+RELATION_SCENES = {
+    "천간합": "함께 살 곳을 고르는 중이라면 각자가 중요하게 여기는 조건을 말하고, 먼저 겹치는 조건부터 표시해 볼 수 있어요",
+    "육합": "손님을 초대하는 날이라면 한 사람이 준비를 시작하고 다른 사람이 빈자리를 메우는 식으로 호흡이 맞는지 살펴보세요",
+    "삼합": "이사를 준비한다면 각자 맡은 일의 마감 시점을 한곳에 적어 보고, 따로 진행하던 일이 어느 순간 맞물리는지 살펴보세요",
+    "육충": "한 사람은 아침에 움직이고 다른 사람은 늦게까지 일한다면, 바꾸기 어려운 시간과 맞출 수 있는 시간을 따로 정해 보세요",
+    "상형": "같이 요리할 때 손질과 정리의 순서를 두고 말이 반복된다면, 각자 왜 그 순서를 선호하는지 먼저 말해 보세요",
+    "삼형": "두 집안의 모임 일정이 겹치면 한꺼번에 해결하려 하기보다 누구에게 언제까지 답해야 하는지부터 정리해 보세요",
+    "자형": "서로 먼저 연락하기를 기다리다 약속이 미뤄진다면, 다음 한 번은 누가 언제 연락할지 정해 두고 기다림이 달라지는지 보세요",
+    "육해": "옷이나 물건을 대신 골라 주고 싶을 때는 추천이 반가운지, 직접 비교하고 싶은지 물어서 배려가 어떻게 전달되는지 살펴보세요",
+}
 
 
 def paragraph(refs, *sentences, heading=None, lead=False):
@@ -111,8 +121,11 @@ def direction(viewer, other, names, facts, palace=False):
         own = facts[f"{other}.palace"]["ten_god"]
         lead = f"{reader}님에게 {target}님의 일지 본기 {STEM_NAMES[stem]}({stem})는 {as_role(role)} 읽혀요."
         explanation = f"{target}님의 일지는 본인에게 {as_role(own)} 읽혀요."
-        closing = f"함께 보내는 시간에는 {ROLE_MEANING[role]}이 관계를 이해하는 한 가지 단서가 될 수 있어요."
-        return paragraph([ref, f"{other}.palace", *fact["source_ids"]], lead, explanation, closing)
+        closing = f"함께 보내는 시간에는 ‘{ROLE_MEANING[role]}’에 주목해 볼 수 있어요."
+        comparison = (f"두 사람이 같은 이름으로 이 자리를 읽으니, 가까운 사이에서 무엇을 편하게 여기는지 비교해 볼 만해요."
+                      if own == role else
+                      f"{target}님에게 익숙한 행동과 {reader}님이 그 행동에서 읽는 뜻이 다를 수 있다는 점이 이 자리에서 눈에 띄어요.")
+        return paragraph([ref, f"{other}.palace", *fact["source_ids"]], lead, explanation, closing, comparison)
     partner = facts.get(f"{viewer}.partner")
     refs = [ref]
     if partner:
@@ -125,7 +138,7 @@ def direction(viewer, other, names, facts, palace=False):
         f"{reader}님에게 {target}님의 일간은 {as_role(role)} 읽혀요.",
         f"처음 가까워지는 과정에서 {ROLE_SCENES[role][0]}이 인상에 남을 수 있어요.",
         note,
-        f"이때 두 사람이 같은 뜻으로 받아들였는지는 직접 말을 나눠 보면서 알 수 있어요.",
+        f"그 행동이 인상에 남았다면 무엇을 했는지 떠올리고, 왜 그 장면이 좋았는지까지 말해 보면 두 사람의 관심이 어디에서 만나는지 알 수 있어요.",
         heading="서로에게 먼저 보이는 모습" if viewer == "a" else None, lead=viewer == "a",
     )
 
@@ -141,7 +154,8 @@ def relation_paragraph(ref, facts, names, heading):
         [ref], f"{scope} {', '.join(places[:2])}에 주목해요.",
         *third,
         f"전통 명리에서는 이 조합을 {as_role(kind)} 부릅니다.",
-        f"둘이 함께할 때는 {RELATION_LENS[kind]}을 돌아보는 단서로 써 볼 수 있어요.",
+        f"둘이 함께할 때는 {RELATION_LENS[kind]}에 주목해 보세요. {RELATION_SCENES[kind]}."
+        if not third else f"{RELATION_LENS[kind]}에 주목할 수 있는 구성이라, {RELATION_SCENES[kind]}.",
         heading=heading,
     )
 
@@ -196,8 +210,8 @@ def compose_report(payload, couple):
         summary = "처음 인상과 가까이 지낼 때에 느끼는 편안함은 서로 다를 수 있어요."
     pair.append(paragraph(
         [ab, ba, "a.palace", "b.palace"],
-        f"{a}님이 {b}님에게서 알아보기 쉬운 단서는 {ROLE_MEANING[r1]}에 있어요.",
-        (f"반대로 {b}님에게는 {ROLE_MEANING[r2]}이 먼저 눈에 들어올 수 있어요." if r1 != r2
+        f"{a}님이 {b}님에게서 알아보기 쉬운 단서는 ‘{ROLE_MEANING[r1]}’에 있어요.",
+        (f"반대로 {b}님은 ‘{ROLE_MEANING[r2]}’에 먼저 눈길이 갈 수 있어요." if r1 != r2
          else "두 사람 모두 그 태도에 공감할 여지가 있지만, 기대하는 정도까지 같은지는 대화를 나눠 봐야 해요."),
         summary,
         "한 주를 돌아보며 기억에 남은 배려를 하나씩 말하면 각자가 중요하게 여기는 행동을 비교할 수 있어요.",
@@ -206,22 +220,22 @@ def compose_report(payload, couple):
     beat = next((beat for beat in couple["story_beats"] if STORY_DIMENSION[r1] in beat["dimensions"]),
                 couple["story_beats"][0])
     third = [
-        paragraph([ab], f"{a}님이 {b}님과 결정을 맞출 때는 {ROLE_MEANING[r1]}을 먼저 살펴보세요.",
+        paragraph([ab], f"{a}님이 {b}님과 결정을 맞출 때는 ‘{ROLE_MEANING[r1]}’에 주목해 보세요.",
                   f"{ROLE_SCENES[r1][2]}.", heading="마음과 행동을 맞춰 보는 연습", lead=True),
         paragraph([ba], f"{b}님은 {ROLE_MEANING[r2]}에 관한 자기 기준을 알려 주세요.",
                   f"“{GOD_QUESTIONS[r2]}”라고 먼저 물으면 각자 기대한 것을 비교해 볼 수 있어요.",
                   "한쪽이 질문을 던졌다면 그날의 결론을 내기 전에 다른 쪽도 자기 질문을 하나 보태 보세요."),
         paragraph(["a.palace", "b.palace"],
-                  f"부딪힌 직후에는 {a}님이 중요하게 여길 수 있는 {ROLE_MEANING[pa]}과 "
-                  f"{b}님의 {ROLE_MEANING[pb]}이 대화에 어떻게 드러났는지 돌아보세요."
+                  f"부딪힌 직후에는 {a}님이 ‘{ROLE_MEANING[pa]}’에서, "
+                  f"{b}님이 ‘{ROLE_MEANING[pb]}’에서 각각 무엇을 기대했는지 돌아보세요."
                   if pa != pb else f"두 사람이 {ROLE_MEANING[pa]}에 마음이 가더라도 다툰 직후에는 각자 원하는 반응을 짚어 보는 편이 좋아요.",
                   "잠시 멈출 때는 다음에 말을 나눌 시각도 정해 두세요.",
                   "돌아온 뒤에는 각자 바라는 변화 한 가지를 말하고, 바로 답하기 전에 들은 뜻을 되짚어 보세요."),
         paragraph([ab], f"『{couple['work']}』의 {couple['name']} 이야기에는 ‘{beat['summary'].rstrip('.。')}’라는 장면이 나와요.",
-                  f"그 장면에서 인물들이 무엇을 선택하는지 살펴보고, 두 사람의 일상에서는 {ROLE_MEANING[r1]}을 어떤 행동으로 전할지 이야기해 보세요.",
+                  f"그 장면에서 인물들이 무엇을 선택하는지 살펴보고, 두 사람의 일상에서는 ‘{ROLE_MEANING[r1]}’을 어떤 행동으로 전할지 이야기해 보세요.",
                   heading="작품 속 두 사람을 만나다"),
         paragraph(["b.palace", "a.palace"],
-                  f"약속을 오래 지키려면 {ROLE_MEANING[pb]}이 두 사람의 일정 안에서 어떤 모습이어야 할지 정해 보세요.",
+                  f"약속을 오래 지키려면 ‘{ROLE_MEANING[pb]}’이 두 사람의 일정 안에서 어떤 모습이어야 할지 정해 보세요.",
                   "앞으로 한 주 동안 각자 맡을 일 하나만 정한 뒤, 주말에 시간과 수고가 어느 쪽에 몰렸는지 확인해 보세요.",
                   "사정이 달라졌다면 다음 주에 바꿔 볼 역할 하나를 그 자리에서 정해도 좋아요.", heading="다음 주에 다시 꺼내 볼 이야기"),
     ]
