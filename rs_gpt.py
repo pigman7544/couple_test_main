@@ -67,7 +67,7 @@ TERM_ALIASES = {
     **{term: term for term in TEN_GODS + RELATIONS},
 }
 # Require a Korean word boundary at the start and a particle or punctuation at the end.
-TERM_END = r"(?=$|[^가-힣]|(?:으로|이라고|이라는|이다|입니다|이라|이며|이고|처럼|에서|합니다|한다|하며|하고|하는|된다|됩니다|[은는이가을를과와의에로도])(?=$|[^가-힣]))"
+TERM_END = r"(?=$|[^가-힣]|(?:으로|이라고|이라는|이에요|이다|입니다|이라|이며|이고|처럼|에서|합니다|한다|하며|하고|하는|된다|됩니다|[은는이가을를과와의에로도])(?=$|[^가-힣]))"
 TECHNICAL_TERM = re.compile(
     r"(?<![가-힣])(?:편관\s*\(\s*칠살\s*\)|칠살\s*\(\s*편관\s*\)|"
     + "|".join(r"\s*".join(term) for term in TERM_ALIASES if "(" not in term and len(term) > 1)
@@ -77,7 +77,7 @@ EDITORIAL_TERMS = re.compile(r"배우자궁|지장간|일간|[시일월연년][�
 SENTENCE_END = re.compile(r"[.!?。！？;；\n]+")
 SYMBOLIC_RELATION = re.compile(
     r"([甲乙丙丁戊己庚辛壬癸]{2})\s*(合)|"
-    r"([子丑寅卯辰巳午未申酉戌亥]{2,3})\s*(삼합|삼형|육합|육충|육해|合|沖|冲|害)"
+    r"([子丑寅卯辰巳午未申酉戌亥]{2,3})\s*\)?\s*(삼합|삼형|육합|육충|육해|合|沖|冲|害)"
 )
 SYMBOLIC_KINDS = {"沖": "육충", "冲": "육충", "害": "육해"}
 PILLAR_NAMES = {"연": "year", "년": "year", "월": "month", "일": "day", "시": "hour"}
@@ -332,6 +332,7 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
                     )
                     palace_claim = bool(
                         palace_ref in chapter_refs and has_principal
+                        and nearest != (other, "day", "간")
                         and (palace_context or shared_palace_context)
                         and (not nearest or nearest[:2] == (other, "day")
                              or shared_palace_context)
