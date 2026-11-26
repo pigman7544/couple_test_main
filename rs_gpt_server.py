@@ -22,6 +22,8 @@ from server import match_inputs
 LOOPBACK = ("127.0.0.1", "localhost")
 ADMIN_PATH = "/rs-gpt/admin"
 ADMIN_API = "/api/rs-gpt/admin"
+READ_PATH = "/rs-gpt/read"
+READ_API = "/api/rs-gpt/read"
 LEDGER_API = "/api/rs-gpt/admin/ledger"
 DIAGNOSTIC_API = "/api/rs-gpt/admin/diagnostic"
 EDITORIAL_SAMPLE_API = "/api/rs-gpt/admin/editorial-sample"
@@ -172,11 +174,18 @@ class Handler(BaseHTTPRequestHandler):
         actual = self.headers.get("Authorization", "").encode("utf-8")
         return len(secret) >= 32 and hmac.compare_digest(actual, f"Bearer {secret}".encode())
 
+    def public_ready(self):
+        return os.environ.get("RS_GPT_PUBLIC") == "1" and not self.live_blockers()
+
     def do_GET(self):
         if self.path in ("/", "/rs-gpt"):
             self.write_response(200, (ROOT / "rs_gpt.html").read_bytes(), "text/html")
         elif self.path == ADMIN_PATH:
             self.write_response(200, (ROOT / "rs_gpt_admin.html").read_bytes(), "text/html")
+        elif self.path == READ_PATH:
+            self.write_response(200, (ROOT / "rs_gpt_read.html").read_bytes(), "text/html")
+        elif self.path == READ_API:
+            self.json_response(200, {"report_enabled": self.public_ready()})
         elif self.path in ART_PATHS and (asset := ROOT / self.path.lstrip("/")).is_file():
             self.write_response(200, asset.read_bytes(), "image/png")
         elif self.path == ADMIN_API:
@@ -224,7 +233,7 @@ class Handler(BaseHTTPRequestHandler):
             self.json_response(404, {"error": "페이지를 찾을 수 없습니다."})
 
     def do_POST(self):
-        if self.path not in ("/api/rs-gpt", ADMIN_API):
+        if self.path not in ("/api/rs-gpt", ADMIN_API, READ_API):
             self.json_response(404, {"error": "페이지를 찾을 수 없습니다."})
             return
         try:
@@ -238,13 +247,14 @@ class Handler(BaseHTTPRequestHandler):
             data = json.loads(self.rfile.read(size))
             if not isinstance(data, dict):
                 raise ValueError
-            if self.path == ADMIN_API:
+            if self.path in (ADMIN_API, READ_API):
                 if set(data) - {"a", "b", "mode"} or not {"a", "b"} <= set(data):
                     raise ValueError
                 mode = data.get("mode", "live")
-                if mode not in ("live", "preview", "local"):
+                if mode not in (("live", "preview", "local") if self.path == ADMIN_API else ("live", "preview")):
                     raise ValueError
-                if mode == "live" and self.live_blockers():
+                ready = not self.live_blockers() if self.path == ADMIN_API else self.public_ready()
+                if mode == "live" and not ready:
                     raise ExperimentError("disabled", "실시간 집필 설정이 준비되지 않았습니다.", 503)
                 a, gender_a, name_a = parse_person(data["a"])
                 b, gender_b, name_b = parse_person(data["b"])
@@ -261,10 +271,22 @@ class Handler(BaseHTTPRequestHandler):
                     result.update(compose_report(payload, couple))
                 elif mode == "live":
                     budget = render_budget if os.environ.get("RENDER") == "true" else local_budget
-                    payload["couple"] = {**payload["couple"],
-                                         "story_beats": [beat["summary"] for beat in couple["story_beats"]]}
+                    if name_a == name_b:
+                        payload["names"] = {"a": f"{name_a}(첫째)", "b": f"{name_b}(둘째)"}
+                    payload["couple"] = {
+                        **payload["couple"],
+                        "story_beats": [beat["summary"] for beat in couple["story_beats"]],
+                        "source_status": couple.get("source_status"),
+                    }
+                    payload["facts"].update({
+                        f"couple.story.{beat['sequence']}": {
+                            "work": couple["work"], "summary": beat["summary"],
+                            "source_status": couple.get("source_status"),
+                        } for beat in couple["story_beats"]
+                    })
+                    capture = GROUNDING_DIAGNOSTIC.capture if self.path == ADMIN_API else None
                     result.update(run_report("sol-62", "live", True, budget, payload,
-                                             on_grounding_failure=GROUNDING_DIAGNOSTIC.capture))
+                                             on_grounding_failure=capture, personalized=True))
             else:
                 if set(data) != {"profile", "mode"}:
                     raise ValueError

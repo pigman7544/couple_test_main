@@ -1,6 +1,7 @@
 import json
 import threading
 import unittest
+from contextlib import nullcontext
 from datetime import datetime, timedelta, timezone
 from http.server import ThreadingHTTPServer
 from pathlib import Path
@@ -9,13 +10,13 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 from unittest.mock import patch
 
-from rs_gpt import ROOT, ExperimentError, PROFILES, birth_payload, check_claims, fixed_case, run_report, validate
+from rs_gpt import ROOT, ExperimentError, PROFILES, birth_payload, call_reservation, check_claims, fixed_case, run_report, validate
 from rs_gpt_budget import (
     MONTHLY_MICRO_USD, RENDER_SERVICE_ID, check_budget, init_local_budget,
     local_budget, month_start, monthly_call_limit,
 )
 from matcher import DB
-from rs_gpt_server import DIAGNOSTIC_API, EDITORIAL_SAMPLE_API, GroundingDiagnostic, Handler
+from rs_gpt_server import DIAGNOSTIC_API, EDITORIAL_SAMPLE_API, READ_API, GroundingDiagnostic, Handler
 
 
 class RsGptBudgetTests(unittest.TestCase):
@@ -268,40 +269,74 @@ class RsGptTests(unittest.TestCase):
             with self.assertRaises(HTTPError) as error:
                 self.post_admin(token)
             self.assertEqual(json.load(error.exception)["code"], "budget_store")
-        budget.assert_called_once_with(343_000)
+        budget.assert_called_once_with(call_reservation(PROFILES["sol-62"]), calls=2)
         provider.assert_not_called()
 
-    @patch("rs_gpt.validate")
     @patch("rs_gpt.urlopen")
-    def test_responses_api_mock_transport_through_http(self, provider, validator):
-        # The legacy comparison sample is only used to test API transport.
-        validator.side_effect = lambda manuscript, facts, names, couple: validate(manuscript, facts)
-        sample = json.loads((ROOT / "rs_gpt_mock.json").read_text(encoding="utf-8"))["sol-61"]
-        provider.return_value.__enter__.return_value.read.return_value = json.dumps({
-            "status": "completed", "output": [{"type": "message", "content": [
-                {"type": "output_text", "text": json.dumps(sample)}
-            ]}], "usage": {"input_tokens": 1000, "input_tokens_details": {"cached_tokens": 500},
-                          "output_tokens": 500},
-        }).encode()
+    def test_responses_api_mock_transport_through_http(self, provider):
+        sample = json.loads((ROOT / "rs_gpt_editorial_sample.json").read_text(encoding="utf-8"))
+        manuscript = {"chapters": sample["chapters"]}
+        story = manuscript["chapters"][2]["paragraphs"][-1]
+        story["text"] = (
+            "춘향전에서 춘향·이몽룡은 오래 떨어져 있다가 몽룡이 암행어사로 돌아오면서 다시 만나요. "
+            "두 사람도 바로 답을 내기 어려울 때, 이야기를 다시 이어 갈 시간을 함께 정해 볼 수 있어요."
+        )
+        story["evidence_ids"].append("couple.story.3")
+        draft = json.loads(json.dumps(manuscript))
+        draft["chapters"][0]["paragraphs"][0]["evidence_ids"] = ["missing.ref"]
+        provider.return_value.__enter__.return_value.read.side_effect = [
+            json.dumps({
+                "status": "completed", "output": [{"type": "message", "content": [
+                    {"type": "output_text", "text": json.dumps(candidate)}
+                ]}], "usage": {"input_tokens": 1000, "input_tokens_details": {"cached_tokens": 500},
+                               "output_tokens": 500},
+            }).encode() for candidate in (draft, manuscript)
+        ]
+        births = {
+            "a": {"name": "윤하", "date": "1993-07-14", "time": "10:00", "gender": "female"},
+            "b": {"name": "도현", "date": "1991-10-22", "time": "", "gender": "male"},
+        }
+
+        def post(mode):
+            return urlopen(Request(self.origin + READ_API, json.dumps({**births, "mode": mode}).encode(),
+                                   {"Content-Type": "application/json"}), timeout=5)
+
         with TemporaryDirectory() as folder:
             ledger = Path(folder) / "budget.sqlite"
             init_local_budget(ledger)
-            with patch.dict("os.environ", {"RS_GPT_LIVE": "1", "OPENAI_API_KEY": "mock-transport-key",
-                                           "RS_GPT_ADMIN_TOKEN": self.token,
+            with patch.dict("os.environ", {"RS_GPT_LIVE": "0", "RS_GPT_PUBLIC": "0",
+                                           "OPENAI_API_KEY": "mock-transport-key",
                                            "RS_GPT_LOCAL_LEDGER": str(ledger)}):
-                with self.post_admin(self.token) as response:
+                with urlopen(self.origin + "/rs-gpt/read", timeout=5) as response:
+                    self.assertIn("GPT 전체 리포트 작성", response.read().decode())
+                with urlopen(self.origin + READ_API, timeout=5) as response:
+                    self.assertFalse(json.load(response)["report_enabled"])
+                with post("preview") as response:
+                    self.assertNotIn("chapters", json.load(response))
+                with self.assertRaises(HTTPError) as disabled:
+                    post("live")
+                self.assertEqual(disabled.exception.code, 503)
+                provider.assert_not_called()
+                with patch.object(Handler, "public_ready", return_value=True), post("live") as response:
                     report = json.load(response)
-                with self.assertRaises(HTTPError) as error:
-                    self.post_admin(self.token)
-                self.assertEqual(error.exception.code, 429)
-            provider.assert_called_once()
-        request = provider.call_args.args[0]
+                with patch.object(Handler, "public_ready", return_value=True):
+                    with self.assertRaises(HTTPError) as error:
+                        post("live")
+                    self.assertEqual(error.exception.code, 429)
+            self.assertEqual(provider.call_count, 2)
+        request, editor_request = [call.args[0] for call in provider.call_args_list]
         body = json.loads(request.data)
         self.assertEqual(request.full_url, "https://api.openai.com/v1/responses")
         self.assertFalse(body["store"])
         self.assertTrue(body["text"]["format"]["strict"])
-        self.assertNotIn("1992", body["input"])
-        self.assertEqual(json.loads(body["input"])["names"], {"a": "민준", "b": "서연"})
+        sent = json.loads(body["input"])
+        self.assertNotIn("1993-07-14", body["input"])
+        self.assertNotIn("1991-10-22", body["input"])
+        self.assertEqual(sent["names"], sample["names"])
+        self.assertIn("민준", sent["style_references"])
+        editor = json.loads(editor_request.data)
+        self.assertIn("두 번째 편집자", editor["instructions"])
+        self.assertEqual(json.loads(editor["input"])["validation_failure"]["rule"], "invalid_evidence_ids")
         self.assertIn((ROOT / "rs_gpt_rules_v3.md").read_text(encoding="utf-8-sig"), body["instructions"])
         chapter_three_rules = body["instructions"].split("## 3장 작품 커플 소개", 1)[1]
         for rule in ("2~3문장", "couple.story_beats", "한 사건"):
@@ -319,9 +354,10 @@ class RsGptTests(unittest.TestCase):
         self.assertTrue(selected["story_beats"])
         self.assertEqual(body["model"], "gpt-6.2-sol")
         self.assertEqual(body["max_output_tokens"], 5500)
-        self.assertIsNone(report["charts"]["a"]["pillars"]["hour"])
+        self.assertEqual(report["charts"]["a"]["pillars"]["hour"], "癸巳")
         self.assertIsNone(report["charts"]["b"]["pillars"]["hour"])
-        self.assertEqual(report["metrics"]["usage"]["estimated_usd"], 0.00605)
+        self.assertEqual(report["chapters"], manuscript["chapters"])
+        self.assertEqual(report["metrics"]["usage"]["estimated_usd"], 0.0121)
         self.assertIsInstance(report["metrics"]["latency_ms"], int)
 
     @patch("rs_gpt_server.verify_render_ledger", return_value={
@@ -680,7 +716,9 @@ class RsGptTests(unittest.TestCase):
         address = self.origin + DIAGNOSTIC_API
         authorized = Request(address, headers={"Authorization": f"Bearer {self.token}"})
         diagnostic = GroundingDiagnostic()
-        with patch.dict("os.environ", config), patch("rs_gpt_server.GROUNDING_DIAGNOSTIC", diagnostic):
+        with (patch.dict("os.environ", config),
+              patch("rs_gpt_server.GROUNDING_DIAGNOSTIC", diagnostic),
+              patch("rs_gpt_server.local_budget", return_value=nullcontext())):
             with self.assertLogs("rs_gpt", "INFO") as logs, self.assertRaises(HTTPError) as error:
                 self.post_admin(self.token)
             self.addCleanup(diagnostic.timer.cancel)
@@ -710,7 +748,7 @@ class RsGptTests(unittest.TestCase):
                 with self.assertRaises(HTTPError) as expired:
                     urlopen(authorized, timeout=5)
                 self.assertEqual(expired.exception.code, 404)
-        provider.assert_called_once()
+        self.assertEqual(provider.call_count, 2)
 
     def test_diagnostic_timer_deletes_without_a_read(self):
         diagnostic = GroundingDiagnostic()

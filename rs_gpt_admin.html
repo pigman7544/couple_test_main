@@ -63,8 +63,8 @@ th,td{border:1px solid var(--line);padding:.35rem;overflow-wrap:anywhere}
 <button type="button" id="preset">고정 검토 명식 입력</button>
 <button type="button" id="preview">명식 확인 · 무료 미리보기</button>
 <button type="button" id="editorial-sample">윤하·도현 검토 원고 보기</button>
-<button id="generate" disabled>전체 리포트 생성 · 무료</button>
-<button type="button" id="live-generate" disabled>GPT 실시간 집필</button>
+<button type="button" id="generate" disabled>오프라인 검토 원고</button>
+<button id="live-generate" disabled>GPT 전체 리포트 작성</button>
 </form>
 <button type="button" id="ledger" hidden>호출 원장 확인</button>
 <button type="button" id="diagnostic" hidden>최근 검증 실패 원고 확인</button>
@@ -463,10 +463,10 @@ async function readReport(mode) {
   }
 }
 preview.addEventListener('click', () => readReport('preview'));
-liveGenerate.addEventListener('click', () => readReport('live'));
+generate.addEventListener('click', () => readReport('local'));
 form.addEventListener('submit', event => {
   event.preventDefault();
-  readReport('local');
+  if (liveEnabled) readReport('live');
 });
 </script>
 </body>

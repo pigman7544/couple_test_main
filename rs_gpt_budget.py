@@ -45,10 +45,10 @@ def render_usage(db):
     return now, count, spent, last
 
 
-def check_budget(count, spent, elapsed, reservation):
+def check_budget(count, spent, elapsed, reservation, calls=1):
     if elapsed < COOLDOWN_SECONDS:
         raise ExperimentError("cooldown", "실험 요청 간격은 최소 5분입니다.", 429)
-    if count >= monthly_call_limit() or spent + reservation > MONTHLY_MICRO_USD:
+    if count + calls > monthly_call_limit() or spent + reservation * calls > MONTHLY_MICRO_USD:
         raise ExperimentError("budget", "이달 실험 호출 한도에 도달했습니다.", 429)
 
 
@@ -62,7 +62,7 @@ def init_local_budget(path):
 
 
 @contextmanager
-def local_budget(reservation):
+def local_budget(reservation, calls=1):
     try:
         path = Path(os.environ["RS_GPT_LOCAL_LEDGER"]).resolve().as_uri()
         with closing(sqlite3.connect(path + "?mode=rw", uri=True, timeout=5)) as db, db:
@@ -74,8 +74,8 @@ def local_budget(reservation):
                 "SELECT COUNT(*), COALESCE(SUM(micro_usd), 0) FROM reservations "
                 "WHERE reserved_at >= ?", (month,)).fetchone()
             last = db.execute("SELECT MAX(reserved_at) FROM reservations").fetchone()[0]
-            check_budget(count, spent, now - (last or 0), reservation)
-            db.execute("INSERT INTO reservations VALUES (?, ?)", (now, reservation))
+            check_budget(count, spent, now - (last or 0), reservation, calls)
+            db.executemany("INSERT INTO reservations VALUES (?, ?)", [(now, reservation)] * calls)
     except (sqlite3.Error, OSError, KeyError):
         raise ExperimentError("budget_store", "호출 한도를 확인할 수 없습니다.", 503) from None
     yield
@@ -156,7 +156,7 @@ def verify_render_ledger():
 
 
 @contextmanager
-def render_budget(reservation):
+def render_budget(reservation, calls=1):
     import psycopg
 
     try:
@@ -165,11 +165,12 @@ def render_budget(reservation):
                 raise ExperimentError("busy", "다른 원고를 작성 중입니다.", 429)
             now, count, spent, last = render_usage(db)
             check_budget(count, spent, (now - last).total_seconds() if last else float("inf"),
-                         reservation)
-            db.execute(
-                "INSERT INTO rs_gpt_ledger.reservations (reserved_at, micro_usd) VALUES (%s, %s)",
-                (now, reservation),
-            )
+                         reservation, calls)
+            with db.cursor() as cursor:
+                cursor.executemany(
+                    "INSERT INTO rs_gpt_ledger.reservations (reserved_at, micro_usd) VALUES (%s, %s)",
+                    [(now, reservation)] * calls,
+                )
             # Commit before the upstream call. Uncertain outcomes retain their reservation.
             db.commit()
             yield
