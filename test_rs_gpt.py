@@ -382,11 +382,15 @@ class RsGptTests(unittest.TestCase):
                 "pair.a.reads.b", "pair.b.reads.a"]
         # A named counterpart alone must not convert a plain day-stem
         # reading into a palace reading.
+        plain = facts["pair.a.reads.b"]["ten_god"]
         claim = ("윤하님의 배우자궁은 관계를 살피는 자리예요. "
                  "도현님에게 윤하님의 배우자궁 중심인 경금은 정관이에요. "
-                 "윤하님에게 도현님의 일간 을목은 정인이에요.")
+                 f"윤하님에게 도현님의 일간 을목은 {plain}이에요.")
+        check_claims(claim, refs, refs, facts, people, {})
+        incorrect = "비견" if plain != "비견" else "정관"
         with self.assertRaises(ExperimentError):
-            check_claims(claim, refs, refs, facts, people, {})
+            check_claims(claim.replace(f"을목은 {plain}", f"을목은 {incorrect}"),
+                         refs, refs, facts, people, {})
 
     def test_editorial_guardrails_reject_shallow_or_unsupported_text(self):
         sample = (ROOT / "rs_gpt_editorial_sample.json").read_text(encoding="utf-8")
