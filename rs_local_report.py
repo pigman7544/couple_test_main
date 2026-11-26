@@ -1,8 +1,8 @@
 """Compose a complete RS manuscript from confirmed facts, without a provider."""
 
-from compatibility_v12 import GOD_QUESTIONS, RELATION_LENS
+from compatibility_v12 import GOD_QUESTIONS
 from rs_gpt import STEM_NAMES, validate
-from rs_synthesis import ELEMENT_STYLE, ROLE_MEANING, with_particle
+from rs_synthesis import ELEMENT_STYLE, with_particle
 
 
 # Each lens gives a concrete expression, the point where it can become a
@@ -45,11 +45,48 @@ SEATS = {
     "day": ("일간", "일지"),
     "hour": ("시간", "시지"),
 }
-STORY_DIMENSION = {
-    "비견": "autonomy", "겁재": "conflict", "식신": "expression", "상관": "expression",
-    "편재": "attraction", "정재": "security", "편관": "conflict", "정관": "security",
-    "편인": "autonomy", "정인": "growth",
+# Short actions make the two readings of a single palace comparable.
+ROLE_ACTIONS = {
+    "비견": "각자 판단할 여지를 남기는 일",
+    "겁재": "누가 결정할지 먼저 정하는 일",
+    "식신": "필요한 것을 살펴 손을 보태는 일",
+    "상관": "걸리는 점을 말로 꺼내는 일",
+    "편재": "그 자리에서 다른 선택지를 찾는 일",
+    "정재": "맡은 몫을 꾸준히 챙기는 일",
+    "편관": "급한 일을 먼저 맡아 수습하는 일",
+    "정관": "합의한 기준과 약속을 지키는 일",
+    "편인": "자기 생각부터 차분히 정리하는 일",
+    "정인": "상대가 말할 때까지 곁에서 기다리는 일",
 }
+
+# Each entry follows one recorded story beat and asks about a choice in it.
+STORY_PASSAGES = {
+    "c01": ("춘향과 몽룡은 처음 만나 정을 맺어요", "첫 만남을 떠올리며 상대의 어떤 행동이 기억에 남았는지 하나씩 말해 보세요"),
+    "c02": ("칠석에 견우와 직녀가 오작교에서 만났다는 이야기가 전해져요", "함께 보낼 시간이 짧은 주에는 그 시간에 가장 하고 싶은 일을 하나씩 골라 보세요"),
+    "c03": ("평강은 온달이 무예와 생활의 기반을 갖추도록 도와요", "상대가 배우고 싶은 일이 있다면 함께 연습할지 필요한 준비만 도울지 물어보세요"),
+    "c06": ("백소정의 정체가 드러나며 허선과의 관계가 흔들려요", "예상 밖의 이야기를 들었을 때 그 자리에서 묻고 싶은 것과 시간을 두고 확인할 것을 나눠 보세요"),
+    "c10": ("로미오와 줄리엣은 무도회에서 처음 만나요", "처음 상대에게 말을 걸고 싶었던 순간에 어떤 표정이나 말이 기억나는지 이야기해 보세요"),
+    "c11": ("청혼과 편지, 위컴 사건을 거치면서 엘리자베스와 다아시는 서로에 대한 판단을 바꿔요", "처음엔 뜻을 몰랐지만 나중에 이해하게 된 행동이 있었는지 떠올려 보세요"),
+    "c13": ("귀향한 오디세우스와 페넬로페는 서로를 확인해요", "오래 떨어져 지내다 만나면 그동안 바뀐 일상 중 무엇부터 듣고 싶은지 물어보세요"),
+    "c18": ("개츠비는 부를 쌓아 데이지와 다시 만나려 해요", "오랜만에 만나는 사람을 위해 뭔가 준비하기 전에 지금 그 사람이 원하는 만남을 물어보세요"),
+    "f01": ("홈즈가 사건을 풀어 가는 동안 왓슨은 동행하며 기록을 남겨요", "함께 맡은 일이 끝나면 각자가 보았던 중요한 순간을 하나씩 기록해 비교해 보세요"),
+    "f02": ("산초는 돈키호테의 판단을 자신이 보는 현실에 비추어 받아들여요", "둘이 새로운 일을 계획한다면 해 보고 싶은 일과 쓸 수 있는 시간을 각각 적어 보세요"),
+    "f03": ("포숙아가 관중의 능력을 인정해 추천했다는 고사가 전해져요", "상대를 다른 사람에게 소개한다면 어떤 구체적인 행동을 들어 그 사람을 설명하고 싶은지 생각해 보세요"),
+    "f04": ("처음에는 맞서 싸운 길가메시와 엔키두가 이후 친구가 되어 함께 모험해요", "처음엔 의견이 달랐지만 함께해 볼 만하다고 느낀 일이 있었는지 이야기해 보세요"),
+}
+LONG_TERM_TESTS = {
+    "비견": "함께해야 하는 일과 혼자 맡아도 되는 일에 표시해 보세요",
+    "겁재": "둘 다 맡으려는 일이 있다면 이번 주에 결정할 사람을 정해 보세요",
+    "식신": "평소 말없이 해 오던 일 하나를 꺼내 앞으로도 같은 사람이 맡을지 의논해 보세요",
+    "상관": "일주일 동안 바꿔 보고 싶은 집안일 순서를 한 가지만 골라 보세요",
+    "편재": "늘 하던 방식이 막힐 때의 대안을 하나만 정해 두세요",
+    "정재": "정기적으로 들어가는 비용 중 다음 주에 함께 확인할 항목을 정해 보세요",
+    "편관": "급한 일이 겹치면 누구에게 먼저 연락할지 정해 두세요",
+    "정관": "서로에게 알리지 않고 바꿀 수 있는 일정과 미리 확인할 일정을 나눠 보세요",
+    "편인": "지금 결정하기 어려운 일은 다음에 확인할 날짜와 함께 적어 두세요",
+    "정인": "부탁할 일이 있다면 이번 주 어느 날에 시간을 낼 수 있는지 물어보세요",
+}
+
 RELATION_SCENES = {
     "천간합": "함께 살 곳을 고르는 중이라면 각자가 중요하게 여기는 조건을 말하고, 먼저 겹치는 조건부터 표시해 볼 수 있어요",
     "육합": "손님을 초대하는 날이라면 한 사람이 준비를 시작하고 다른 사람이 빈자리를 메우는 식으로 호흡이 맞는지 살펴보세요",
@@ -75,39 +112,58 @@ def natal(owner, charts, facts, name):
     chart = charts[owner]
     master = chart["day_master"]
     month = chart["month_command"]
-    paragraphs = [paragraph(
-        [f"{owner}.day.stem"],
-        f"{name}님의 일간은 {with_particle(f'{STEM_NAMES[master]}({master})', '이에요', '예요')}.",
-        f"이 글자는 사주에서 {ELEMENT_STYLE[chart['element']]}을 상징해요.",
-        "여기에 태어난 달과 가까운 관계에서 드러날 수 있는 태도를 보태면, 같은 글자를 가진 사람도 서로 다른 방식으로 읽을 수 있어요.",
-        heading=f"{name}님의 기본 성향", lead=owner == "a",
-    )]
     stem = next((f"{owner}.{seat}.stem" for seat in ("month", "year", "hour")
                  if f"{owner}.{seat}.stem" in facts), None)
-    if stem:
-        fact = facts[stem]
-        role = fact["ten_god"]
-        seat = SEATS[fact["pillar"]][0]
-        paragraphs.append(paragraph(
-            [stem], f"{name}님의 {seat}은 {as_role(role)} 읽어요.",
-            f"전통적으로 {ROLE_MEANING[role]}에 주목하는 풀이예요.",
-            f"두 사람이 생활을 맞춰 간다면 {ROLE_SCENES[role][0]}에서 그 태도가 보일 수 있어요.",
-        ))
-    ref = month["principal_id"] if month else facts[f"{owner}.palace"]["source_ids"][0]
-    role = facts[ref]["ten_god"]
-    seat = "월지" if month else "일지"
+    first = paragraph(
+        [f"{owner}.day.stem"],
+        f"{name}님의 일간은 {with_particle(f'{STEM_NAMES[master]}({master})', '이에요', '예요')}.",
+        f"전통 명리에서 이 글자는 {ELEMENT_STYLE[chart['element']]}을 상징해요.",
+        heading=f"{name}님의 기본 성향", lead=owner == "a",
+    )
     coverage = []
+    if not month:
+        subject = "해와 달의 기둥" if "year" in chart["unresolved"] else "달의 기둥"
+        coverage.append(f"절기 경계에 걸린 {subject}은 풀이에서 보류했어요.")
     if "hour" in chart["unresolved"]:
         coverage.append(f"{name}님의 시주는 확인되지 않았습니다.")
+    coverage_refs = [f"{owner}.coverage"] if coverage else []
     if not month:
-        coverage.append("절기 경계에 걸쳐 있어 태어난 달의 글자는 풀이에서 보류했어요.")
-    paragraphs.append(paragraph(
-        [ref, *([f"{owner}.coverage"] if coverage else [])],
-        f"{name}님의 {seat} 본기는 {as_role(role)} 해석해요.",
-        f"이 자리는 {ROLE_MEANING[role]}과 연결해 읽을 수 있어요." if not month else
-        f"이 자리를 생활에 비춰 보면, {ROLE_SCENES[role][1]}.",
-        *coverage,
-    ))
+        if stem:
+            role = facts[stem]["ten_god"]
+            seat = SEATS[facts[stem]["pillar"]][0]
+            first["evidence_ids"].append(stem)
+            first["text"] += f" {name}님의 {seat}은 {as_role(role)} 읽어요."
+            first["text"] += f" 생활에서는 {ROLE_SCENES[role][0]}에서 그 태도가 드러날 수 있어요."
+        return [first, paragraph([*coverage_refs, f"{owner}.day.stem"], *coverage,
+                                 "가까운 관계에 관한 풀이는 확인된 날의 글자에서 이어갈게요.")]
+
+    ref = month["principal_id"]
+    role = facts[ref]["ten_god"]
+    reading = f"{name}님의 월지 본기는 {as_role(role)} 해석해요."
+    stem_role = facts[stem]["ten_god"]
+    seat = SEATS[facts[stem]["pillar"]][0]
+    stem_reading = f"{name}님의 {seat}은 {as_role(stem_role)} 읽어요."
+    if stem_role == role:
+        first["evidence_ids"].extend([stem])
+        first["text"] += f" {stem_reading} {ROLE_SCENES[stem_role][0]}에서 그 태도가 보일 수 있어요."
+        bridge = "앞의 자리에서도 살핀 태도가 이 자리에 한 번 더 나타나요."
+    else:
+        first["evidence_ids"].append(stem)
+        first["text"] += f" {stem_reading} 생활에서는 {ROLE_SCENES[stem_role][0]}에서 그 태도가 드러날 수 있어요."
+        bridge = f"앞서 본 태도에 더해 {ROLE_ACTIONS[role]}에도 마음이 갈 수 있어요."
+    paragraphs = [first, paragraph([ref, stem, *coverage_refs], reading, bridge,
+                                    f"{ROLE_SCENES[role][1]}.", *coverage)]
+    if stem_role == role:
+        extra = next((f"{owner}.{seat}.stem" for seat in ("year", "hour")
+                      if f"{owner}.{seat}.stem" in facts and facts[f"{owner}.{seat}.stem"]["ten_god"] != role), None)
+        if extra:
+            extra_role = facts[extra]["ten_god"]
+            extra_seat = SEATS[facts[extra]["pillar"]][0]
+            paragraphs.append(paragraph(
+                [extra, ref], f"{name}님의 {extra_seat}은 {as_role(extra_role)} 읽어요.",
+                f"{ROLE_SCENES[extra_role][0]}도 떠올릴 수 있어요.",
+                f"{ROLE_ACTIONS[role]}도, {ROLE_ACTIONS[extra_role]}도 중요하게 여기는 상황이라면, 무엇을 먼저 챙길지 상대와 상의해 보세요.",
+            ))
     return paragraphs
 
 
@@ -119,45 +175,50 @@ def direction(viewer, other, names, facts, palace=False):
     if palace:
         stem = fact["principal_stem"]
         own = facts[f"{other}.palace"]["ten_god"]
-        lead = f"{reader}님에게 {target}님의 일지 본기 {STEM_NAMES[stem]}({stem})는 {as_role(role)} 읽혀요."
-        explanation = f"{target}님의 일지는 본인에게 {as_role(own)} 읽혀요."
-        closing = f"함께 보내는 시간에는 ‘{ROLE_MEANING[role]}’에 주목해 볼 수 있어요."
-        comparison = (f"두 사람이 같은 이름으로 이 자리를 읽으니, 가까운 사이에서 무엇을 편하게 여기는지 비교해 볼 만해요."
-                      if own == role else
-                      f"{target}님에게 익숙한 행동과 {reader}님이 그 행동에서 읽는 뜻이 다를 수 있다는 점이 이 자리에서 눈에 띄어요.")
-        return paragraph([ref, f"{other}.palace", *fact["source_ids"]], lead, explanation, closing, comparison)
+        comparison = (
+            f"예를 들어 함께 낯선 일을 맡았을 때 두 사람 모두 {ROLE_ACTIONS[role]}에 마음이 갈 수 있어요."
+            if role == own else
+            f"{target}님이 {ROLE_ACTIONS[own]}에 마음을 쓴다면, {reader}님은 그중에서도 {ROLE_ACTIONS[role]}에 의미를 둘 수 있어요."
+        )
+        return paragraph(
+            [ref, f"{other}.palace", *fact["source_ids"]],
+            f"{reader}님에게 {target}님의 일지 본기 {with_particle(f'{STEM_NAMES[stem]}({stem})', '은', '는')} {as_role(role)} 읽혀요.",
+            f"{target}님의 일지는 본인에게 {as_role(own)} 읽혀요.",
+            comparison,
+        )
     partner = facts.get(f"{viewer}.partner")
     refs = [ref]
-    if partner:
+    note = []
+    if partner and partner["cross_is_partner_star"]:
         refs.append(f"{viewer}.partner")
-    note = ("이 관계는 전통 풀이에서 쓰는 배우자성 범주에도 들어가요."
-            if partner and partner["cross_is_partner_star"] else
-            "두 사람이 서로를 볼 때 어떤 행동이 눈에 들어오는지 살펴볼 수 있는 대목이에요.")
+        note = [
+            f"이 십성은 전통 풀이에서 {reader}님의 배우자성으로 보는 {partner['category']}에 들어가요.",
+            "상대의 날을 대표하는 글자를 기준으로 본 분류예요.",
+        ]
     return paragraph(
         refs,
         f"{reader}님에게 {target}님의 일간은 {as_role(role)} 읽혀요.",
-        f"처음 가까워지는 과정에서 {ROLE_SCENES[role][0]}이 인상에 남을 수 있어요.",
-        note,
-        f"그 행동이 인상에 남았다면 무엇을 했는지 떠올리고, 왜 그 장면이 좋았는지까지 말해 보면 두 사람의 관심이 어디에서 만나는지 알 수 있어요.",
-        heading="서로에게 먼저 보이는 모습" if viewer == "a" else None, lead=viewer == "a",
+        f"상대에게서 {ROLE_SCENES[role][0]}이 눈에 들어올 수 있어요.",
+        *note, heading="서로에게 먼저 보이는 모습" if viewer == "a" else None,
+        lead=viewer == "a",
     )
 
 
-def relation_paragraph(ref, facts, names, heading):
+def relation_paragraph(ref, facts, names, heading, overlapping=()):
     fact = facts[ref]
     kind = fact["kind"]
     layer = 0 if fact["layer"] == "stem" else 1
     places = [f"{names[s['person']]}님의 {SEATS[s['pillar']][layer]} {s['symbol']}" for s in fact["sources"]]
-    scope = "두 명식을 포개어 보면" if ref.startswith("pair.") else "한 사람의 명식 안에"
-    third = [f"여기에 {places[2]}도 함께 놓여 있어요."] if len(places) == 3 else []
-    return paragraph(
-        [ref], f"{scope} {', '.join(places[:2])}에 주목해요.",
-        *third,
-        f"전통 명리에서는 이 조합을 {as_role(kind)} 부릅니다.",
-        f"둘이 함께할 때는 {RELATION_LENS[kind]}에 주목해 보세요. {RELATION_SCENES[kind]}."
-        if not third else f"{RELATION_LENS[kind]}에 주목할 수 있는 구성이라, {RELATION_SCENES[kind]}.",
-        heading=heading,
-    )
+    scope = "두 명식을 포개면" if ref.startswith("pair.") else "한 사람의 명식 안에서는"
+    lead = [f"{scope} {', '.join(places[:2])} 두 자리가 맞물려요."]
+    if len(places) == 3:
+        lead.append(f"여기에 {places[2]} 자리도 들어가요.")
+    lead.append(f"전통 명리에서는 이 조합을 {as_role(kind)} 읽어요.")
+    if overlapping:
+        other = facts[overlapping[0]]["kind"]
+        lead.append(f"같은 두 자리에는 {other}도 겹쳐 있어, 조정이 필요한 지점을 함께 살펴볼 수 있어요.")
+    return paragraph([ref, *overlapping], *lead, f"{RELATION_SCENES[kind]}.",
+                     heading=heading)
 
 
 def compose_report(payload, couple):
@@ -166,81 +227,91 @@ def compose_report(payload, couple):
     names = {"a": "ⓐ", "b": "ⓑ"}
     a, b = names.values()
     first = [p for owner in names for p in natal(owner, charts, facts, names[owner])]
-    pair = [direction("a", "b", names, facts), direction("b", "a", names, facts),
-            direction("b", "a", names, facts, palace=True),
-            direction("a", "b", names, facts, palace=True)]
-    pair[2]["heading"] = "가까워졌을 때 보이는 관계의 결"
+    pair = [direction("a", "b", names, facts), direction("b", "a", names, facts)]
+    palace_a, palace_b = facts["a.palace"], facts["b.palace"]
     direct = facts["pair.palaces"]["direct_branch_relation_ids"]
+    positions = [
+        f"{name}님의 일지에는 {palace['branch']} 자가 있어요."
+        for name, palace in ((a, palace_a), (b, palace_b))
+    ]
+    if not direct:
+        positions.append("두 자리만 놓고 보면 직접 맺는 조합이 없어요.")
+    pair.append(paragraph(
+        ["pair.palaces", "a.palace", "b.palace"],
+        "가까운 관계에서 무엇을 편하게 느끼는지 살필 때는 배우자궁을 봐요.",
+        *positions, heading="가까워졌을 때 살피는 자리",
+    ))
+    pair.extend(direction(viewer, other, names, facts, palace=True)
+                for viewer, other in (("b", "a"), ("a", "b")))
     if direct:
-        for index, ref in enumerate(direct):
-            p = relation_paragraph(ref, facts, names, "두 사람이 가까이 지내는 방식" if not index else None)
-            p["evidence_ids"].insert(0, "pair.palaces")
-            pair.append(p)
-    else:
-        equal = facts["a.palace"]["branch"] == facts["b.palace"]["branch"]
-        pair.append(paragraph(
-            ["pair.palaces", "a.palace", "b.palace"],
-            f"{a}님의 일지와 {b}님의 일지에는 직접 성립하는 조합이 없어요.",
-            ("두 자리에 같은 글자가 놓여 있어 익숙함을 느끼는 지점이 있는지 살펴볼 수 있어요."
-             if equal else "각자가 편하게 여기는 것을 따로 물어볼 때 두 자리의 차이를 생활에서 확인할 수 있어요."),
-            "같은 공간에서 저녁을 보낼 때 무엇을 같이 하고 싶은지, 무엇은 각자 하고 싶은지 따로 말해 보면 관계에 필요한 거리가 구체적으로 드러나요.",
-            heading="두 사람이 가까이 지내는 방식",
-        ))
-    relations = [ref for ref, fact in facts.items() if "sources" in fact]
-    for prefix, title in (("pair.", "다른 자리에서 생기는 접점"), ("a.", f"{a}님에게 익숙할 수 있는 방식"),
-                          ("b.", f"{b}님에게 익숙할 수 있는 방식")):
-        candidates = [ref for ref in relations if ref.startswith(prefix) and ref not in direct]
-        if candidates and len(pair) < 8:
-            chosen = min(candidates, key=lambda ref: (
-                sum(facts[ref]["kind"] in p["text"] for p in pair),
-                -sum(s["pillar"] == "day" for s in facts[ref]["sources"]),
+        primary = next((ref for ref in direct if facts[ref]["kind"] == "육충"), direct[0])
+        pair.append(relation_paragraph(primary, facts, names, "두 일지가 직접 만나는 자리",
+                                       [ref for ref in direct if ref != primary]))
+        pair[-1]["evidence_ids"].insert(0, "pair.palaces")
+
+    other_relations = [ref for ref, fact in facts.items() if "sources" in fact and ref not in direct]
+    # An exact same-kind reading of the same arrangement adds little to this chapter.
+    used_kinds = {facts[ref]["kind"] for ref in direct}
+    for prefix, title in (("pair.", "다른 자리에서 생기는 접점"),
+                          ("pair.", "두 명식을 함께 볼 때"),
+                          ("a.", f"{a}님의 명식 안에서"), ("b.", f"{b}님의 명식 안에서")):
+        candidates = [ref for ref in other_relations
+                      if ref.startswith(prefix) and facts[ref]["kind"] not in used_kinds
+                      and (title != "두 명식을 함께 볼 때"
+                           or any(s["pillar"] == "day" for s in facts[ref]["sources"]))]
+        if candidates:
+            chosen = max(candidates, key=lambda ref: (
+                any(s["pillar"] == "day" for s in facts[ref]["sources"]),
+                len(facts[ref]["sources"]),
             ))
             pair.append(relation_paragraph(chosen, facts, names, title))
+            used_kinds.add(facts[chosen]["kind"])
+        if len(pair) >= 8:
+            break
+
     ab, ba = "pair.a.reads.b", "pair.b.reads.a"
     r1, r2 = facts[ab]["ten_god"], facts[ba]["ten_god"]
-    palace_a, palace_b = facts["a.palace"], facts["b.palace"]
     pa, pb = palace_a["ten_god"], palace_b["ten_god"]
     matching = [names[owner] + "님" for owner, palace in (("a", palace_a), ("b", palace_b))
                 if palace["matches_other_day_master"]]
     if len(matching) == 2:
-        summary = "각자의 배우자궁을 대표하는 글자가 서로를 나타내는 글자와 같아요."
+        link = ["두 배우자궁의 중심 글자가 서로의 일간과 같아요."]
     elif matching:
-        summary = f"{matching[0]}의 배우자궁에는 상대를 나타내는 글자가 중심에 있어요."
+        link = [f"{matching[0]}의 배우자궁 중심 글자가 상대의 일간과 같아요."]
     else:
-        summary = "처음 인상과 가까이 지낼 때에 느끼는 편안함은 서로 다를 수 있어요."
+        link = []
+    contrast = (
+        f"함께 준비하는 일이 있다면 {a}님에게는 {ROLE_ACTIONS[r1]}에, {b}님에게는 {ROLE_ACTIONS[r2]}에 상대의 배려가 담겨 보일 수 있어요."
+        if r1 != r2 else
+        f"두 사람 모두 {ROLE_ACTIONS[r1]}에서 상대의 마음을 읽기 쉬울 수 있어요."
+    )
     pair.append(paragraph(
-        [ab, ba, "a.palace", "b.palace"],
-        f"{a}님이 {b}님에게서 알아보기 쉬운 단서는 ‘{ROLE_MEANING[r1]}’에 있어요.",
-        (f"반대로 {b}님은 ‘{ROLE_MEANING[r2]}’에 먼저 눈길이 갈 수 있어요." if r1 != r2
-         else "두 사람 모두 그 태도에 공감할 여지가 있지만, 기대하는 정도까지 같은지는 대화를 나눠 봐야 해요."),
-        summary,
-        "한 주를 돌아보며 기억에 남은 배려를 하나씩 말하면 각자가 중요하게 여기는 행동을 비교할 수 있어요.",
-        heading="두 사람의 궁합을 돌아보면",
+        [ab, ba, "a.palace", "b.palace"], *link, contrast,
+        (f"그 일을 마친 뒤 {a}님은 {ROLE_ACTIONS[pa]}에서, {b}님은 {ROLE_ACTIONS[pb]}에서 편안함을 느꼈는지도 함께 살펴보세요."
+         if pa != pb else f"조금 더 가까워진 사이에서는 두 사람 모두 {ROLE_ACTIONS[pa]}을 편하게 여기는지 물어볼 만해요."),
+        "상대가 해 준 일과 내가 바라던 일을 나누어 말하면 서로의 대답을 비교하기 쉬워요.",
+        heading="처음 눈에 띈 배려와 가까워진 뒤의 기대",
     ))
-    beat = next((beat for beat in couple["story_beats"] if STORY_DIMENSION[r1] in beat["dimensions"]),
-                couple["story_beats"][0])
+
+    event, story_advice = STORY_PASSAGES[couple["id"]]
     third = [
-        paragraph([ab], f"{a}님이 {b}님과 결정을 맞출 때는 ‘{ROLE_MEANING[r1]}’에 주목해 보세요.",
-                  f"{ROLE_SCENES[r1][2]}.", heading="마음과 행동을 맞춰 보는 연습", lead=True),
-        paragraph([ba], f"{b}님은 {ROLE_MEANING[r2]}에 관한 자기 기준을 알려 주세요.",
-                  f"“{GOD_QUESTIONS[r2]}”라고 먼저 물으면 각자 기대한 것을 비교해 볼 수 있어요.",
-                  "한쪽이 질문을 던졌다면 그날의 결론을 내기 전에 다른 쪽도 자기 질문을 하나 보태 보세요."),
+        paragraph([ab], f"{a}님이 {b}님에게 바라는 게 있다면 한 가지 상황을 골라 말해 보세요.",
+                  f"{ROLE_SCENES[r1][2]}.", heading="다음에 해 볼 대화", lead=True),
+        paragraph([ba], f"{b}님은 상대가 무엇을 바라는지 먼저 들어 보세요.",
+                  f"“{GOD_QUESTIONS[r2]}”처럼 묻고, 들은 답에서 이번에 맞춰 볼 행동 하나를 정해도 좋아요."),
         paragraph(["a.palace", "b.palace"],
-                  f"부딪힌 직후에는 {a}님이 ‘{ROLE_MEANING[pa]}’에서, "
-                  f"{b}님이 ‘{ROLE_MEANING[pb]}’에서 각각 무엇을 기대했는지 돌아보세요."
-                  if pa != pb else f"두 사람이 {ROLE_MEANING[pa]}에 마음이 가더라도 다툰 직후에는 각자 원하는 반응을 짚어 보는 편이 좋아요.",
-                  "잠시 멈출 때는 다음에 말을 나눌 시각도 정해 두세요.",
-                  "돌아온 뒤에는 각자 바라는 변화 한 가지를 말하고, 바로 답하기 전에 들은 뜻을 되짚어 보세요."),
-        paragraph([ab], f"『{couple['work']}』의 {couple['name']} 이야기에는 ‘{beat['summary'].rstrip('.。')}’라는 장면이 나와요.",
-                  f"그 장면에서 인물들이 무엇을 선택하는지 살펴보고, 두 사람의 일상에서는 ‘{ROLE_MEANING[r1]}’을 어떤 행동으로 전할지 이야기해 보세요.",
-                  heading="작품 속 두 사람을 만나다"),
-        paragraph(["b.palace", "a.palace"],
-                  f"약속을 오래 지키려면 ‘{ROLE_MEANING[pb]}’이 두 사람의 일정 안에서 어떤 모습이어야 할지 정해 보세요.",
-                  "앞으로 한 주 동안 각자 맡을 일 하나만 정한 뒤, 주말에 시간과 수고가 어느 쪽에 몰렸는지 확인해 보세요.",
-                  "사정이 달라졌다면 다음 주에 바꿔 볼 역할 하나를 그 자리에서 정해도 좋아요.", heading="다음 주에 다시 꺼내 볼 이야기"),
+                  (f"같은 일을 두고 {a}님은 {ROLE_ACTIONS[pa]}에, {b}님은 {ROLE_ACTIONS[pb]}에 먼저 신경 쓸 수 있어요."
+                   if pa != pb else f"둘 다 {ROLE_ACTIONS[pa]}을 중요하게 여기더라도 원하는 때는 다를 수 있어요."),
+                  "대화가 어려워지면 이어서 이야기할 시각부터 정하고, 다시 만났을 때 각자 가장 먼저 확인하고 싶은 일 하나를 말해 보세요."),
+        paragraph(["a.palace", "b.palace"],
+                  f"{LONG_TERM_TESTS[pb]}.",
+                  "한 주 뒤 실제로 들인 시간을 비교하고, 나누고 싶은 일 하나를 골라 다시 맡아 보세요.",
+                  heading="한 주 뒤 확인할 일"),
+        paragraph([ab, ba], f"『{couple['work']}』 속 {couple['name']} 이야기에는 이런 대목이 있어요. {event}.",
+                  f"{story_advice}.", heading="작품 속 두 사람을 만나다"),
     ]
     manuscript = {"chapters": [
-        {"title": "서로 다른 두 사람의 사주팔자", "paragraphs": first},
+        {"title": "두 사람의 사주팔자", "paragraphs": first},
         {"title": "두 사람의 궁합", "paragraphs": pair},
         {"title": "두 사람을 위한 조언과 닮은 커플", "paragraphs": third},
     ]}
