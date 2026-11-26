@@ -307,7 +307,8 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
                 nearest = next((loc for anchor, loc in reversed(grounded_locations)
                                 if anchor.end() <= match.start()), None)
                 prefix = sentence[:match.start()]
-                perspective = re.search(owner_pattern + r"(?:에게|기준(?:으로)?|입장에서)", prefix)
+                perspectives = list(re.finditer(owner_pattern + r"(?:에게|기준(?:으로)?|입장에서)", prefix))
+                perspective = perspectives[-1] if perspectives else None
                 if perspective:
                     viewer = people[perspective["person"]]
                     other = "b" if viewer == "a" else "a"
