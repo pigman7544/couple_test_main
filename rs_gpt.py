@@ -321,11 +321,20 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
                     principal_forms = ({principal, STEM_NAMES.get(principal, "")}
                                        if principal else set())
                     has_principal = any(symbol and symbol in segment for symbol in principal_forms)
+                    # An explicit palace mention in this viewer's clause is
+                    # strongest; a preceding clause may establish shared
+                    # palace context for a two-way comparison.
+                    palace_context = ("배우자궁" in segment or "본기" in segment)
+                    shared_palace_context = (
+                        "배우자궁" in prefix[:perspective.start()]
+                        and any(people[m["person"]] == other
+                                for m in anchor_pattern.finditer(segment))
+                    )
                     palace_claim = bool(
                         palace_ref in chapter_refs and has_principal
-                        and ("배우자궁" in prefix or "본기" in segment)
+                        and (palace_context or shared_palace_context)
                         and (not nearest or nearest[:2] == (other, "day")
-                             or "배우자궁" in prefix[:perspective.start()])
+                             or shared_palace_context)
                     )
                     ref = palace_ref if palace_claim else f"pair.{viewer}.reads.{other}"
                     matching = [facts[ref]] if ref in chapter_refs and facts[ref].get("ten_god") == term else []
