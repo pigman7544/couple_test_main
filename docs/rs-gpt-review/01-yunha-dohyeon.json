@@ -1,0 +1,928 @@
+{
+  "provenance": "local_edited_mock_fixture",
+  "inputs": {
+    "a": {
+      "name": "윤하",
+      "date": "1993-07-14",
+      "time": "10:00",
+      "gender": "female"
+    },
+    "b": {
+      "name": "도현",
+      "date": "1991-10-22",
+      "time": "",
+      "gender": "male"
+    }
+  },
+  "payload": {
+    "charts": {
+      "a": {
+        "pillars": {
+          "year": "癸酉",
+          "month": "己未",
+          "day": "丙申",
+          "hour": "癸巳"
+        },
+        "day_master": "丙",
+        "element": "fire",
+        "unresolved": [],
+        "month_command": {
+          "branch": "未",
+          "season": "여름",
+          "branch_element": "earth",
+          "day_master_element": "fire",
+          "same_element": false,
+          "generates_day_master": false,
+          "principal_id": "a.month.hidden.己"
+        }
+      },
+      "b": {
+        "pillars": {
+          "year": "辛未",
+          "month": "戊戌",
+          "day": "乙丑",
+          "hour": null
+        },
+        "day_master": "乙",
+        "element": "wood",
+        "unresolved": [
+          "hour"
+        ],
+        "month_command": {
+          "branch": "戌",
+          "season": "가을",
+          "branch_element": "earth",
+          "day_master_element": "wood",
+          "same_element": false,
+          "generates_day_master": false,
+          "principal_id": "b.month.hidden.戊"
+        }
+      }
+    },
+    "facts": {
+      "a.year.stem": {
+        "person": "a",
+        "pillar": "year",
+        "layer": "stem",
+        "symbol": "癸",
+        "ten_god": "정관"
+      },
+      "a.year.hidden.辛": {
+        "person": "a",
+        "pillar": "year",
+        "layer": "hidden",
+        "symbol": "辛",
+        "branch": "酉",
+        "tier": "본기",
+        "ten_god": "정재"
+      },
+      "a.month.stem": {
+        "person": "a",
+        "pillar": "month",
+        "layer": "stem",
+        "symbol": "己",
+        "ten_god": "상관"
+      },
+      "a.month.hidden.己": {
+        "person": "a",
+        "pillar": "month",
+        "layer": "hidden",
+        "symbol": "己",
+        "branch": "未",
+        "tier": "본기",
+        "ten_god": "상관"
+      },
+      "a.month.hidden.乙": {
+        "person": "a",
+        "pillar": "month",
+        "layer": "hidden",
+        "symbol": "乙",
+        "branch": "未",
+        "tier": "중기",
+        "ten_god": "정인"
+      },
+      "a.month.hidden.丁": {
+        "person": "a",
+        "pillar": "month",
+        "layer": "hidden",
+        "symbol": "丁",
+        "branch": "未",
+        "tier": "여기",
+        "ten_god": "겁재"
+      },
+      "a.day.stem": {
+        "person": "a",
+        "pillar": "day",
+        "layer": "stem",
+        "symbol": "丙",
+        "ten_god": "비견"
+      },
+      "a.day.hidden.庚": {
+        "person": "a",
+        "pillar": "day",
+        "layer": "hidden",
+        "symbol": "庚",
+        "branch": "申",
+        "tier": "본기",
+        "ten_god": "편재"
+      },
+      "a.day.hidden.壬": {
+        "person": "a",
+        "pillar": "day",
+        "layer": "hidden",
+        "symbol": "壬",
+        "branch": "申",
+        "tier": "중기",
+        "ten_god": "편관"
+      },
+      "a.day.hidden.戊": {
+        "person": "a",
+        "pillar": "day",
+        "layer": "hidden",
+        "symbol": "戊",
+        "branch": "申",
+        "tier": "여기",
+        "ten_god": "식신"
+      },
+      "a.hour.stem": {
+        "person": "a",
+        "pillar": "hour",
+        "layer": "stem",
+        "symbol": "癸",
+        "ten_god": "정관"
+      },
+      "a.hour.hidden.丙": {
+        "person": "a",
+        "pillar": "hour",
+        "layer": "hidden",
+        "symbol": "丙",
+        "branch": "巳",
+        "tier": "본기",
+        "ten_god": "비견"
+      },
+      "a.hour.hidden.庚": {
+        "person": "a",
+        "pillar": "hour",
+        "layer": "hidden",
+        "symbol": "庚",
+        "branch": "巳",
+        "tier": "중기",
+        "ten_god": "편재"
+      },
+      "a.hour.hidden.戊": {
+        "person": "a",
+        "pillar": "hour",
+        "layer": "hidden",
+        "symbol": "戊",
+        "branch": "巳",
+        "tier": "여기",
+        "ten_god": "식신"
+      },
+      "a.coverage": {
+        "person": "a",
+        "kind": "확정 범위",
+        "unresolved_pillars": [],
+        "examined_hidden_ids": [
+          "a.year.hidden.辛",
+          "a.month.hidden.己",
+          "a.month.hidden.乙",
+          "a.month.hidden.丁",
+          "a.day.hidden.庚",
+          "a.day.hidden.壬",
+          "a.day.hidden.戊",
+          "a.hour.hidden.丙",
+          "a.hour.hidden.庚",
+          "a.hour.hidden.戊"
+        ]
+      },
+      "b.year.stem": {
+        "person": "b",
+        "pillar": "year",
+        "layer": "stem",
+        "symbol": "辛",
+        "ten_god": "편관"
+      },
+      "b.year.hidden.己": {
+        "person": "b",
+        "pillar": "year",
+        "layer": "hidden",
+        "symbol": "己",
+        "branch": "未",
+        "tier": "본기",
+        "ten_god": "편재"
+      },
+      "b.year.hidden.乙": {
+        "person": "b",
+        "pillar": "year",
+        "layer": "hidden",
+        "symbol": "乙",
+        "branch": "未",
+        "tier": "중기",
+        "ten_god": "비견"
+      },
+      "b.year.hidden.丁": {
+        "person": "b",
+        "pillar": "year",
+        "layer": "hidden",
+        "symbol": "丁",
+        "branch": "未",
+        "tier": "여기",
+        "ten_god": "식신"
+      },
+      "b.month.stem": {
+        "person": "b",
+        "pillar": "month",
+        "layer": "stem",
+        "symbol": "戊",
+        "ten_god": "정재"
+      },
+      "b.month.hidden.戊": {
+        "person": "b",
+        "pillar": "month",
+        "layer": "hidden",
+        "symbol": "戊",
+        "branch": "戌",
+        "tier": "본기",
+        "ten_god": "정재"
+      },
+      "b.month.hidden.丁": {
+        "person": "b",
+        "pillar": "month",
+        "layer": "hidden",
+        "symbol": "丁",
+        "branch": "戌",
+        "tier": "중기",
+        "ten_god": "식신"
+      },
+      "b.month.hidden.辛": {
+        "person": "b",
+        "pillar": "month",
+        "layer": "hidden",
+        "symbol": "辛",
+        "branch": "戌",
+        "tier": "여기",
+        "ten_god": "편관"
+      },
+      "b.day.stem": {
+        "person": "b",
+        "pillar": "day",
+        "layer": "stem",
+        "symbol": "乙",
+        "ten_god": "비견"
+      },
+      "b.day.hidden.己": {
+        "person": "b",
+        "pillar": "day",
+        "layer": "hidden",
+        "symbol": "己",
+        "branch": "丑",
+        "tier": "본기",
+        "ten_god": "편재"
+      },
+      "b.day.hidden.辛": {
+        "person": "b",
+        "pillar": "day",
+        "layer": "hidden",
+        "symbol": "辛",
+        "branch": "丑",
+        "tier": "중기",
+        "ten_god": "편관"
+      },
+      "b.day.hidden.癸": {
+        "person": "b",
+        "pillar": "day",
+        "layer": "hidden",
+        "symbol": "癸",
+        "branch": "丑",
+        "tier": "여기",
+        "ten_god": "편인"
+      },
+      "b.coverage": {
+        "person": "b",
+        "kind": "확정 범위",
+        "unresolved_pillars": [
+          "hour"
+        ],
+        "examined_hidden_ids": [
+          "b.year.hidden.己",
+          "b.year.hidden.乙",
+          "b.year.hidden.丁",
+          "b.month.hidden.戊",
+          "b.month.hidden.丁",
+          "b.month.hidden.辛",
+          "b.day.hidden.己",
+          "b.day.hidden.辛",
+          "b.day.hidden.癸"
+        ]
+      },
+      "pair.천간합.a.day.b.year": {
+        "kind": "천간합",
+        "layer": "stem",
+        "sources": [
+          {
+            "person": "a",
+            "pillar": "day",
+            "symbol": "丙",
+            "read_stem": "丙",
+            "owner_ten_god": "비견",
+            "other_ten_god": "상관",
+            "source_id": "a.day.stem"
+          },
+          {
+            "person": "b",
+            "pillar": "year",
+            "symbol": "辛",
+            "read_stem": "辛",
+            "owner_ten_god": "편관",
+            "other_ten_god": "정재",
+            "source_id": "b.year.stem"
+          }
+        ]
+      },
+      "pair.천간합.a.year.b.month": {
+        "kind": "천간합",
+        "layer": "stem",
+        "sources": [
+          {
+            "person": "a",
+            "pillar": "year",
+            "symbol": "癸",
+            "read_stem": "癸",
+            "owner_ten_god": "정관",
+            "other_ten_god": "편인",
+            "source_id": "a.year.stem"
+          },
+          {
+            "person": "b",
+            "pillar": "month",
+            "symbol": "戊",
+            "read_stem": "戊",
+            "owner_ten_god": "정재",
+            "other_ten_god": "식신",
+            "source_id": "b.month.stem"
+          }
+        ]
+      },
+      "pair.천간합.a.hour.b.month": {
+        "kind": "천간합",
+        "layer": "stem",
+        "sources": [
+          {
+            "person": "a",
+            "pillar": "hour",
+            "symbol": "癸",
+            "read_stem": "癸",
+            "owner_ten_god": "정관",
+            "other_ten_god": "편인",
+            "source_id": "a.hour.stem"
+          },
+          {
+            "person": "b",
+            "pillar": "month",
+            "symbol": "戊",
+            "read_stem": "戊",
+            "owner_ten_god": "정재",
+            "other_ten_god": "식신",
+            "source_id": "b.month.stem"
+          }
+        ]
+      },
+      "pair.삼합.a.year.a.hour.b.day": {
+        "kind": "삼합",
+        "layer": "branch",
+        "sources": [
+          {
+            "person": "a",
+            "pillar": "year",
+            "symbol": "酉",
+            "read_stem": "辛",
+            "owner_ten_god": "정재",
+            "other_ten_god": "편관",
+            "source_id": "a.year.hidden.辛"
+          },
+          {
+            "person": "a",
+            "pillar": "hour",
+            "symbol": "巳",
+            "read_stem": "丙",
+            "owner_ten_god": "비견",
+            "other_ten_god": "상관",
+            "source_id": "a.hour.hidden.丙"
+          },
+          {
+            "person": "b",
+            "pillar": "day",
+            "symbol": "丑",
+            "read_stem": "己",
+            "owner_ten_god": "편재",
+            "other_ten_god": "상관",
+            "source_id": "b.day.hidden.己"
+          }
+        ]
+      },
+      "pair.육충.a.month.b.day": {
+        "kind": "육충",
+        "layer": "branch",
+        "sources": [
+          {
+            "person": "a",
+            "pillar": "month",
+            "symbol": "未",
+            "read_stem": "己",
+            "owner_ten_god": "상관",
+            "other_ten_god": "편재",
+            "source_id": "a.month.hidden.己"
+          },
+          {
+            "person": "b",
+            "pillar": "day",
+            "symbol": "丑",
+            "read_stem": "己",
+            "owner_ten_god": "편재",
+            "other_ten_god": "상관",
+            "source_id": "b.day.hidden.己"
+          }
+        ]
+      },
+      "pair.상형.a.month.b.month": {
+        "kind": "상형",
+        "layer": "branch",
+        "sources": [
+          {
+            "person": "a",
+            "pillar": "month",
+            "symbol": "未",
+            "read_stem": "己",
+            "owner_ten_god": "상관",
+            "other_ten_god": "편재",
+            "source_id": "a.month.hidden.己"
+          },
+          {
+            "person": "b",
+            "pillar": "month",
+            "symbol": "戌",
+            "read_stem": "戊",
+            "owner_ten_god": "정재",
+            "other_ten_god": "식신",
+            "source_id": "b.month.hidden.戊"
+          }
+        ]
+      },
+      "pair.상형.a.month.b.day": {
+        "kind": "상형",
+        "layer": "branch",
+        "sources": [
+          {
+            "person": "a",
+            "pillar": "month",
+            "symbol": "未",
+            "read_stem": "己",
+            "owner_ten_god": "상관",
+            "other_ten_god": "편재",
+            "source_id": "a.month.hidden.己"
+          },
+          {
+            "person": "b",
+            "pillar": "day",
+            "symbol": "丑",
+            "read_stem": "己",
+            "owner_ten_god": "편재",
+            "other_ten_god": "상관",
+            "source_id": "b.day.hidden.己"
+          }
+        ]
+      },
+      "pair.삼형.a.month.b.month.b.day": {
+        "kind": "삼형",
+        "layer": "branch",
+        "sources": [
+          {
+            "person": "a",
+            "pillar": "month",
+            "symbol": "未",
+            "read_stem": "己",
+            "owner_ten_god": "상관",
+            "other_ten_god": "편재",
+            "source_id": "a.month.hidden.己"
+          },
+          {
+            "person": "b",
+            "pillar": "month",
+            "symbol": "戌",
+            "read_stem": "戊",
+            "owner_ten_god": "정재",
+            "other_ten_god": "식신",
+            "source_id": "b.month.hidden.戊"
+          },
+          {
+            "person": "b",
+            "pillar": "day",
+            "symbol": "丑",
+            "read_stem": "己",
+            "owner_ten_god": "편재",
+            "other_ten_god": "상관",
+            "source_id": "b.day.hidden.己"
+          }
+        ]
+      },
+      "pair.육해.a.year.b.month": {
+        "kind": "육해",
+        "layer": "branch",
+        "sources": [
+          {
+            "person": "a",
+            "pillar": "year",
+            "symbol": "酉",
+            "read_stem": "辛",
+            "owner_ten_god": "정재",
+            "other_ten_god": "편관",
+            "source_id": "a.year.hidden.辛"
+          },
+          {
+            "person": "b",
+            "pillar": "month",
+            "symbol": "戌",
+            "read_stem": "戊",
+            "owner_ten_god": "정재",
+            "other_ten_god": "식신",
+            "source_id": "b.month.hidden.戊"
+          }
+        ]
+      },
+      "pair.a.reads.b": {
+        "kind": "일간 교차 십성",
+        "perspective": "a",
+        "ten_god": "정인",
+        "source_ids": [
+          "a.day.stem",
+          "b.day.stem"
+        ]
+      },
+      "pair.b.reads.a": {
+        "kind": "일간 교차 십성",
+        "perspective": "b",
+        "ten_god": "상관",
+        "source_ids": [
+          "b.day.stem",
+          "a.day.stem"
+        ]
+      },
+      "b.육충.b.year.b.day": {
+        "kind": "육충",
+        "layer": "branch",
+        "sources": [
+          {
+            "person": "b",
+            "pillar": "year",
+            "symbol": "未"
+          },
+          {
+            "person": "b",
+            "pillar": "day",
+            "symbol": "丑"
+          }
+        ]
+      },
+      "b.삼형.b.year.b.month.b.day": {
+        "kind": "삼형",
+        "layer": "branch",
+        "sources": [
+          {
+            "person": "b",
+            "pillar": "year",
+            "symbol": "未"
+          },
+          {
+            "person": "b",
+            "pillar": "month",
+            "symbol": "戌"
+          },
+          {
+            "person": "b",
+            "pillar": "day",
+            "symbol": "丑"
+          }
+        ]
+      },
+      "a.partner": {
+        "category": "관성",
+        "traditional_roles": [
+          "정관",
+          "편관"
+        ],
+        "cross_ten_god": "정인",
+        "cross_is_partner_star": false,
+        "source_ids": [
+          "pair.a.reads.b"
+        ]
+      },
+      "a.palace": {
+        "branch": "申",
+        "principal_stem": "庚",
+        "ten_god": "편재",
+        "matches_other_day_master": false,
+        "source_ids": [
+          "a.day.hidden.庚",
+          "b.day.stem"
+        ]
+      },
+      "b.reads.a.palace": {
+        "perspective": "b",
+        "person": "a",
+        "pillar": "day",
+        "branch": "申",
+        "principal_stem": "庚",
+        "ten_god": "정관",
+        "source_ids": [
+          "a.day.hidden.庚",
+          "b.day.stem"
+        ]
+      },
+      "b.partner": {
+        "category": "재성",
+        "traditional_roles": [
+          "정재",
+          "편재"
+        ],
+        "cross_ten_god": "상관",
+        "cross_is_partner_star": false,
+        "source_ids": [
+          "pair.b.reads.a"
+        ]
+      },
+      "b.palace": {
+        "branch": "丑",
+        "principal_stem": "己",
+        "ten_god": "편재",
+        "matches_other_day_master": false,
+        "source_ids": [
+          "b.day.hidden.己",
+          "a.day.stem"
+        ]
+      },
+      "a.reads.b.palace": {
+        "perspective": "a",
+        "person": "b",
+        "pillar": "day",
+        "branch": "丑",
+        "principal_stem": "己",
+        "ten_god": "상관",
+        "source_ids": [
+          "b.day.hidden.己",
+          "a.day.stem"
+        ]
+      },
+      "pair.palaces": {
+        "source_ids": [
+          "a.palace",
+          "b.palace"
+        ],
+        "direct_branch_relation_ids": []
+      },
+      "couple.story.1": {
+        "work": "춘향전",
+        "summary": "춘향과 몽룡이 만나 정을 맺는다",
+        "source_status": "원전 또는 역사 자료 대조 전: 편집 초안"
+      },
+      "couple.story.2": {
+        "work": "춘향전",
+        "summary": "몽룡이 떠난 뒤 춘향이 변학도의 요구를 거절한다",
+        "source_status": "원전 또는 역사 자료 대조 전: 편집 초안"
+      },
+      "couple.story.3": {
+        "work": "춘향전",
+        "summary": "몽룡이 암행어사로 돌아와 춘향과 재회한다",
+        "source_status": "원전 또는 역사 자료 대조 전: 편집 초안"
+      }
+    },
+    "names": {
+      "a": "윤하",
+      "b": "도현"
+    },
+    "couple": {
+      "id": "c01",
+      "work": "춘향전",
+      "name": "춘향·이몽룡",
+      "source_status": "원전 또는 역사 자료 대조 전: 편집 초안",
+      "story_beats": [
+        "춘향과 몽룡이 만나 정을 맺는다",
+        "몽룡이 떠난 뒤 춘향이 변학도의 요구를 거절한다",
+        "몽룡이 암행어사로 돌아와 춘향과 재회한다"
+      ]
+    }
+  },
+  "art": {
+    "title": "/assets/c01_title.png",
+    "plain": "/assets/c01_plain.png"
+  },
+  "report": {
+    "chapters": [
+      {
+        "title": "각자가 결정을 내리는 방식",
+        "paragraphs": [
+          {
+            "heading": "윤하님이 개선점을 찾는 방식",
+            "emphasize_lead": true,
+            "text": "윤하님의 월간에는 상관(傷官)이라는 기운이 드러나요. 사주에서 상관은 익숙한 방식에 질문을 던지고 자기 생각을 표현하는 힘으로 읽어요. 월지의 중심 기운도 상관이라, 윤하님은 정해진 계획에서도 더 나은 방법을 찾으려는 모습으로 풀이할 수 있죠. 다만 도현님이 아직 준비되지 않았을 때는 좋은 제안도 갑작스러운 변경처럼 들릴 수 있어요.",
+            "evidence_ids": [
+              "a.month.stem",
+              "a.month.hidden.己"
+            ]
+          },
+          {
+            "heading": "윤하님이 지키고 싶은 기준",
+            "emphasize_lead": false,
+            "text": "윤하님의 사주에는 정관(正官)의 기운도 두 번 드러나요. 사주에서 정관은 약속과 책임, 지켜야 할 기준을 의식하는 성향에 빗대어요. 새로운 방법을 찾는 상관과 기준을 중시하는 정관이 함께 있으니, 윤하님은 무작정 바꾸기보다 납득할 만한 이유가 있을 때 움직이는 쪽으로도 해석할 수 있어요. 도현님과 계획을 세울 때 무엇은 지키고 무엇은 바꿀 수 있는지 먼저 나누면 이 두 기운을 함께 살릴 수 있겠죠.",
+            "evidence_ids": [
+              "a.year.stem",
+              "a.hour.stem"
+            ]
+          },
+          {
+            "heading": "도현님이 계획을 가늠하는 방식",
+            "emphasize_lead": false,
+            "text": "도현님의 월간에는 정재(正財)가 자리해요. 사주에서 정재는 눈앞의 자원과 시간을 꼼꼼하게 헤아리고 꾸준히 관리하는 힘으로 읽어요. 월지의 중심 기운도 정재이므로, 도현님은 좋은 제안이라도 실제로 감당할 수 있는지 확인하고 싶어 할 수 있어요. 윤하님의 새로운 생각에 바로 답하지 못할 때도 관심이 없어서라기보다 준비할 시간을 재는 모습일 수 있죠.",
+            "evidence_ids": [
+              "b.month.stem",
+              "b.month.hidden.戊"
+            ]
+          },
+          {
+            "heading": "도현님이 부담을 나누는 방식",
+            "emphasize_lead": false,
+            "text": "도현님의 연간에는 편관(偏官)이 보여요. 사주에서 편관은 외부의 요구나 압박에 대응하며 책임을 감당하는 모습과 연결해 풀이해요. 정재의 현실 감각과 함께 읽으면, 도현님이 일을 맡을 때 가능한 범위부터 분명히 하려는 모습도 떠올릴 수 있어요. 다만 도현님의 태어난 시간은 확인되지 않아, 이 해석은 확인된 기둥에 한정돼요.",
+            "evidence_ids": [
+              "b.year.stem",
+              "b.coverage"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "두 명식이 만나는 자리",
+        "paragraphs": [
+          {
+            "heading": "말을 받아 주고 생각을 꺼내는 사이",
+            "emphasize_lead": true,
+            "text": "도현님의 일간 을목이 윤하님의 일간 병화를 북돋는 방향이에요. 윤하님에게 도현님은 정인으로 읽혀, 말을 끝까지 들어 주는 태도에서 편안함을 느낄 수 있어요. 반대로 도현님에게 윤하님은 상관으로 읽혀요. 익숙한 문제를 새 각도에서 보는 모습이 처음에는 반갑다가, 의견을 바로 내야 하는 상황에서는 부담이 될 수도 있겠죠.",
+            "evidence_ids": [
+              "pair.a.reads.b",
+              "pair.b.reads.a"
+            ]
+          },
+          {
+            "heading": "두 배우자궁이 놓인 자리",
+            "emphasize_lead": false,
+            "text": "사주에서 배우자궁은 가까운 관계와 함께 사는 모습을 살피는 자리예요. 윤하님의 배우자궁은 신(申), 도현님의 배우자궁은 축(丑)인데, 두 자리 사이에는 직접적인 합이나 충이 없어요. 이는 서로 끌리지 않는다거나 갈등이 없다는 뜻이 아니에요. 각자의 배우자궁 안에 어떤 기운이 있는지, 다른 자리와는 어떻게 이어지는지를 더 살펴야 한다는 의미죠.",
+            "evidence_ids": [
+              "pair.palaces",
+              "a.palace",
+              "b.palace"
+            ]
+          },
+          {
+            "heading": "같은 편재를 서로 다르게 읽을 때",
+            "emphasize_lead": false,
+            "text": "두 사람의 배우자궁 중심에는 공교롭게도 모두 편재(偏財)가 놓여 있어요. 사주에서 편재는 현실의 기회와 자원을 폭넓게 살피는 기운으로 풀이해요. 윤하님의 신(申) 속 경금(庚)과 도현님의 축(丑) 속 기토(己)가 각각 자기 일간을 기준으로 편재인 거예요. 두 사람이 관계에서도 말뿐인 약속보다 실제로 무엇을 해 줄 수 있는지 관심을 가질 가능성을 떠올리게 하지만, 배려 방식까지 똑같다는 뜻은 아니에요.",
+            "evidence_ids": [
+              "a.day.hidden.庚",
+              "b.day.hidden.己",
+              "a.palace",
+              "b.palace"
+            ]
+          },
+          {
+            "heading": null,
+            "emphasize_lead": false,
+            "text": "배우자궁에는 중심 기운 외에도 여러 지장간(地藏干)이 숨어 있어요. 사주에서 지장간은 겉으로 보이는 한 가지 성향만으로 그 자리를 판단하지 않도록 돕는 단서예요. 윤하님의 신(申)에는 경금 외에 임수와 무토가, 도현님의 축(丑)에는 기토 외에 신금과 계수가 함께 들어 있죠. 따라서 두 사람이 편재를 공유한다고 해도 실제로 친밀함을 느끼는 방식은 다르게 나타날 수 있어요.",
+            "evidence_ids": [
+              "a.day.hidden.庚",
+              "a.day.hidden.壬",
+              "a.day.hidden.戊",
+              "b.day.hidden.己",
+              "b.day.hidden.辛",
+              "b.day.hidden.癸"
+            ]
+          },
+          {
+            "heading": null,
+            "emphasize_lead": false,
+            "text": "사주에서 십성은 어떤 기운을 누구의 일간을 기준으로 보느냐에 따라 달라지는 관계의 이름이에요. 도현님에게 윤하님의 배우자궁 중심인 경금은 정관으로 읽혀요. 윤하님에게 도현님의 배우자궁 중심인 기토는 상관으로 읽혀요. 그래서 한쪽은 역할과 책임을 분명히 하는 데, 다른 쪽은 불편함을 편하게 표현하는 데 의미를 둘 가능성을 함께 살펴볼 수 있어요.",
+            "evidence_ids": [
+              "b.reads.a.palace",
+              "a.reads.b.palace"
+            ]
+          },
+          {
+            "heading": "뜻을 맞출 수 있는 두 접점",
+            "emphasize_lead": false,
+            "text": "윤하님의 일간 병화와 도현님의 연간 신금이 한 짝을 이뤄요. 이 두 글자의 짝을 병신합(丙辛合)이라고 해요. 윤하님의 연간 계수와 도현님의 월간 무토도 이어지는데, 이 짝은 무계합(戊癸合)으로 읽어요. 의견을 모을 실마리가 여럿이라는 해석은 가능하지만 어느 쪽이 먼저 양보할지는 두 사람의 선택에 달려 있어요.",
+            "evidence_ids": [
+              "pair.천간합.a.day.b.year",
+              "pair.천간합.a.year.b.month"
+            ]
+          },
+          {
+            "heading": "같은 목표 아래 역할이 모일 때",
+            "emphasize_lead": false,
+            "text": "윤하님의 시지 사(巳)와 윤하님의 연지 유(酉)가 먼저 눈에 들어와요. 여기에 도현님의 일지 축(丑)을 더하면 사유축(巳酉丑) 삼합의 세 글자가 갖춰져요. 전통 명리에서 금의 방향으로 모이는 이 조합은 공동 목표 아래 서로 다른 역할을 맡는 모습에 빗대어 볼 만해요. 가령 함께 행사를 준비할 때 누가 손님을 맞고 누가 뒷정리를 맡을지 정하면, 각자 잘하는 일이 한곳에 모이는지 살펴볼 수 있어요.",
+            "evidence_ids": [
+              "pair.삼합.a.year.a.hour.b.day"
+            ]
+          },
+          {
+            "heading": "생활 일정을 바꿀 때 얽히는 조건",
+            "emphasize_lead": false,
+            "text": "윤하님의 월지 미(未)와 도현님의 일지 축(丑)은 서로 맞부딪히는 자리예요. 전통 명리에서는 이 조합을 축미충(丑未沖)으로 읽어요. 도현님의 명식 안에서는 연지 미(未)와 월지 술(戌)도 앞의 축(丑)과 함께 놓여요. 원국 내부의 삼형과 두 사람 사이의 긴장은 출처가 다르니, 가까운 관계에서 부담이 생기는 조건을 살필 때 따로 읽어요.",
+            "evidence_ids": [
+              "pair.육충.a.month.b.day",
+              "b.삼형.b.year.b.month.b.day"
+            ]
+          },
+          {
+            "heading": "배려의 뜻이 어긋나기 쉬운 순간",
+            "emphasize_lead": false,
+            "text": "윤하님의 연지 유(酉)와 도현님의 월지 술(戌) 사이도 살펴볼 만해요. 전통 명리에서는 이 관계를 유술해(酉戌害)라고 불러요. 예를 들어 한 사람이 피곤할까 봐 손님을 대신 돌려보냈는데, 다른 사람은 자신에게 먼저 물어 주길 바랄 수 있어요. 서로에게 배려가 어떻게 전달됐는지는 그때 원했던 게 무엇인지 물어봐야 알 수 있어요.",
+            "evidence_ids": [
+              "pair.육해.a.year.b.month"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "갈등을 풀고 약속을 이어 가는 법",
+        "paragraphs": [
+          {
+            "heading": "일정이 틀어지면 영향을 먼저 확인하기",
+            "emphasize_lead": true,
+            "text": "함께 쓰는 방을 손보기로 했다면 물건을 옮기기 전에 각자가 꼭 남기고 싶은 자리를 하나씩 정해 보세요. 윤하님은 바꾸면 편해질 점을, 도현님은 바뀌면 새로 들여야 할 수고를 먼저 말해 보면 좋아요. 둘 다 괜찮은 위치 한 곳부터 사흘만 시험해 보면, 처음의 의견 차이를 생활 속에서 확인할 수 있어요.",
+            "evidence_ids": [
+              "pair.육충.a.month.b.day"
+            ]
+          },
+          {
+            "heading": "도움을 건네기 전에 선택을 묻기",
+            "emphasize_lead": false,
+            "text": "한 사람이 가족에게 답장하기 어려워한다면 대신 답을 보내기 전에 무엇을 도울지 물어보세요. 문구를 같이 고를지, 오늘은 함께 들어 주기만 할지에 따라 필요한 도움이 달라요. 이미 도와준 뒤라면 고맙다고 말할 부분과 다음에 먼저 상의하고 싶은 부분을 한 가지씩 짚어도 좋아요.",
+            "evidence_ids": [
+              "pair.육해.a.year.b.month"
+            ]
+          },
+          {
+            "heading": "대화가 달아오르면 돌아올 시간을 정하기",
+            "emphasize_lead": false,
+            "text": "윤하님이 이야기하다 생각이 여럿 떠오르면 지금 답이 필요한 질문 하나만 남겨 보세요. 도현님은 바로 답하기 어렵다면 언제 다시 이야기할 수 있는지 시각을 말해 주세요. 그때 돌아와서는 각자가 이해한 질문을 한 문장으로 바꾸어 말한 뒤 의견을 이어 가면 좋아요.",
+            "evidence_ids": [
+              "pair.a.reads.b",
+              "pair.b.reads.a"
+            ]
+          },
+          {
+            "heading": "오래 이어 갈 일은 역할을 다시 살피기",
+            "emphasize_lead": false,
+            "text": "공과금을 함께 관리한다면 이번 달에는 한 사람이 내역을 모으고 다른 사람이 빠진 항목이 있는지 살펴보세요. 다음 달 첫 주에는 두 역할을 한번 바꿔 보세요. 무엇이 어려웠는지 서로 설명하고, 맡은 몫이 한쪽에 쏠렸다면 다음 달 분담을 다시 정할 수 있어요.",
+            "evidence_ids": [
+              "pair.삼합.a.year.a.hour.b.day"
+            ]
+          },
+          {
+            "heading": "돌아온 뒤 이어지는 이야기",
+            "emphasize_lead": false,
+            "text": "춘향전에서 춘향·이몽룡은 몽룡이 암행어사로 돌아오면서 다시 만나요. 이 대목을 두 사람의 관계에 비춰 보면, 생각할 시간을 얻는 일과 말을 건넨 사람이 답을 기다릴 수 있도록 돌아오는 일이 한 쌍이라는 점이 눈에 들어와요. 잠시 멈춘 대화에 먼저 돌아와 말을 거는 것부터 약속을 지켜 볼 수 있어요.",
+            "evidence_ids": [
+              "pair.a.reads.b",
+              "couple.story.3"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "matching": {
+    "normalized_couple_vector": {
+      "attraction": 56.75,
+      "security": 54.44,
+      "conflict": 36.0,
+      "autonomy": 64.625,
+      "expression": 35.728571428571435,
+      "growth": 84.9
+    },
+    "top_three": [
+      {
+        "id": "c01",
+        "work": "춘향전",
+        "distance_squared": 2.9456234946938777
+      },
+      {
+        "id": "c11",
+        "work": "오만과 편견",
+        "distance_squared": 3.310926351836734
+      },
+      {
+        "id": "c13",
+        "work": "오디세이아",
+        "distance_squared": 3.6677720661224495
+      }
+    ]
+  }
+}

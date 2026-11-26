@@ -10,13 +10,26 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 from unittest.mock import patch
 
-from rs_gpt import ROOT, ExperimentError, PROFILES, birth_payload, call_reservation, check_claims, fixed_case, run_report, validate
+from rs_gpt import ROOT, ExperimentError, GroundingError, PROFILES, birth_payload, call_reservation, check_claims, fixed_case, run_report, validate, validate_personalized
 from rs_gpt_budget import (
     MONTHLY_MICRO_USD, RENDER_SERVICE_ID, check_budget, init_local_budget,
     local_budget, month_start, monthly_call_limit,
 )
 from matcher import DB
 from rs_gpt_server import DIAGNOSTIC_API, EDITORIAL_SAMPLE_API, READ_API, GroundingDiagnostic, Handler
+
+
+class ReviewManuscriptTests(unittest.TestCase):
+    def test_direct_palace_clash_fixture_and_wrong_pillar(self):
+        path = ROOT / "docs/rs-gpt-review/02-haewon-jian.json"
+        sample = json.loads(path.read_text(encoding="utf-8"))
+        report, payload = sample["report"], sample["payload"]
+        self.assertEqual(validate_personalized(report, payload)["paragraphs"], 17)
+        clash = report["chapters"][1]["paragraphs"][5]
+        clash["text"] = clash["text"].replace("지안님의 일지", "지안님의 월지")
+        with self.assertRaises(GroundingError) as error:
+            validate_personalized(report, payload)
+        self.assertEqual(error.exception.diagnostic["rule"], "pillar_symbol_mismatch")
 
 
 class RsGptBudgetTests(unittest.TestCase):
@@ -274,16 +287,12 @@ class RsGptTests(unittest.TestCase):
 
     @patch("rs_gpt.urlopen")
     def test_responses_api_mock_transport_through_http(self, provider):
-        sample = json.loads((ROOT / "rs_gpt_editorial_sample.json").read_text(encoding="utf-8"))
-        manuscript = {"chapters": sample["chapters"]}
+        sample = json.loads((ROOT / "docs/rs-gpt-review/01-yunha-dohyeon.json").read_text(encoding="utf-8"))
+        manuscript = sample["report"]
         story = manuscript["chapters"][2]["paragraphs"][-1]
-        story["text"] = (
-            "춘향전에서 춘향·이몽룡은 오래 떨어져 있다가 몽룡이 암행어사로 돌아오면서 다시 만나요. "
-            "두 사람도 바로 답을 내기 어려울 때, 이야기를 다시 이어 갈 시간을 함께 정해 볼 수 있어요."
-        )
-        story["evidence_ids"].append("couple.story.3")
         draft = json.loads(json.dumps(manuscript))
-        draft["chapters"][0]["paragraphs"][0]["evidence_ids"] = ["missing.ref"]
+        incomplete = draft["chapters"][1]["paragraphs"][6]
+        incomplete["text"] = incomplete["text"].replace("윤하님의 연지 유(酉)", "유(酉)")
         provider.return_value.__enter__.return_value.read.side_effect = [
             json.dumps({
                 "status": "completed", "output": [{"type": "message", "content": [
@@ -292,10 +301,7 @@ class RsGptTests(unittest.TestCase):
                                "output_tokens": 500},
             }).encode() for candidate in (draft, manuscript)
         ]
-        births = {
-            "a": {"name": "윤하", "date": "1993-07-14", "time": "10:00", "gender": "female"},
-            "b": {"name": "도현", "date": "1991-10-22", "time": "", "gender": "male"},
-        }
+        births = sample["inputs"]
 
         def post(mode):
             return urlopen(Request(self.origin + READ_API, json.dumps({**births, "mode": mode}).encode(),
@@ -332,11 +338,12 @@ class RsGptTests(unittest.TestCase):
         sent = json.loads(body["input"])
         self.assertNotIn("1993-07-14", body["input"])
         self.assertNotIn("1991-10-22", body["input"])
-        self.assertEqual(sent["names"], sample["names"])
+        self.assertEqual(sent["names"], sample["payload"]["names"])
+        self.assertEqual({key: sent[key] for key in sample["payload"]}, sample["payload"])
         self.assertIn("민준", sent["style_references"])
         editor = json.loads(editor_request.data)
         self.assertIn("두 번째 편집자", editor["instructions"])
-        self.assertEqual(json.loads(editor["input"])["validation_failure"]["rule"], "invalid_evidence_ids")
+        self.assertEqual(json.loads(editor["input"])["validation_failure"]["rule"], "symbolic_relation_locations")
         self.assertIn((ROOT / "rs_gpt_rules_v3.md").read_text(encoding="utf-8-sig"), body["instructions"])
         chapter_three_rules = body["instructions"].split("## 3장 작품 커플 소개", 1)[1]
         for rule in ("2~3문장", "couple.story_beats", "한 사건"):
@@ -767,4 +774,3 @@ class RsGptTests(unittest.TestCase):
                 run_report("sol-61", "live", live_enabled=True)
         self.assertEqual(error.exception.code, "incomplete")
         self.assertIsInstance(error.exception.metrics["latency_ms"], int)
-

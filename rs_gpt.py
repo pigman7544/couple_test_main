@@ -51,6 +51,9 @@ style_references는 한국어 리듬과 설명 깊이의 예입니다. 예시의
 1장의 각 사람을 중심으로 확정 근거가 있는 문단을 두 개 이상 작성하세요.
 2장에서 처음 만날 때와 가까워진 뒤의 차이를 연결하고, 3장의 대화와 행동을 2장의 구체적인 관찰에서 이어 가세요.
 같은 주제로 말을 돌려 쓰거나 같은 문장을 반복하지 마세요. 구체적 생활 장면은 가능성으로 제시하세요.
+한자 조합을 이름 붙일 때는 같은 문단에서 각 글자의 소유자와 위치(예: 이름님의 월지)를 모두 밝히세요.
+2장은 생활 장면에서 무엇이 어긋날 수 있는지 보여 주세요. 3장은 그 관찰을 다른 상황에 적용할 구체적인 말과 행동을 제안하세요.
+3장에서 앞서 설명한 명리 용어를 다시 정의하거나 같은 사례를 되풀이하지 마세요.
 작품 소개 문단에는 실제로 서술한 사건의 couple.story ID 하나와 이 비유를 뒷받침하는 명리 근거를 같이 넣으세요.
 작품의 전승이나 판본 범위를 넘어 역사적 사실을 단정하지 마세요.
 unresolved에 들어 있는 기둥은 추정하지 말고 확인되지 않았다고 짧게 밝혀 주세요.
@@ -235,12 +238,17 @@ def evidence_payload(result, genders):
     return {"charts": charts, "facts": facts}
 
 
-def check_claims(prose, refs, chapter_refs, facts, people, position):
+def check_claims(prose, refs, chapter_refs, facts, people, position, *, require_relation_locations=False):
     """Match recognizable claims against typed facts and their named locations."""
     person = "|".join(re.escape(label) for label in sorted(people, key=len, reverse=True))
     owner_pattern = rf"(?P<person>{person})(?:의|은|는|이|가)?\s*"
     anchor_pattern = re.compile(owner_pattern + r"(?:(?P<pillar>[연년월일시])\s*(?P<layer>[간지주])|배우자궁)")
     owners = re.compile(owner_pattern)
+    paragraph_locations = {
+        (people[m["person"]], PILLAR_NAMES[m["pillar"]], m["layer"])
+        if m["pillar"] else (people[m["person"]], "day", "지")
+        for m in anchor_pattern.finditer(prose)
+    } if require_relation_locations else set()
     cited = [facts[ref] for ref in chapter_refs]
     previous_anchors = []
     previous_people = set()
@@ -256,10 +264,19 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
                 "삼합" if label == "合" and len(branches) == 3 else
                 "육합" if label == "合" else SYMBOLIC_KINDS.get(label, label)
             )
-            if not any(facts[ref].get("kind") == kind
-                       and sorted(s["symbol"] for s in facts[ref].get("sources", ()))
-                       == sorted(stems or branches) for ref in refs):
+            matching = [facts[ref] for ref in refs if facts[ref].get("kind") == kind
+                        and sorted(s["symbol"] for s in facts[ref].get("sources", ()))
+                        == sorted(stems or branches)]
+            if not matching:
                 reject("symbolic_relation_mismatch", sentence, notation[0])
+            layer = "간" if stems else "지"
+            if require_relation_locations and not any(
+                all((source["person"], source["pillar"], layer) in paragraph_locations
+                    or (source["person"], source["pillar"], "주") in paragraph_locations
+                    for source in fact["sources"])
+                for fact in matching
+            ):
+                reject("symbolic_relation_locations", sentence, notation[0])
         matches = list(anchor_pattern.finditer(sentence))
         locations = [(people[m["person"]], PILLAR_NAMES[m["pillar"]], m["layer"])
                      if m["pillar"] else (people[m["person"]], "day", "지") for m in matches]
@@ -305,7 +322,7 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
         locations = [location for _, location in grounded_locations]
         terms = list(TECHNICAL_TERM.finditer(sentence))
         if locations or previous_anchors:
-            terms += list(re.finditer(r"(?<![가-힣])(?:충|해)" + TERM_END, sentence))
+            terms += list(re.finditer(r"(?<![가-힣])(?:충|해)(?!\s*\(亥\))" + TERM_END, sentence))
         for match in sorted(terms, key=lambda m: m.start()):
             term = TERM_ALIASES[re.sub(r"\s+", "", match[0])]
             if term == "상관" and re.match(r"(?:이\s*)?\s*(?:없|있|없이|계수|관계)", sentence[match.end():].strip()):
@@ -393,7 +410,7 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
         previous_people = mentioned or (previous_people if not locations else set())
 
 
-def validate(manuscript, facts, names=None, couple=None):
+def validate(manuscript, facts, names=None, couple=None, *, require_relation_locations=False):
     """Check output structure, citations, and selected explicit technical terms."""
     if not isinstance(manuscript, dict) or set(manuscript) != {"chapters"}:
         raise GroundingError("structure", "report_fields")
@@ -452,7 +469,8 @@ def validate(manuscript, facts, names=None, couple=None):
                 not isinstance(ref, str) or ref not in facts for ref in refs
             ):
                 raise GroundingError("evidence", "invalid_evidence_ids", evidence_ids=refs, **position)
-            check_claims(prose, refs, chapter_refs, facts, people, position)
+            check_claims(prose, refs, chapter_refs, facts, people, position,
+                         require_relation_locations=require_relation_locations)
             if names:
                 sentences = [sentence for sentence in SENTENCE_END.split(prose) if sentence.strip()]
                 if not 2 <= len(sentences) <= 4 or "\n" in prose or "\r" in prose:
@@ -563,7 +581,7 @@ def extract_report(response):
 def validate_personalized(manuscript, payload):
     names, facts = payload["names"], payload["facts"]
     couple = payload["couple"]
-    audit = validate(manuscript, facts, names, couple)
+    audit = validate(manuscript, facts, names, couple, require_relation_locations=True)
     sentences_seen = set()
     for index, (chapter, minimum) in enumerate(zip(manuscript["chapters"], (550, 950, 650)), 1):
         paragraphs = chapter["paragraphs"]
