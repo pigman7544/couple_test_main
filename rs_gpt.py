@@ -324,7 +324,8 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
                     palace_claim = bool(
                         palace_ref in chapter_refs and has_principal
                         and ("배우자궁" in prefix or "본기" in segment)
-                        and (not nearest or nearest[:2] == (other, "day"))
+                        and (not nearest or nearest[:2] == (other, "day")
+                             or "배우자궁" in prefix[:perspective.start()])
                     )
                     ref = palace_ref if palace_claim else f"pair.{viewer}.reads.{other}"
                     matching = [facts[ref]] if ref in chapter_refs and facts[ref].get("ten_god") == term else []
