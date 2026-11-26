@@ -355,6 +355,21 @@ class RsGptTests(unittest.TestCase):
         with self.assertRaises(ExperimentError):
             validate(manuscript, facts, {**names, "a": "다른이름"}, couple)
 
+    def test_two_cross_palace_perspectives_in_one_sentence(self):
+        payload = birth_payload(
+            dict(year=1993, month=7, day=14, hour=10),
+            dict(year=1991, month=10, day=22, hour=None),
+            {"a": "female", "b": "male"},
+        )
+        facts = payload["facts"]
+        refs = ["b.reads.a.palace", "a.reads.b.palace"]
+        people = {"윤하님": "a", "도현님": "b"}
+        claim = ("도현님에게 윤하님의 배우자궁 중심인 경금은 정관으로, "
+                 "윤하님에게 도현님의 기토는 상관으로 읽혀요.")
+        check_claims(claim, refs, refs, facts, people, {})
+        with self.assertRaises(ExperimentError):
+            check_claims(claim.replace("상관으로", "정관으로"), refs, refs, facts, people, {})
+
     def test_editorial_guardrails_reject_shallow_or_unsupported_text(self):
         sample = (ROOT / "rs_gpt_editorial_sample.json").read_text(encoding="utf-8")
         facts = birth_payload(
@@ -364,10 +379,10 @@ class RsGptTests(unittest.TestCase):
         )["facts"]
         for chapter, paragraph, find, replace, rule in (
             (0, 0, None, None, "paragraph_count"),
-            (0, 0, ". 좋은 의도로", ". 한 문장을 늘려 봅니다. 좋은 의도로", "sentence_count"),
-            (1, 0, "두 일간은", "배우자궁의 지장간과 일간은", "technical_term_density"),
+            (0, 0, "사주에서 상관은", "사주에서 상관은 판단의 근거 없이 단정합니다. 사주에서 상관은", "sentence_count"),
+            (1, 0, "두 사람의 일간은", "배우자궁의 지장간과 일간은", "technical_term_density"),
             (1, 5, "丙辛合", "乙庚合", "symbolic_relation_mismatch"),
-            (1, 6, "巳酉丑 삼합", "申酉丑 삼합", "symbolic_relation_mismatch"),
+            (1, 6, "巳酉丑) 삼합", "申酉丑) 삼합", "symbolic_relation_mismatch"),
             (1, 1, "충이 없어요", "충이 있어요", "scoped_fact_mismatch"),
             (2, 4, "기약해요.", "기약해요. 헤어지는 순간이에요. 서로를 기억하기로 해요.",
              "selected_couple_length"),
