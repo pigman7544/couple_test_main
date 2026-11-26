@@ -401,7 +401,7 @@ class RsGptTests(unittest.TestCase):
         )["facts"]
         for chapter, paragraph, find, replace, rule in (
             (0, 0, None, None, "paragraph_count"),
-            (0, 0, "사주에서 상관은", "사주에서 상관은 판단의 근거 없이 단정합니다. 사주에서 상관은", "sentence_count"),
+            (0, 0, "사주에서 상관은", "첫 번째 추가 문장이에요. 두 번째 추가 문장이에요. 사주에서 상관은", "sentence_count"),
             (1, 0, "두 사람의 일간은", "배우자궁의 지장간과 일간은", "technical_term_density"),
             (1, 5, "丙辛合", "乙庚合", "symbolic_relation_mismatch"),
             (1, 6, "巳酉丑) 삼합", "申酉丑) 삼합", "symbolic_relation_mismatch"),
