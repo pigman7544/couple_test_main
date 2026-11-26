@@ -21,9 +21,13 @@ LOGGER = logging.getLogger(__name__)
 
 def monthly_call_limit():
     if (os.environ.get("RENDER") == "true"
-            and os.environ.get("RENDER_SERVICE_ID") == RENDER_SERVICE_ID
-            and os.environ.get("RS_GPT_MONTHLY_CALLS") == "5"):
-        return 5
+            and os.environ.get("RENDER_SERVICE_ID") == RENDER_SERVICE_ID):
+        configured = os.environ.get("RS_GPT_MONTHLY_CALLS")
+        november_2026 = datetime(2026, 11, 1, tzinfo=timezone.utc)
+        if configured == "9" and month_start(datetime.now(timezone.utc)) == november_2026:
+            return 9
+        if configured in ("5", "9"):
+            return 5
     return MONTHLY_CALLS
 
 
