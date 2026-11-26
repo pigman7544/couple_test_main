@@ -328,7 +328,7 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
                     shared_palace_context = (
                         "배우자궁" in prefix[:perspective.start()]
                         and any(people[m["person"]] == other
-                                for m in anchor_pattern.finditer(segment))
+                                for m in owners.finditer(segment))
                     )
                     palace_claim = bool(
                         palace_ref in chapter_refs and has_principal
