@@ -1,0 +1,28 @@
+name: RS GPT experimental regression
+
+on:
+  push:
+    branches:
+      - experiment/rs-gpt-render-live-20261123
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      RS_GPT_LIVE: "0"
+      NO_PROXY: "localhost,127.0.0.1"
+      no_proxy: "localhost,127.0.0.1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Run free regression suite
+        run: python -m unittest -v test_v67 test_compatibility_v14 test_rs_preview test_rs_gpt
