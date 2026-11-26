@@ -370,6 +370,24 @@ class RsGptTests(unittest.TestCase):
         with self.assertRaises(ExperimentError):
             check_claims(claim.replace("상관으로", "정관으로"), refs, refs, facts, people, {})
 
+    def test_cross_palace_context_does_not_leak_into_plain_stem_reading(self):
+        payload = birth_payload(
+            dict(year=1993, month=7, day=14, hour=10),
+            dict(year=1991, month=10, day=22, hour=None),
+            {"a": "female", "b": "male"},
+        )
+        facts = payload["facts"]
+        people = {"윤하님": "a", "도현님": "b"}
+        refs = ["b.reads.a.palace", "a.reads.b.palace",
+                "pair.a.reads.b", "pair.b.reads.a"]
+        # A named counterpart alone must not convert a plain day-stem
+        # reading into a palace reading.
+        claim = ("윤하님의 배우자궁은 관계를 살피는 자리예요. "
+                 "도현님에게 윤하님의 배우자궁 중심인 경금은 정관이에요. "
+                 "윤하님에게 도현님의 일간 을목은 정인이에요.")
+        with self.assertRaises(ExperimentError):
+            check_claims(claim, refs, refs, facts, people, {})
+
     def test_editorial_guardrails_reject_shallow_or_unsupported_text(self):
         sample = (ROOT / "rs_gpt_editorial_sample.json").read_text(encoding="utf-8")
         facts = birth_payload(
