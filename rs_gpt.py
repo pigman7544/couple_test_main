@@ -312,9 +312,21 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
                 if perspective:
                     viewer = people[perspective["person"]]
                     other = "b" if viewer == "a" else "a"
-                    palace_claim = "본기" in prefix and nearest and nearest[:2] == (other, "day")
-                    ref = (f"{viewer}.reads.{other}.palace" if palace_claim
-                           else f"pair.{viewer}.reads.{other}")
+                    # Scope the claim to the latest viewer phrase, not earlier
+                    # perspectives in the same sentence.
+                    segment = sentence[perspective.end():match.start()]
+                    palace_ref = f"{viewer}.reads.{other}.palace"
+                    palace_fact = facts.get(palace_ref, {})
+                    principal = palace_fact.get("principal_stem")
+                    principal_forms = ({principal, STEM_NAMES.get(principal, "")}
+                                       if principal else set())
+                    has_principal = any(symbol and symbol in segment for symbol in principal_forms)
+                    palace_claim = bool(
+                        palace_ref in chapter_refs and has_principal
+                        and ("배우자궁" in prefix or "본기" in segment)
+                        and (not nearest or nearest[:2] == (other, "day"))
+                    )
+                    ref = palace_ref if palace_claim else f"pair.{viewer}.reads.{other}"
                     matching = [facts[ref]] if ref in chapter_refs and facts[ref].get("ten_god") == term else []
                 else:
                     if nearest is None and not mentioned and len(previous_anchors) == 1:
