@@ -63,7 +63,8 @@ th,td{border:1px solid var(--line);padding:.35rem;overflow-wrap:anywhere}
 <button type="button" id="preset">고정 검토 명식 입력</button>
 <button type="button" id="preview">명식 확인 · 무료 미리보기</button>
 <button type="button" id="editorial-sample">윤하·도현 검토 원고 보기</button>
-<button id="generate" disabled>리포트 생성</button>
+<button id="generate" disabled>전체 리포트 생성 · 무료</button>
+<button type="button" id="live-generate" disabled>GPT 실시간 집필</button>
 </form>
 <button type="button" id="ledger" hidden>호출 원장 확인</button>
 <button type="button" id="diagnostic" hidden>최근 검증 실패 원고 확인</button>
@@ -84,6 +85,7 @@ const login = byId('login'), form = byId('report'), status = byId('status');
 const reading = byId('reading'), generate = byId('generate');
 let token = '';
 let liveEnabled = false;
+const liveGenerate = byId('live-generate');
 let reviewCommit = null;
 let reviewReport = null;
 const reviewExport = byId('review-export');
@@ -134,7 +136,8 @@ login.addEventListener('submit', async event => {
     byId('ledger').hidden = !data.ledger_check;
     byId('diagnostic').hidden = false;
     liveEnabled = data.live_enabled === true;
-    generate.disabled = !liveEnabled;
+    generate.disabled = false;
+    liveGenerate.disabled = !liveEnabled;
     const blockers = Array.isArray(data.live_blockers) ? data.live_blockers : [];
     status.textContent = liveEnabled ? '두 사람의 정보를 입력해 주세요.' :
       blockers.map(code => liveBlockerMessages[code]).filter(Boolean).join(' ') ||
@@ -259,8 +262,8 @@ function showCouplePreview(data) {
   append(section, 'p', data.couple.work);
   const link = document.createElement('a');
   link.className = 'report-link';
-  link.href = liveEnabled ? '#generate' : '#status';
-  link.textContent = liveEnabled ? '전체 리포트 보기' : '전체 리포트 · 실시간 집필 비활성화';
+  link.href = '#generate';
+  link.textContent = '전체 리포트 생성';
   section.append(link);
   reading.append(section);
 }
@@ -334,7 +337,8 @@ function show(data) {
   if (data.chapters.length === 3) {
     reviewReport = {
       metadata: {export_version: 1, commit: reviewCommit,
-        source: data.editorial_sample ? 'editorial_sample' : 'generated_report',
+        source: data.editorial_sample ? 'editorial_sample' :
+          data.mode === 'local' ? 'local_report' : 'generated_report',
         model: data.metrics?.response_model || data.model || null},
       names: data.names, charts: data.charts, symbols: data.symbols,
       chapters: data.chapters, couple: data.couple, art: data.art,
@@ -418,6 +422,7 @@ editorialSample.addEventListener('click', async () => {
   editorialSample.disabled = true;
   preview.disabled = true;
   generate.disabled = true;
+  liveGenerate.disabled = true;
   try {
     const data = await call(token, null, endpoint + '/editorial-sample');
     clearReview();
@@ -429,7 +434,8 @@ editorialSample.addEventListener('click', async () => {
   } finally {
     editorialSample.disabled = false;
     preview.disabled = false;
-    generate.disabled = !liveEnabled;
+    generate.disabled = false;
+    liveGenerate.disabled = !liveEnabled;
   }
 });
 async function readReport(mode) {
@@ -437,26 +443,30 @@ async function readReport(mode) {
   preview.disabled = true;
   editorialSample.disabled = true;
   generate.disabled = true;
+  liveGenerate.disabled = true;
   clearReview();
-  status.textContent = mode === 'live' ? 'OpenAI가 원고를 작성하고 있습니다.' : '명식을 계산하고 있습니다.';
+  status.textContent = mode === 'preview' ? '명식을 계산하고 있습니다.' : '원고를 작성하고 있습니다.';
   const body = Object.fromEntries(['a', 'b'].map(id => [id, Object.fromEntries(
     ['name', 'date', 'time', 'gender'].map(field => [field, byId(id + '-' + field).value])
   )]));
   try {
     show(await call(token, {...body, mode}));
-    status.textContent = mode === 'live' ? '원고 작성이 완료됐습니다.' : '명식 계산이 완료됐습니다.';
+    status.textContent = mode === 'preview' ? '명식 계산이 완료됐습니다.' : '원고 작성이 완료됐습니다.';
+    if (mode !== 'preview') reading.scrollIntoView({block: 'start'});
   } catch (error) {
     status.textContent = error.message;
   } finally {
-    generate.disabled = !liveEnabled;
+    generate.disabled = false;
+    liveGenerate.disabled = !liveEnabled;
     preview.disabled = false;
     editorialSample.disabled = false;
   }
 }
 preview.addEventListener('click', () => readReport('preview'));
+liveGenerate.addEventListener('click', () => readReport('live'));
 form.addEventListener('submit', event => {
   event.preventDefault();
-  if (liveEnabled) readReport('live');
+  readReport('local');
 });
 </script>
 </body>

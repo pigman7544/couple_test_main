@@ -16,6 +16,7 @@ from rs_gpt import CHART_SYMBOLS, ROOT, PROFILES, ExperimentError, birth_payload
 from rs_gpt_budget import (
     RENDER_SERVICE_ID, init_local_budget, local_budget, render_budget, verify_render_ledger,
 )
+from rs_local_report import compose_report
 from server import match_inputs
 
 LOOPBACK = ("127.0.0.1", "localhost")
@@ -241,7 +242,7 @@ class Handler(BaseHTTPRequestHandler):
                 if set(data) - {"a", "b", "mode"} or not {"a", "b"} <= set(data):
                     raise ValueError
                 mode = data.get("mode", "live")
-                if mode not in ("live", "preview"):
+                if mode not in ("live", "preview", "local"):
                     raise ValueError
                 if mode == "live" and self.live_blockers():
                     raise ExperimentError("disabled", "실시간 집필 설정이 준비되지 않았습니다.", 503)
@@ -256,7 +257,9 @@ class Handler(BaseHTTPRequestHandler):
                 if art and not all((ROOT / path.lstrip("/")).is_file() for path in art.values()):
                     art = None
                 result = {**payload, "art": art, "symbols": CHART_SYMBOLS}
-                if mode == "live":
+                if mode == "local":
+                    result.update(compose_report(payload, couple))
+                elif mode == "live":
                     budget = render_budget if os.environ.get("RENDER") == "true" else local_budget
                     payload["couple"] = {**payload["couple"],
                                          "story_beats": [beat["summary"] for beat in couple["story_beats"]]}

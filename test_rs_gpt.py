@@ -90,6 +90,123 @@ class RsGptTests(unittest.TestCase):
         return urlopen(Request(self.origin + "/api/rs-gpt/admin",
                                json.dumps(births or self.births).encode(), headers), timeout=5)
 
+    @patch("rs_gpt.request_openai", side_effect=AssertionError("provider called"))
+    def test_local_manuscripts_across_40_birth_pairs(self, provider):
+        from datetime import date, timedelta
+        from random import Random
+        from rs_gpt import SENTENCE_END
+        from matcher import DB
+
+        stems = "甲乙丙丁戊己庚辛壬癸"
+        principals = dict(zip("子丑寅卯辰巳午未申酉戌亥", "癸己甲乙戊丙丁己庚辛戊壬"))
+        gods = ("비견 겁재", "식신 상관", "편재 정재", "편관 정관", "편인 정인")
+
+        def role(viewer, target):
+            a, b = stems.index(viewer), stems.index(target)
+            return gods[(b // 2 - a // 2) % 5].split()[(a + b) % 2]
+
+        def person(day, time, name, gender):
+            return {"date": day.isoformat(), "time": time, "name": name, "gender": gender}
+
+        rng = Random(39)
+        dates = [
+            (date(1992, 3, 18), date(1992, 4, 30), "", ""),
+            (date(2000, 2, 29), date(2000, 2, 29), "", ""),
+            (date(1992, 3, 18), date(1992, 3, 18), "02:00", "20:00"),
+            (date(1960, 2, 4), date(2002, 10, 1), "", "12:00"),
+            (date(2024, 2, 4), date(2024, 2, 4), "05:00", "23:59"),
+            (date(2024, 2, 4), date(2024, 2, 4), "", ""),
+            (date(1000, 3, 1), date(2050, 12, 31), "00:00", "23:59"),
+        ]
+        start = date(1960, 1, 1)
+        for i in range(33):
+            dates.append((start + timedelta(days=rng.randrange(23000)),
+                          start + timedelta(days=rng.randrange(23000)),
+                          "" if i % 3 == 0 else f"{rng.randrange(24):02d}:30",
+                          "" if i % 5 == 0 else f"{rng.randrange(24):02d}:00"))
+        signatures, advice_signatures = set(), set()
+        cross_roles, palace_roles, relations, works = set(), set(), set(), set()
+        for index, (a, b, ta, tb) in enumerate(dates):
+            with self.subTest(index=index, dates=(a, b), times=(ta, tb)), patch.dict(
+                "os.environ", {"RS_GPT_ADMIN_TOKEN": self.token, "RS_GPT_LIVE": "0"}
+            ):
+                request = {"mode": "local", "a": person(a, ta, "가람", "male"),
+                           "b": person(b, tb, "가람" if index == 1 else "나래",
+                                       ("female", "other", "")[index % 3])}
+                with self.post_admin(self.token, request) as response:
+                    data = json.load(response)
+                self.assertEqual(data["mode"], "local")
+                facts, charts, chapters = data["facts"], data["charts"], data["chapters"]
+                for owner, other, clock in (("a", "b", ta), ("b", "a", tb)):
+                    chart = charts[owner]
+                    master = chart["day_master"]
+                    other_master = charts[other]["day_master"]
+                    branch = chart["pillars"]["day"][1]
+                    palace = facts[f"{owner}.palace"]
+                    self.assertEqual(palace["principal_stem"], principals[branch])
+                    self.assertEqual(palace["ten_god"], role(master, principals[branch]))
+                    self.assertEqual(facts[f"{other}.reads.{owner}.palace"]["ten_god"],
+                                     role(other_master, principals[branch]))
+                    cross = role(master, other_master)
+                    self.assertEqual(facts[f"pair.{owner}.reads.{other}"]["ten_god"], cross)
+                    if f"{owner}.partner" in facts:
+                        expected = {"male": ("편재", "정재"), "female": ("편관", "정관")}
+                        self.assertEqual(facts[f"{owner}.partner"]["cross_is_partner_star"],
+                                         cross in expected[request[owner]["gender"]])
+                    else:
+                        self.assertNotIn(request[owner]["gender"], {"male", "female"})
+                    self.assertEqual(chart["pillars"]["hour"] is None, not clock)
+                    cross_roles.add(cross)
+                    palace_roles.add(palace["ten_god"])
+                for fact in facts.values():
+                    for source in fact.get("sources", ()):
+                        pillar = charts[source["person"]]["pillars"][source["pillar"]]
+                        self.assertIsNotNone(pillar)
+                        self.assertEqual(source["symbol"], pillar[fact["layer"] == "branch"])
+                direct = facts["pair.palaces"]["direct_branch_relation_ids"]
+                relations.update(facts[ref]["kind"] for ref in direct)
+                branch_pair = {chart["pillars"]["day"][1] for chart in charts.values()}
+                for domain, pairs in (("육합", ("子丑", "寅亥", "卯戌", "辰酉", "巳申", "午未")),
+                                      ("육충", ("子午", "丑未", "寅申", "卯酉", "辰戌", "巳亥"))):
+                    self.assertEqual(any(facts[ref]["kind"] == domain for ref in direct),
+                                     any(branch_pair == set(pair) for pair in pairs))
+                lengths = [sum(len(p["text"]) for p in c["paragraphs"]) for c in chapters]
+                self.assertGreaterEqual(sum(lengths), 2200)
+                self.assertGreater(lengths[1], max(lengths[0], lengths[2]))
+                for chapter in chapters:
+                    self.assertEqual(sum(p["emphasize_lead"] for p in chapter["paragraphs"]), 1)
+                    for p in chapter["paragraphs"]:
+                        self.assertTrue(set(p["evidence_ids"]) <= facts.keys())
+                        self.assertNotRegex(p["text"], r"쉽게 말하면|운명적|반드시|확실히|무조건|합화|ⓐ|ⓑ")
+                        self.assertTrue(2 <= sum(bool(s.strip()) for s in SENTENCE_END.split(p["text"])) <= 4)
+                        for owner in "ab":
+                            if not request[owner]["time"]:
+                                self.assertFalse(any(ref.startswith(f"{owner}.hour.") for ref in p["evidence_ids"]))
+                couple = next(c for c in DB if c["id"] == data["couple"]["id"])
+                story = next(p["text"] for p in chapters[2]["paragraphs"] if couple["work"] in p["text"])
+                self.assertIn(couple["name"], story)
+                self.assertTrue(any(beat["summary"].rstrip(".。") in story for beat in couple["story_beats"]))
+                works.add(couple["id"])
+                def without_names(paragraphs):
+                    return tuple(p["text"].replace("가람님(가)", "").replace("가람님(나)", "")
+                                 .replace("가람님", "").replace("나래님", "") for p in paragraphs)
+
+                signatures.add(without_names(chapters[1]["paragraphs"]))
+                advice_signatures.add(without_names(chapters[2]["paragraphs"][:3]))
+                if index == 1:
+                    self.assertIn("가람님(가)", chapters[0]["paragraphs"][0]["text"])
+                    self.assertIn("가람님(나)", " ".join(p["text"] for p in chapters[0]["paragraphs"]))
+                if index == 5:
+                    self.assertIn("month", charts["a"]["unresolved"])
+                    self.assertFalse(any(ref.startswith("a.month.") for ref in facts))
+        self.assertEqual(len(signatures), 40)
+        self.assertGreaterEqual(len(advice_signatures), 35)
+        self.assertEqual(len(cross_roles), 10)
+        self.assertEqual(len(palace_roles), 10)
+        self.assertTrue({"육합", "육충"} <= relations)
+        self.assertGreaterEqual(len(works), 5)
+        provider.assert_not_called()
+
     def test_fixed_calculation(self):
         data, baseline = fixed_case()
         self.assertEqual([len(c["paragraphs"]) for c in baseline], [6, 12, 3])

@@ -270,7 +270,9 @@ def check_claims(prose, refs, chapter_refs, facts, people, position):
                 rf"([{''.join(STEM_NAMES)}{''.join(BRANCH_NAMES)}]{{1,2}}|"
                 rf"[{readings}](?:[목화토금수{readings}])?{TERM_END})", tail
             )
-            if value:
+            # A role such as 정인 can also match the two-syllable reading
+            # pattern. Leave the role to the scoped ten-god check below.
+            if value and not TECHNICAL_TERM.match(tail, value.start(1)):
                 hanja = re.match(r"\s*\(([甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]{1,2})\)", tail[value.end():])
                 if value[1] not in expected or (hanja and hanja[1] not in expected):
                     reject("pillar_symbol_mismatch", sentence, value[0] + (hanja[0] if hanja else ""))
