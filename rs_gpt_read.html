@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 둘의 이야기</title>
+<style>
+:root{color-scheme:light;font:17px/1.65 system-ui,sans-serif;color:#33282a;background:#faf4ed}
+main{max-width:760px;margin:auto;padding:2rem 1rem 4rem}
+h1,h2,h3{line-height:1.25}
+header p,small{color:#694e54}
+.people{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+fieldset,article{margin:0;padding:1rem 1.25rem;border:1px solid #dac8bc;border-radius:12px;background:#fffdf9;min-width:0}
+legend{font-weight:700}
+label{display:block;margin:.4rem 0}
+input,select,button{font:inherit;padding:.35rem .6rem;border:1px solid #987b7c;border-radius:6px;color:inherit;background:white}
+input,select{display:block;box-sizing:border-box;width:100%}
+button{margin:.9rem .4rem 0 0;cursor:pointer}
+#generate{color:white;background:#853a4a}
+button:disabled{opacity:.55;cursor:default}
+article{margin-top:1rem}
+img{display:block;max-width:min(100%,420px);height:auto;margin:1rem auto}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>우리 둘의 이야기</h1>
+<p>두 사람의 명식을 바탕으로 관계를 돌아보는 연연의 궁합 리포트입니다.</p>
+</header>
+<form id="births">
+  <div id="people" class="people"></div>
+  <p><small>양력과 한국 출생시간을 기준으로 계산합니다. 시간을 모르면 비워 주세요. 전체 리포트 작성에는 이름 또는 별명과 계산된 명식이 OpenAI에 전달됩니다.</small></p>
+  <button id="preview" type="button">무료 미리보기</button>
+  <button id="generate" type="submit" disabled>GPT 전체 리포트 작성</button>
+</form>
+<p id="status" role="status"></p>
+<section id="result" aria-label="리포트"></section>
+</main>
+<script>
+const endpoint = '/api/rs-gpt/read';
+const byId = id => document.getElementById(id);
+const fields = [
+  ['name', '이름 또는 별명', 'text'], ['date', '생년월일', 'date'],
+  ['time', '출생시간', 'time'], ['gender', '성별', 'select']
+];
+const form = byId('births');
+const people = ['a', 'b'];
+const result = byId('result');
+const statusLine = byId('status');
+const preview = byId('preview');
+const generate = byId('generate');
+let enabled = false;
+let pending = false;
+
+function append(parent, tag, value) {
+  const node = document.createElement(tag);
+  node.textContent = value;
+  parent.append(node);
+  return node;
+}
+
+for (const [index, person] of people.entries()) {
+  const group = append(byId('people'), 'fieldset', '');
+  append(group, 'legend', index ? '두 번째 사람' : '첫 번째 사람');
+  for (const [key, label, type] of fields) {
+    const wrapper = append(group, 'label', label);
+    const input = append(wrapper, type === 'select' ? 'select' : 'input', '');
+    input.id = person + '-' + key;
+    if (type === 'select') {
+      for (const [value, title] of [['', '선택 안 함'], ['female', '여성'], ['male', '남성'], ['other', '기타']]) {
+        append(input, 'option', title).value = value;
+      }
+    } else {
+      input.type = type;
+      input.required = key !== 'time';
+      if (key === 'name') input.maxLength = 32;
+      if (key === 'date') {
+        input.min = '1000-01-01';
+        input.max = '2050-12-31';
+      }
+    }
+  }
+}
+
+function show(data) {
+  result.replaceChildren();
+  const chart = append(result, 'article', '');
+  append(chart, 'h2', '두 사람의 명식');
+  for (const person of people) {
+    const keys = [['hour','시주'], ['day','일주'], ['month','월주'], ['year','연주']];
+    const pillars = keys.map(([key, title]) => title + ' ' + (data.charts[person].pillars[key] || '미상'));
+    append(chart, 'p', data.names[person] + '님 · ' + pillars.join(' · '));
+  }
+  if (!data.chapters) append(chart, 'p', '닮은 커플 · 『' + data.couple.work + '』의 ' + data.couple.name);
+  for (const [index, chapter] of (data.chapters || []).entries()) {
+    const section = append(result, 'article', '');
+    append(section, 'h2', (index + 1) + '장. ' + chapter.title);
+    for (const paragraph of chapter.paragraphs) {
+      if (paragraph.heading) append(section, 'h3', paragraph.heading);
+      const lead = paragraph.emphasize_lead && paragraph.text.match(/^.+?[.!?。！？](?=\s|$)/u);
+      const prose = append(section, 'p', lead ? '' : paragraph.text);
+      if (lead) {
+        append(prose, 'strong', lead[0]);
+        prose.append(paragraph.text.slice(lead[0].length));
+      }
+    }
+  }
+  if (data.art) {
+    const card = append(result, 'img', '');
+    card.src = data.art.title;
+    card.alt = data.couple.name + ' 일러스트';
+  }
+}
+
+async function read(mode) {
+  if (pending || !form.reportValidity()) return;
+  const input = Object.fromEntries(people.map(person => [person, Object.fromEntries(
+    fields.map(([key]) => [key, byId(person + '-' + key).value])
+  )]));
+  pending = true;
+  preview.disabled = generate.disabled = true;
+  if (mode === 'preview') result.replaceChildren();
+  statusLine.textContent = mode === 'live' ? '원고를 작성하고 검토하고 있습니다.' : '명식을 계산하고 있습니다.';
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({...input, mode})
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      statusLine.textContent = data.error || '요청을 처리하지 못했습니다.';
+      return;
+    }
+    show(data);
+    statusLine.textContent = mode === 'live' ? '전체 리포트가 준비됐습니다.' : '무료 미리보기가 준비됐습니다.';
+  } catch {
+    statusLine.textContent = '응답을 받지 못했습니다. 잠시 뒤 다시 시도해 주세요.';
+  } finally {
+    pending = false;
+    preview.disabled = false;
+    generate.disabled = !enabled;
+  }
+}
+
+preview.addEventListener('click', () => read('preview'));
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  if (!generate.disabled) read('live');
+});
+fetch(endpoint).then(response => response.json()).then(data => {
+  enabled = data.report_enabled === true;
+  generate.disabled = !enabled || pending;
+  if (!enabled && !statusLine.textContent) statusLine.textContent = '지금은 무료 미리보기를 이용할 수 있습니다.';
+}).catch(() => {
+  if (!statusLine.textContent) statusLine.textContent = '집필 상태를 확인하지 못했습니다.';
+});
+</script>
+</body>
+</html>

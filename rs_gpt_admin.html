@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>연연 · 실시간 궁합 리포트</title>
+<style>
+:root{color-scheme:light;--paper:#f7f4ee;--ink:#292520;--red:#823a34;--line:#ded5c9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:1rem/1.65 system-ui,sans-serif}
+main{max-width:800px;margin:auto;padding:clamp(20px,5vw,60px)}
+h1,h2{font-family:Batang,serif;color:var(--red)}
+h1{font-size:clamp(1.75rem,5vw,2.8rem);margin-bottom:.25em}
+form,article{background:#fffdf8;border:1px solid var(--line);padding:clamp(16px,4vw,30px);margin:20px 0;border-radius:9px}
+label{display:block;margin:.55rem 0}
+input,select,button{font:inherit;min-height:42px;border:1px solid #807165;border-radius:5px;padding:6px 10px}
+input,select{display:block;width:100%;background:white}
+button{cursor:pointer;background:var(--red);color:white;margin-top:.65rem}
+button:disabled{opacity:.55;cursor:default}
+.people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+fieldset{min-width:0;border:1px solid var(--line)}
+pre,small{white-space:pre-wrap;overflow-wrap:anywhere}
+summary{cursor:pointer}
+table{border-collapse:collapse;width:100%;text-align:center;margin:1rem 0}
+th,td{border:1px solid var(--line);padding:.35rem;overflow-wrap:anywhere}
+.chart caption{text-align:left;font-weight:700;margin-bottom:.4rem}
+.chart .symbol{display:block;font-size:1.25rem;line-height:1.35}
+.chart .reading{display:block;font-size:.8rem;white-space:nowrap}
+.chart .wood{background:#e5f0e5;color:#244d36}
+.chart .fire{background:#f8e5df;color:#7e302d}
+.chart .earth{background:#f5ebd5;color:#644411}
+.chart .metal{background:#eeedf4;color:#454260}
+.chart .water{background:#e3edf6;color:#254563}
+.chart .day-master{box-shadow:inset 0 0 0 2px currentColor;font-weight:700}
+.couple-preview{background:#fff;color:#3d3040}
+.couple-preview h2{font:700 clamp(1.65rem,5vw,2.65rem)/1.3 system-ui,sans-serif;color:inherit;margin:.5em 0}
+.couple-preview img,.couple-cards img{display:block;width:100%;height:auto;border-radius:1rem}
+.couple-preview img{box-shadow:0 12px 30px #78546026}
+.report-link{display:block;border:1px solid #edd8e1;border-radius:1rem;margin-top:1.5rem;padding:1rem;text-align:center;color:#70405e}
+.couple-cards{border-top:1px solid #e5d8df;margin-top:2rem;padding-top:1rem}
+.card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(8px,4vw,26px)}
+.card-grid figure{margin:0;text-align:center}
+.card-grid a{display:inline-block;padding:.5rem;color:#70405e}
+.manuscript h2{font-size:clamp(1.35rem,4vw,1.85rem);line-height:1.4;margin:.1rem 0 1.4rem;word-break:keep-all;overflow-wrap:anywhere}
+.manuscript .subheading{font-size:1.08rem;line-height:1.45;margin:1.65rem 0 .6rem;color:#69352f}
+.manuscript .prose{line-height:1.8;margin:0 0 .95rem;word-break:keep-all;overflow-wrap:anywhere}
+.manuscript .prose strong{color:#69352f}
+[hidden]{display:none!important}
+@media(max-width:520px){.people{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<h1>연연 실시간 궁합 리포트</h1>
+<p>두 사람의 명식을 계산해 GPT-6.2 Sol이 리포트 1~3장을 집필합니다.</p>
+<form id="login">
+<label>실험 관리자 토큰<input id="token" type="password" autocomplete="off" required></label>
+<button>인증</button>
+</form>
+<form id="report" hidden>
+<div class="people" id="people"></div>
+<p>양력 생년월일을 입력해 주세요. 출생시간을 모르면 비워 두세요.</p>
+<button type="button" id="preset">고정 검토 명식 입력</button>
+<button type="button" id="preview">명식 확인 · 무료 미리보기</button>
+<button type="button" id="editorial-sample">윤하·도현 검토 원고 보기</button>
+<button type="button" id="generate" disabled>오프라인 검토 원고</button>
+<button id="live-generate" disabled>GPT 전체 리포트 작성</button>
+</form>
+<button type="button" id="ledger" hidden>호출 원장 확인</button>
+<button type="button" id="diagnostic" hidden>최근 검증 실패 원고 확인</button>
+<section id="diagnostic-reading" aria-label="관리자 검증 진단"></section>
+<p id="status" role="status" aria-live="polite"></p>
+<fieldset id="review-export" hidden>
+<legend>전체 검수 원고 내보내기</legend>
+<button type="button" data-format="html">HTML 다운로드</button>
+<button type="button" data-format="json">JSON 다운로드</button>
+<p id="export-status" role="status"></p>
+</fieldset>
+<section id="reading" aria-label="생성된 리포트"></section>
+</main>
+<script>
+const byId = id => document.getElementById(id);
+const endpoint = '/api/rs-gpt/admin';
+const login = byId('login'), form = byId('report'), status = byId('status');
+const reading = byId('reading'), generate = byId('generate');
+let token = '';
+let liveEnabled = false;
+const liveGenerate = byId('live-generate');
+let reviewCommit = null;
+let reviewReport = null;
+const reviewExport = byId('review-export');
+const liveBlockerMessages = {
+  live_off: '실시간 집필이 꺼져 있습니다.',
+  provider_key_missing: 'OpenAI API 키가 설정되지 않았습니다.',
+  wrong_render_service: '지정된 Render 실험 서버에서만 집필할 수 있습니다.',
+  render_ledger_missing: 'Render 호출 원장 연결 설정이 없습니다.',
+  local_ledger_required: '로컬 실험에는 루프백 주소와 호출 원장이 필요합니다.',
+};
+for (const [id, label] of [['a', '첫째'], ['b', '둘째']]) {
+  const fields = document.createElement('fieldset');
+  fields.innerHTML = `<legend>${label}</legend>
+    <label>이름<input id="${id}-name" maxlength="32" required></label>
+    <label>생년월일<input type="date" id="${id}-date" min="1000-01-01" max="2050-12-31" required></label>
+    <label>출생시간<input type="time" id="${id}-time"></label>
+    <label>성별<select id="${id}-gender"><option value="">응답하지 않음</option>
+    <option value="female">여성</option><option value="male">남성</option></select></label>`;
+  byId('people').append(fields);
+}
+async function call(secret, body, path = endpoint) {
+  const headers = {Authorization: 'Bearer ' + secret};
+  const options = {headers, cache: 'no-store', redirect: 'error'};
+  if (body) {
+    headers['Content-Type'] = 'application/json';
+    Object.assign(options, {method: 'POST', body: JSON.stringify(body)});
+  }
+  const response = await fetch(path, options);
+  if (!response.headers.get('content-type')?.includes('application/json')) {
+    throw new Error('실험 서버에 연결하지 못했습니다.');
+  }
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || '실험 요청에 실패했습니다.');
+  return data;
+}
+login.addEventListener('submit', async event => {
+  event.preventDefault();
+  const button = login.querySelector('button');
+  button.disabled = true;
+  try {
+    const value = byId('token').value.trim();
+    const data = await call(value);
+    token = value;
+    reviewCommit = data.review_commit;
+    byId('token').value = '';
+    login.hidden = true;
+    form.hidden = false;
+    byId('ledger').hidden = !data.ledger_check;
+    byId('diagnostic').hidden = false;
+    liveEnabled = data.live_enabled === true;
+    generate.disabled = false;
+    liveGenerate.disabled = !liveEnabled;
+    const blockers = Array.isArray(data.live_blockers) ? data.live_blockers : [];
+    status.textContent = liveEnabled ? '두 사람의 정보를 입력해 주세요.' :
+      blockers.map(code => liveBlockerMessages[code]).filter(Boolean).join(' ') ||
+      '실시간 집필 설정이 준비되지 않았습니다.';
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+byId('ledger').addEventListener('click', async event => {
+  const button = event.currentTarget;
+  button.disabled = true;
+  try {
+    const data = await call(token, null, endpoint + '/ledger');
+    status.textContent = `원장 연결·권한·동시 실행 잠금 확인 완료. 이번 달 ${data.monthly_reservations}/${data.monthly_call_limit}회 · 남은 횟수 ${data.monthly_calls_remaining}회 · 월 예약액 $${(data.monthly_reserved_micro_usd / 1e6).toFixed(6)} / $${(data.monthly_budget_micro_usd / 1e6).toFixed(2)}`;
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+byId('preset').addEventListener('click', () => {
+  for (const [id, date, gender] of [['a', '1992-03-18', 'male'], ['b', '1992-04-30', 'female']]) {
+    byId(id + '-name').value = id === 'a' ? '민준' : '서연';
+    byId(id + '-date').value = date;
+    byId(id + '-time').value = '';
+    byId(id + '-gender').value = gender;
+  }
+});
+function append(parent, tag, value) {
+  const item = document.createElement(tag);
+  item.textContent = value;
+  parent.append(item);
+  return item;
+}
+const diagnosticReading = byId('diagnostic-reading');
+let diagnosticExpiry;
+function clearDiagnostic() {
+  clearTimeout(diagnosticExpiry);
+  diagnosticReading.replaceChildren();
+}
+window.addEventListener('pagehide', clearDiagnostic);
+byId('diagnostic').addEventListener('click', async event => {
+  const button = event.currentTarget;
+  button.disabled = true;
+  clearDiagnostic();
+  const started = performance.now();
+  try {
+    const data = await call(token, null, endpoint + '/diagnostic');
+    const remaining = data.remaining_ms - (performance.now() - started);
+    if (remaining <= 0) throw new Error('검증 실패 원고의 보관 시간이 끝났습니다.');
+    const categories = {structure: '원고 형식', expression: '문체·표현', evidence: '근거 대조'};
+    append(diagnosticReading, 'h2', '검증 실패 · 관리자 전용');
+    append(diagnosticReading, 'p', categories[data.failure.category]);
+    if (data.failure.category === 'evidence') {
+      append(diagnosticReading, 'p', '실패 문장과 계산 근거를 대조해 실제 사실 오류인지 확인해 주세요.');
+    }
+    append(diagnosticReading, 'pre', JSON.stringify(data.failure, null, 2));
+    const original = document.createElement('details');
+    append(original, 'summary', '원고 1~3장 원문');
+    append(original, 'pre', data.original);
+    diagnosticReading.append(original);
+    const reference = document.createElement('details');
+    append(reference, 'summary', '계산 명식·십성·합충형해 및 선정 작품');
+    append(reference, 'pre', JSON.stringify(data.reference, null, 2));
+    diagnosticReading.append(reference);
+    diagnosticExpiry = setTimeout(clearDiagnostic, remaining);
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+function showCharts(section, data) {
+  const columns = ['hour', 'day', 'month', 'year'];
+  for (const id of ['a', 'b']) {
+    const chart = data.charts[id];
+    const table = document.createElement('table');
+    table.className = 'chart';
+    append(table, 'caption', data.names[id] + '님의 사주팔자');
+    const header = table.createTHead().insertRow();
+    for (const label of ['구분', '시주', '일주', '월주', '연주']) append(header, 'th', label).scope = 'col';
+    const body = table.createTBody();
+    for (const [index, label] of ['천간', '지지'].entries()) {
+      const row = body.insertRow();
+      append(row, 'th', label).scope = 'row';
+      for (const pillar of columns) {
+        const symbols = chart.pillars[pillar];
+        const symbol = chart.unresolved.includes(pillar) ? null : symbols?.[index];
+        const cell = append(row, 'td', '');
+        if (!symbol) {
+          cell.textContent = '미상';
+          continue;
+        }
+        const info = data.symbols[symbol];
+        const isDayMaster = pillar === 'day' && index === 0;
+        cell.classList.add(info.element);
+        if (isDayMaster) cell.classList.add('day-master');
+        append(cell, 'span', symbol).className = 'symbol';
+        append(cell, 'span', info.reading + ' · ' + info.element_name).className = 'reading';
+        if (isDayMaster) append(cell, 'span', '일간').className = 'reading';
+      }
+    }
+    section.append(table);
+  }
+}
+function cardImage(path, label) {
+  const img = document.createElement('img');
+  img.src = path;
+  img.alt = label;
+  return img;
+}
+function showCouplePreview(data) {
+  const section = document.createElement('article');
+  section.className = 'couple-preview';
+  append(section, 'small', '緣硏 · 연연　 OUR TWO STORIES ♡');
+  append(section, 'p', '우리 둘의 이야기 · 무료 미리보기');
+  append(section, 'h2', `두 사람의 관계는 ${data.couple.name}을 닮았어요.`);
+  if (data.art) section.append(cardImage(data.art.title, data.couple.name + ' 공유용 카드'));
+  else append(section, 'p', '이 작품의 커플 일러스트는 아직 지원하지 않아요.');
+  append(section, 'p', data.couple.work);
+  const link = document.createElement('a');
+  link.className = 'report-link';
+  link.href = '#generate';
+  link.textContent = '전체 리포트 생성';
+  section.append(link);
+  reading.append(section);
+}
+function showCoupleCards(section, data) {
+  const cards = document.createElement('div');
+  cards.className = 'couple-cards';
+  append(cards, 'h3', '우리 둘의 커플 카드 ♡');
+  append(cards, 'p', data.couple.name);
+  if (!data.art) {
+    append(cards, 'p', '이 작품의 커플 일러스트는 아직 지원하지 않아요.');
+  } else {
+    const grid = document.createElement('div');
+    grid.className = 'card-grid';
+    for (const [key, label] of [['title', '글자 있는 카드 · 공유용'], ['plain', '글자 없는 카드 · 프로필용']]) {
+      const figure = document.createElement('figure');
+      figure.append(cardImage(data.art[key], data.couple.name + ' ' + label));
+      append(figure, 'figcaption', label);
+      const save = document.createElement('a');
+      save.href = data.art[key];
+      save.download = '';
+      save.textContent = '이미지 저장';
+      figure.append(save);
+      grid.append(figure);
+    }
+    cards.append(grid);
+  }
+  section.append(cards);
+}
+function show(data) {
+  const metrics = data.metrics, usage = metrics?.usage;
+  if (metrics) {
+    append(reading, 'p', [metrics.response_model || data.model,
+      metrics.latency_ms === null ? '' : (metrics.latency_ms / 1000).toFixed(2) + '초',
+      usage ? `입력 ${usage.input_tokens} · 캐시 입력 ${usage.cached_input_tokens} · 출력 ${usage.output_tokens} 토큰` : '',
+      usage ? '추정 비용 $' + usage.estimated_usd : ''].filter(Boolean).join(' / '));
+  }
+  if (!data.chapters) {
+    showCouplePreview(data);
+    const section = document.createElement('article');
+    showCharts(section, data);
+    if (!liveEnabled) showCoupleCards(section, data);
+    reading.append(section);
+    return;
+  }
+  for (const [index, chapter] of data.chapters.entries()) {
+    const section = document.createElement('article');
+    section.className = 'manuscript';
+    const title = chapter.title.trim().replace(/^(?:[1-3]\s*장\s*\.\s*)+/u, '');
+    append(section, 'h2', `${index + 1}장. ${title}`);
+    if (index === 0) showCharts(section, data);
+    for (const paragraph of chapter.paragraphs) {
+      if (paragraph.heading) {
+        append(section, 'h3', paragraph.heading);
+        section.lastElementChild.className = 'subheading';
+      }
+      if (!paragraph.text) continue;
+      const prose = document.createElement('p');
+      prose.className = 'prose';
+      const lead = paragraph.emphasize_lead && paragraph.text.match(/^.+?[.!?。！？](?=\s|$)/u);
+      if (lead) {
+        append(prose, 'strong', lead[0]);
+        prose.append(paragraph.text.slice(lead[0].length));
+      } else {
+        prose.textContent = paragraph.text;
+      }
+      section.append(prose);
+    }
+    if (index === 2) showCoupleCards(section, data);
+    reading.append(section);
+  }
+  if (data.chapters.length === 3) {
+    reviewReport = {
+      metadata: {export_version: 1, commit: reviewCommit,
+        source: data.editorial_sample ? 'editorial_sample' :
+          data.mode === 'local' ? 'local_report' : 'generated_report',
+        model: data.metrics?.response_model || data.model || null},
+      names: data.names, charts: data.charts, symbols: data.symbols,
+      chapters: data.chapters, couple: data.couple, art: data.art,
+    };
+    reviewExport.hidden = false;
+  }
+  if (data.editorial_sample) return;
+  const details = document.createElement('details');
+  append(details, 'summary', '계산된 명식과 근거');
+  append(details, 'pre', JSON.stringify({명식: data.charts, 근거: data.facts}, null, 2));
+  reading.append(details);
+}
+function clearReview() {
+  reading.replaceChildren();
+  reviewReport = null;
+  reviewExport.hidden = true;
+  byId('export-status').textContent = '';
+}
+
+async function reviewHtml(report) {
+  const doc = document.implementation.createHTMLDocument('연연 전체 검수 원고');
+  doc.documentElement.lang = 'ko';
+  const charset = doc.createElement('meta');
+  charset.setAttribute('charset', 'utf-8');
+  doc.head.prepend(charset);
+  doc.head.append(document.querySelector('meta[name="viewport"]').cloneNode());
+  doc.head.append(document.querySelector('style').cloneNode(true));
+  const main = doc.createElement('main');
+  append(main, 'h1', '연연 전체 검수 원고');
+  const metadata = report.metadata;
+  append(main, 'p', [
+    metadata.source === 'editorial_sample' ? '윤하·도현 가상 사례 · 오프라인 샘플' : '생성 원고',
+    '내보내기 v' + metadata.export_version, '커밋 ' + (metadata.commit || '확인 불가'),
+    metadata.model,
+  ].filter(Boolean).join(' · '));
+  const articles = [...reading.querySelectorAll('.manuscript')].map(article => article.cloneNode(true));
+  main.append(...articles);
+  const liveImages = [...reading.querySelectorAll('.manuscript img')];
+  await Promise.all([...main.querySelectorAll('figure img')].map(async (image, index) => {
+    const original = liveImages[index];
+    await original.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = original.naturalWidth;
+    canvas.height = original.naturalHeight;
+    canvas.getContext('2d').drawImage(original, 0, 0);
+    image.src = canvas.toDataURL('image/png');
+    image.closest('figure').querySelector('a[download]').remove();
+  }));
+  doc.body.append(main);
+  return '<!doctype html>\n' + doc.documentElement.outerHTML;
+}
+
+for (const button of reviewExport.querySelectorAll('button')) {
+  button.addEventListener('click', async () => {
+    if (!reviewReport) return;
+    const report = reviewReport;
+    const format = button.dataset.format;
+    button.disabled = true;
+    byId('export-status').textContent = '';
+    try {
+      const content = format === 'html' ? await reviewHtml(report) : JSON.stringify(report, null, 2);
+      const type = format === 'html' ? 'text/html' : 'application/json';
+      const url = URL.createObjectURL(new Blob([content], {type: type + ';charset=utf-8'}));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'rs-gpt-review.' + format;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      if (reviewReport === report) {
+        byId('export-status').textContent = '원고 파일을 만들지 못했습니다. 카드가 표시된 뒤 다시 시도해 주세요.';
+      }
+    } finally {
+      button.disabled = false;
+    }
+  });
+}
+const preview = byId('preview');
+const editorialSample = byId('editorial-sample');
+editorialSample.addEventListener('click', async () => {
+  editorialSample.disabled = true;
+  preview.disabled = true;
+  generate.disabled = true;
+  liveGenerate.disabled = true;
+  try {
+    const data = await call(token, null, endpoint + '/editorial-sample');
+    clearReview();
+    show(data);
+    status.textContent = '가상 사례의 편집 기준 원고입니다. GPT를 호출하지 않았습니다.';
+    reading.scrollIntoView({block: 'start'});
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    editorialSample.disabled = false;
+    preview.disabled = false;
+    generate.disabled = false;
+    liveGenerate.disabled = !liveEnabled;
+  }
+});
+async function readReport(mode) {
+  if (!form.reportValidity()) return;
+  preview.disabled = true;
+  editorialSample.disabled = true;
+  generate.disabled = true;
+  liveGenerate.disabled = true;
+  clearReview();
+  status.textContent = mode === 'preview' ? '명식을 계산하고 있습니다.' : '원고를 작성하고 있습니다.';
+  const body = Object.fromEntries(['a', 'b'].map(id => [id, Object.fromEntries(
+    ['name', 'date', 'time', 'gender'].map(field => [field, byId(id + '-' + field).value])
+  )]));
+  try {
+    show(await call(token, {...body, mode}));
+    status.textContent = mode === 'preview' ? '명식 계산이 완료됐습니다.' : '원고 작성이 완료됐습니다.';
+    if (mode !== 'preview') reading.scrollIntoView({block: 'start'});
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    generate.disabled = false;
+    liveGenerate.disabled = !liveEnabled;
+    preview.disabled = false;
+    editorialSample.disabled = false;
+  }
+}
+preview.addEventListener('click', () => readReport('preview'));
+generate.addEventListener('click', () => readReport('local'));
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  if (liveEnabled) readReport('live');
+});
+</script>
+</body>
+</html>

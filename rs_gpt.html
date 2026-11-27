@@ -39,6 +39,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere}
 <h1>연연 RS 원고 비교</h1>
 <p>고정 명식 · 첫째 남 1992-03-18 · 둘째 여 1992-04-30 · 양력 · 두 사람 모두 출생시각 미상</p>
 <p id="scope" class="meta"></p>
+<p><a href="/rs-gpt/read">내 궁합 리포트</a></p>
 </header>
 <div class="toolbar">
 <label for="mode">실행 방식</label>
@@ -59,6 +60,9 @@ const scope = byId('scope'), status = byId('status'), compare = byId('compare');
 const download = byId('download'), mode = byId('mode');
 let baseline = [], profiles = {}, results = [];
 
+function chapterTitle(chapter) {
+  return chapter.title.trim().replace(/^(?:[1-3]\s*장\s*[.．:：-]?\s*)+/u, '');
+}
 function append(parent, tag, value, className) {
   const node = document.createElement(tag);
   node.textContent = value;
@@ -82,10 +86,18 @@ function render(node, title, meta, chapters = []) {
   append(node, 'h2', title);
   if (meta) append(node, 'p', meta, 'meta');
   chapters.forEach((chapter, index) => {
-    append(node, 'h3', `${index + 1}장. ${chapter.title}`);
+    append(node, 'h3', `${index + 1}장. ${chapterTitle(chapter)}`);
     chapter.paragraphs.forEach(paragraph => {
       if (paragraph.heading) append(node, 'h4', paragraph.heading);
+      if (!paragraph.text) return;
       append(node, 'p', paragraph.text);
+      const lead = paragraph.emphasize_lead && paragraph.text.match(/^.+?[.!?。！？](?=\s|$)/u);
+      if (lead) {
+        const prose = node.lastElementChild;
+        prose.textContent = '';
+        append(prose, 'strong', lead[0]);
+        prose.append(paragraph.text.slice(lead[0].length));
+      }
       if (paragraph.evidence_ids?.length) append(node, 'small', paragraph.evidence_ids.join(' · '));
     });
   });
@@ -140,7 +152,7 @@ download.addEventListener('click', () => {
   for (const doc of documents) {
     lines.push(`## ${doc.title}`, '', doc.meta || '', '');
     (doc.chapters || []).forEach((chapter, index) => {
-      lines.push(`### ${index + 1}장. ${chapter.title}`, '');
+      lines.push(`### ${index + 1}장. ${chapterTitle(chapter)}`, '');
       for (const p of chapter.paragraphs) {
         if (p.heading) lines.push(`#### ${p.heading}`, '');
         lines.push(p.text, '', `근거 · ${p.evidence_ids.join(' · ')}`, '');
