@@ -25,4 +25,4 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
       - name: Run free regression suite
-        run: python -m unittest -v test_v67 test_compatibility_v14 test_rs_preview test_rs_gpt
+        run: python -m unittest -v test_v67 test_compatibility_v14 test_rs_preview test_rs_gpt test_rs_gpt_quality

@@ -289,6 +289,10 @@ class RsGptTests(unittest.TestCase):
     def test_responses_api_mock_transport_through_http(self, provider):
         sample = json.loads((ROOT / "docs/rs-gpt-review/01-yunha-dohyeon.json").read_text(encoding="utf-8"))
         manuscript = sample["report"]
+        for chapter, section_starts in zip(manuscript["chapters"], ({0, 2}, {0, 2, 5}, {0, 2, 4})):
+            for index, paragraph in enumerate(chapter["paragraphs"]):
+                if index not in section_starts:
+                    paragraph["heading"] = None
         story = manuscript["chapters"][2]["paragraphs"][-1]
         draft = json.loads(json.dumps(manuscript))
         incomplete = draft["chapters"][1]["paragraphs"][6]
@@ -340,7 +344,8 @@ class RsGptTests(unittest.TestCase):
         self.assertNotIn("1991-10-22", body["input"])
         self.assertEqual(sent["names"], sample["payload"]["names"])
         self.assertEqual({key: sent[key] for key in sample["payload"]}, sample["payload"])
-        self.assertIn("민준", sent["style_references"])
+        self.assertNotIn("style_references", sent)
+        self.assertEqual(sent["relationship_focus"]["primary_ids"], ["pair.a.reads.b", "pair.b.reads.a"])
         editor = json.loads(editor_request.data)
         self.assertIn("두 번째 편집자", editor["instructions"])
         self.assertEqual(json.loads(editor["input"])["validation_failure"]["rule"], "symbolic_relation_locations")
