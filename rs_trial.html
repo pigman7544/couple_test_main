@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 둘의 이야기 · 연연</title>
+<style>
+:root{color-scheme:light;font:16px/1.75 system-ui,sans-serif;color:#382d3b;background:#faf7f6;--accent:#763b59;--line:#e6d7e0}
+*{box-sizing:border-box}
+body{margin:0}
+main{max-width:790px;margin:auto;padding:clamp(1.25rem,5vw,3.5rem) clamp(1rem,5vw,2.5rem) 4rem}
+header{margin-bottom:1.8rem}
+.brand{font-size:.82rem;letter-spacing:.12em;color:var(--accent);font-weight:750}
+h1,h2,h3{line-height:1.3}
+h1{font-size:clamp(2rem,6vw,3.1rem);margin:.55rem 0}
+h2{font-size:clamp(1.45rem,4vw,2rem)}
+h3{color:var(--accent);margin:1.65rem 0 .55rem}
+p{margin:.65rem 0 1.1rem;overflow-wrap:anywhere}
+.help,figcaption{color:#655461;font-size:.9rem}
+.people,.charts,.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+fieldset,article{min-width:0;background:white;border:1px solid var(--line);border-radius:1rem;padding:clamp(1rem,4vw,2.1rem);margin:0}
+article{margin-top:1rem}
+legend{font-weight:700;color:var(--accent)}
+label{display:block;margin:.4rem 0 .85rem;font-weight:600}
+input,select,button,.save{font:inherit;color:inherit;background:#fff;border:1px solid #bc9faf;border-radius:.6rem;padding:.5rem .75rem;min-height:44px}
+input,select{display:block;width:100%;min-width:0;margin-top:.2rem}
+button,.save{cursor:pointer;font-weight:700}
+.primary{color:#fff;background:var(--accent);border-color:var(--accent)}
+button:disabled{opacity:.55;cursor:default}
+.actions,nav{display:flex;flex-wrap:wrap;gap:.65rem;margin:.75rem 0;align-items:center}
+[aria-current="step"]{background:#f2e7ed;border-color:var(--accent);color:var(--accent)}
+table{width:100%;border-collapse:collapse;table-layout:fixed;text-align:center;margin-bottom:1rem;font-size:.83rem}
+caption{text-align:left;font-weight:700;font-size:1rem}
+th,td{border:1px solid var(--line);padding:.35rem .15rem}
+th,.day{background:#f7edf2}
+.day strong{color:var(--accent)}
+.characters{display:block;font-size:1.35rem;font-weight:700}
+.charts{margin:1rem 0 1.5rem}
+.example,.chapter-part{border-top:1px solid var(--line);padding-top:.25rem;margin-top:1.2rem}
+img{display:block;width:100%;height:auto;border-radius:.75rem}
+.preview-card{max-width:450px;margin:1.25rem auto}
+figure{margin:0}
+.save{display:block;text-align:center;margin-top:.6rem;text-decoration:none}
+#result[hidden],form[hidden]{display:none}
+:focus-visible{outline:3px solid #a94472;outline-offset:3px}
+@media (max-width:550px){.people,.charts,.cards{grid-template-columns:1fr}.cards figure{max-width:330px;margin:auto}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="brand">緣硏 · 연연</div>
+<h1>우리 둘의 이야기</h1>
+<p>두 사람의 명식에서 관계의 특징을 살펴보고, 일상에 적용할 대화를 읽어 보세요.</p>
+</header>
+<form id="births">
+  <div id="people" class="people"></div>
+  <p class="help">양력과 한국 출생시간을 기준으로 계산해요. 시간을 모르면 비워 두세요. 이 무료 체험은 입력에 맞춘 규칙 기반 리포트를 제공해요.</p>
+  <div class="actions">
+    <button id="preview" class="primary" type="submit">무료 미리보기</button>
+    <button id="sample" type="button">예시 입력하기</button>
+  </div>
+</form>
+<p id="status" role="status"></p>
+<section id="result" aria-label="리포트" hidden></section>
+</main>
+<script>
+const endpoint = '/api/rs-gpt/try';
+const byId = id => document.getElementById(id);
+const people = ['a','b'];
+const fields = [
+  ['name','이름 또는 별명','text'], ['date','생년월일','date'],
+  ['time','출생시간 (선택)','time'], ['gender','성별 (선택)','select']
+];
+const pillars = [['hour','시주'],['day','일주'],['month','월주'],['year','연주']];
+const form = byId('births');
+const result = byId('result');
+const status = byId('status');
+let pending = false;
+let previewInput;
+let gptEnabled = false;
+
+function append(parent, tag, value = '', className = '') {
+  const node = document.createElement(tag);
+  node.textContent = value;
+  if (className) node.className = className;
+  parent.append(node);
+  return node;
+}
+
+function button(parent, label, action, primary = false) {
+  const control = append(parent, 'button', label, primary ? 'primary' : '');
+  control.type = 'button';
+  control.addEventListener('click', action);
+  return control;
+}
+
+for (const [index, person] of people.entries()) {
+  const group = append(byId('people'), 'fieldset');
+  append(group, 'legend', index ? '두 번째 사람' : '첫 번째 사람');
+  for (const [key, label, type] of fields) {
+    const wrapper = append(group, 'label', label);
+    const input = append(wrapper, type === 'select' ? 'select' : 'input');
+    input.id = person + '-' + key;
+    if (type === 'select') {
+      for (const [value, title] of [['','선택 안 함'],['female','여성'],['male','남성'],['other','기타']]) {
+        append(input, 'option', title).value = value;
+      }
+    } else {
+      input.type = type;
+      input.required = key === 'name' || key === 'date';
+      if (key === 'name') input.maxLength = 32;
+      if (key === 'date') {
+        input.min = '1000-01-01';
+        input.max = '2050-12-31';
+      }
+    }
+  }
+}
+
+function chart(parent, data) {
+  const grid = append(parent, 'div', '', 'charts');
+  for (const person of people) {
+    const table = append(grid, 'table');
+    append(table, 'caption', data.names[person] + '님의 명식');
+    const headers = append(append(table, 'thead'), 'tr');
+    for (const [, label] of pillars) append(headers, 'th', label).scope = 'col';
+    const body = append(table, 'tbody');
+    for (const index of [0,1]) {
+      const row = append(body, 'tr');
+      for (const [key] of pillars) {
+        const symbol = data.charts[person].pillars[key]?.[index];
+        const cell = append(row, 'td', '', key === 'day' && index === 0 ? 'day' : '');
+        if (!symbol) {
+          cell.textContent = '미상';
+          continue;
+        }
+        const detail = data.symbols[symbol];
+        append(cell, 'strong', symbol, 'characters');
+        append(cell, 'span', detail.reading + ' · ' + detail.element_name);
+      }
+    }
+  }
+}
+
+function picture(parent, source, alt, className = '') {
+  const image = append(parent, 'img', '', className);
+  image.src = source;
+  image.alt = alt;
+}
+
+function cards(parent, data) {
+  append(parent, 'h3', '우리 둘의 커플 카드');
+  if (!data.art) {
+    append(parent, 'p', '이 커플의 확정 카드는 준비 중이에요.', 'help');
+    return;
+  }
+  const grid = append(parent, 'div', '', 'cards');
+  for (const [variant, label] of [['title','공유용'],['plain','프로필용']]) {
+    const figure = append(grid, 'figure');
+    picture(figure, data.art[variant], data.couple.name + ' ' + label + ' 카드');
+    const save = append(figure, 'a', label + ' 카드 저장', 'save');
+    save.href = data.art[variant];
+    save.download = data.art[variant].split('/').at(-1);
+  }
+}
+
+function paragraphs(parent, items, headings = true) {
+  for (const item of items) {
+    const block = item.couple ? append(parent, 'section', '', 'example') : parent;
+    if (headings && item.heading) append(block, 'h3', item.heading);
+    const lead = item.emphasize_lead && item.text.match(/^.+?[.!?。！？](?=\s|$)/u);
+    const prose = append(block, 'p', lead ? '' : item.text);
+    if (lead) {
+      append(prose, 'strong', lead[0]);
+      prose.append(item.text.slice(lead[0].length));
+    }
+  }
+}
+
+function focusHeading(heading) {
+  heading.tabIndex = -1;
+  heading.focus();
+}
+
+function reset() {
+  result.hidden = true;
+  result.replaceChildren();
+  form.hidden = false;
+  status.textContent = '';
+  byId('a-name').focus();
+}
+
+function showPreview(data) {
+  result.replaceChildren();
+  result.hidden = false;
+  const panel = append(result, 'article');
+  const heading = append(panel, 'h2', data.names.a + '님과 ' + data.names.b + '님의 무료 미리보기');
+  chart(panel, data);
+  append(panel, 'p', '닮은 커플 · 『' + data.couple.work + '』의 ' + data.couple.name);
+  if (data.art) picture(panel, data.art.title, data.couple.name + ' 공유용 카드', 'preview-card');
+  const actions = append(panel, 'div', '', 'actions');
+  button(actions, '전체 리포트 무료로 읽기', () => read('local'), true);
+  if (gptEnabled) {
+    button(actions, 'GPT 전체 리포트 작성', () => read('live'));
+    append(panel, 'p', 'GPT 작성 버튼을 누르면 이름 또는 별명과 계산된 명식을 OpenAI에 보내요.', 'help');
+  }
+  button(actions, '입력 수정', reset);
+  focusHeading(heading);
+}
+
+function showReport(data) {
+  result.replaceChildren();
+  const navigation = append(result, 'nav');
+  navigation.setAttribute('aria-label', '리포트 장 선택');
+  const panel = append(result, 'article');
+  const titles = ['명식','궁합','조언'];
+  const tabs = titles.map((title, index) => button(navigation, (index + 1) + '장 ' + title, () => showChapter(index)));
+  button(navigation, '다시 분석', reset);
+
+  function showChapter(index) {
+    for (const [tabIndex, tab] of tabs.entries()) {
+      if (tabIndex === index) tab.setAttribute('aria-current', 'step');
+      else tab.removeAttribute('aria-current');
+    }
+    panel.replaceChildren();
+    const chapter = data.chapters[index];
+    const heading = append(panel, 'h2', (index + 1) + '장. ' + chapter.title);
+    if (index === 0) chart(panel, data);
+    if (chapter.sections) {
+      for (const section of chapter.sections) {
+        const block = append(panel, 'section', '', 'chapter-part');
+        append(block, 'h3', section.title);
+        paragraphs(block, section.paragraphs, false);
+      }
+      cards(panel, data);
+    } else {
+      paragraphs(panel, chapter.paragraphs);
+    }
+    const actions = append(panel, 'div', '', 'actions');
+    if (index > 0) button(actions, '이전 장', () => showChapter(index - 1));
+    if (index < 2) button(actions, '다음 장', () => showChapter(index + 1), true);
+    focusHeading(heading);
+  }
+
+  showChapter(0);
+}
+
+async function read(mode) {
+  if (pending || (mode === 'preview' && !form.reportValidity())) return;
+  const input = mode !== 'preview' ? previewInput : Object.fromEntries(people.map(person => [
+    person, Object.fromEntries(fields.map(([key]) => [key, byId(person + '-' + key).value]))
+  ]));
+  pending = true;
+  const controls = document.querySelectorAll('button');
+  for (const control of controls) control.disabled = true;
+  status.textContent = mode === 'live' ? 'GPT가 원고를 작성하고 검토하고 있어요.' : '두 사람의 명식을 계산하고 있어요.';
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({...input, mode})
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      status.textContent = data.error || '요청을 처리하지 못했어요.';
+      return;
+    }
+    form.hidden = true;
+    if (mode === 'preview') {
+      previewInput = input;
+      showPreview(data);
+    } else {
+      showReport(data);
+    }
+    status.textContent = mode === 'preview' ? '무료 미리보기가 준비됐어요.' : '전체 리포트가 준비됐어요.';
+  } catch {
+    status.textContent = '응답을 받지 못했어요. 잠시 뒤 다시 시도해 주세요.';
+  } finally {
+    pending = false;
+    for (const control of controls) control.disabled = false;
+  }
+}
+
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  read('preview');
+});
+fetch(endpoint).then(response => response.json()).then(data => {
+  gptEnabled = data.gpt_enabled === true;
+}).catch(() => {});
+byId('sample').addEventListener('click', () => {
+  const sample = [['윤하','1985-01-11','16:00','female'],['도현','1992-04-30','01:00','male']];
+  for (const [index, person] of people.entries()) {
+    for (const [field, [key]] of fields.entries()) byId(person + '-' + key).value = sample[index][field];
+  }
+  byId('preview').focus();
+});
+</script>
+</body>
+</html>

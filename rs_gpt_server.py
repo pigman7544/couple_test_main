@@ -17,6 +17,7 @@ from rs_gpt_budget import (
     RENDER_SERVICE_ID, init_local_budget, local_budget, render_budget, verify_render_ledger,
 )
 from rs_local_report import compose_report
+from rs_trial import format_trial
 from server import match_inputs
 
 LOOPBACK = ("127.0.0.1", "localhost")
@@ -24,6 +25,8 @@ ADMIN_PATH = "/rs-gpt/admin"
 ADMIN_API = "/api/rs-gpt/admin"
 READ_PATH = "/rs-gpt/read"
 READ_API = "/api/rs-gpt/read"
+TRIAL_PATH = "/try"
+TRIAL_API = "/api/rs-gpt/try"
 LEDGER_API = "/api/rs-gpt/admin/ledger"
 DIAGNOSTIC_API = "/api/rs-gpt/admin/diagnostic"
 EDITORIAL_SAMPLE_API = "/api/rs-gpt/admin/editorial-sample"
@@ -177,9 +180,16 @@ class Handler(BaseHTTPRequestHandler):
     def public_ready(self):
         return os.environ.get("RS_GPT_PUBLIC") == "1" and not self.live_blockers()
 
+    def trial_live_ready(self):
+        return os.environ.get("RS_GPT_TRIAL_LIVE") == "1" and self.public_ready()
+
     def do_GET(self):
         if self.path in ("/", "/rs-gpt"):
             self.write_response(200, (ROOT / "rs_gpt.html").read_bytes(), "text/html")
+        elif self.path == TRIAL_PATH:
+            self.write_response(200, (ROOT / "rs_trial.html").read_bytes(), "text/html")
+        elif self.path == TRIAL_API:
+            self.json_response(200, {"gpt_enabled": self.trial_live_ready()})
         elif self.path == ADMIN_PATH:
             self.write_response(200, (ROOT / "rs_gpt_admin.html").read_bytes(), "text/html")
         elif self.path == READ_PATH:
@@ -233,7 +243,7 @@ class Handler(BaseHTTPRequestHandler):
             self.json_response(404, {"error": "페이지를 찾을 수 없습니다."})
 
     def do_POST(self):
-        if self.path not in ("/api/rs-gpt", ADMIN_API, READ_API):
+        if self.path not in ("/api/rs-gpt", ADMIN_API, READ_API, TRIAL_API):
             self.json_response(404, {"error": "페이지를 찾을 수 없습니다."})
             return
         try:
@@ -247,21 +257,31 @@ class Handler(BaseHTTPRequestHandler):
             data = json.loads(self.rfile.read(size))
             if not isinstance(data, dict):
                 raise ValueError
-            if self.path in (ADMIN_API, READ_API):
+            if self.path in (ADMIN_API, READ_API, TRIAL_API):
                 if set(data) - {"a", "b", "mode"} or not {"a", "b"} <= set(data):
                     raise ValueError
-                mode = data.get("mode", "live")
-                if mode not in (("live", "preview", "local") if self.path == ADMIN_API else ("live", "preview")):
+                trial = self.path == TRIAL_API
+                mode = data.get("mode", "preview" if trial else "live")
+                allowed = ("preview", "live")
+                if self.path == ADMIN_API or trial:
+                    allowed += ("local",)
+                if mode not in allowed:
                     raise ValueError
-                ready = not self.live_blockers() if self.path == ADMIN_API else self.public_ready()
-                if mode == "live" and not ready:
-                    raise ExperimentError("disabled", "실시간 집필 설정이 준비되지 않았습니다.", 503)
+                if mode == "live":
+                    if self.path == ADMIN_API:
+                        ready = not self.live_blockers()
+                    else:
+                        ready = self.trial_live_ready() if trial else self.public_ready()
+                    if not ready:
+                        raise ExperimentError("disabled", "실시간 집필 설정이 준비되지 않았습니다.", 503)
                 a, gender_a, name_a = parse_person(data["a"])
                 b, gender_b, name_b = parse_person(data["b"])
                 payload = birth_payload(a, b, {"a": gender_a, "b": gender_b})
                 payload["names"] = {"a": name_a, "b": name_b}
                 _, _, _, _, _, ranked, _ = match_inputs(data)
                 couple = ranked[0][2]
+                if trial:
+                    couple = next(entry for _, couple_id, entry in ranked if couple_id.startswith("c"))
                 payload["couple"] = {key: couple[key] for key in ("id", "name", "work")}
                 art = VERIFIED_ART.get((couple["id"], couple["work"], couple["name"]))
                 if art and not all((ROOT / path.lstrip("/")).is_file() for path in art.values()):
@@ -287,6 +307,8 @@ class Handler(BaseHTTPRequestHandler):
                     capture = GROUNDING_DIAGNOSTIC.capture if self.path == ADMIN_API else None
                     result.update(run_report("sol-62", "live", True, budget, payload,
                                              on_grounding_failure=capture, personalized=True))
+                if trial and mode != "preview":
+                    result.update(format_trial(result))
             else:
                 if set(data) != {"profile", "mode"}:
                     raise ValueError

@@ -1,8 +1,8 @@
 """Compose a complete RS manuscript from confirmed facts, without a provider."""
 
 from compatibility_v12 import GOD_QUESTIONS
-from rs_gpt import STEM_NAMES, validate
-from rs_synthesis import ELEMENT_STYLE, with_particle
+from rs_gpt import CHART_SYMBOLS, STEM_NAMES, validate
+from rs_synthesis import with_particle
 
 
 # Each lens gives a concrete expression, the point where it can become a
@@ -117,7 +117,7 @@ def natal(owner, charts, facts, name):
     first = paragraph(
         [f"{owner}.day.stem"],
         f"{name}님의 일간은 {with_particle(f'{STEM_NAMES[master]}({master})', '이에요', '예요')}.",
-        f"전통 명리에서 이 글자는 {ELEMENT_STYLE[chart['element']]}을 상징해요.",
+        f"이 글자의 오행은 {CHART_SYMBOLS[master]['element_name']}에 해당해요.",
         heading=f"{name}님의 기본 성향", lead=owner == "a",
     )
     coverage = []
